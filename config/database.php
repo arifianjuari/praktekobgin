@@ -20,13 +20,26 @@ if (file_exists(__DIR__ . '/config.php')) {
 // $db2_password = getenv('DB_PASS') ?: 'root';
 // $db2_database = getenv('DB_NAME') ?: 'praktekobgin_data';
 // $db2_port = getenv('DB_PORT') ?: '8889';
+// Cek apakah ada file local.config.env dan load jika ada
+$local_config = __DIR__ . '/../local.config.env';
+if (file_exists($local_config)) {
+    $env_lines = file($local_config, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($env_lines as $line) {
+        if (strpos($line, '#') === 0) continue; // Skip komentar
+        list($name, $value) = explode('=', $line, 2);
+        $name = trim($name);
+        $value = trim($value);
+        putenv("$name=$value");
+    }
+}
+
 // Konfigurasi DB: gunakan ENV jika ada, fallback hanya untuk development lokal!
 // Untuk VPS/production, pastikan variabel environment diatur di server.
 $db2_host = getenv('DB_HOST') ?: '127.0.0.1';
 $db2_username = getenv('DB_USER') ?: 'root';
-$db2_password = getenv('DB_PASS') ?: '';
+$db2_password = getenv('DB_PASS') ?: 'root'; // Default password untuk MAMP
 $db2_database = getenv('DB_NAME') ?: 'praktekobgin_data';
-$db2_port = getenv('DB_PORT') ?: '3306';
+$db2_port = getenv('DB_PORT') ?: '8889'; // Default port untuk MAMP
 
 
 // Improved error handling function

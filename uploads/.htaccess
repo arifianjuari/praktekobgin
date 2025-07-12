@@ -1,0 +1,36 @@
+# Deny access to all files by default
+<Files *>
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Allow access only to image files
+<FilesMatch "\.(jpg|jpeg|png|gif)$">
+    Order deny,allow
+    Allow from all
+</FilesMatch>
+
+# Prevent script execution
+<FilesMatch "\.(php|php3|php4|php5|php7|phtml|cgi|pl|py|asp|aspx|jsp)$">
+    Order deny,allow
+    Deny from all
+</FilesMatch>
+
+# Prevent directory listing
+Options -Indexes
+
+# Protect against hotlinking
+SetEnvIf Referer "^$" local_ref=1
+SetEnvIf Referer "^http(s)?://([^/]+\.)?yourdomain\.com/" local_ref=1
+<FilesMatch "\.(jpg|jpeg|png|gif)$">
+    Order deny,allow
+    Deny from all
+    Allow from env=local_ref
+</FilesMatch>
+
+# Additional security headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule> 

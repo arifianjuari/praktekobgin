@@ -1,0 +1,36 @@
+# Inherit rules from parent .htaccess
+Options +FollowSymLinks
+
+# Allow access only to specific image files
+<FilesMatch "^edukasi-.*\.(jpg|jpeg|png|gif)$">
+    Order allow,deny
+    Allow from all
+</FilesMatch>
+
+# Prevent script execution
+<FilesMatch "\.ph(p[3-7]?|tml)$">
+    Order deny,allow
+    Deny from all
+</FilesMatch>
+
+# Set proper content type for images
+<IfModule mod_mime.c>
+    AddType image/jpeg .jpg .jpeg
+    AddType image/png .png
+    AddType image/gif .gif
+</IfModule>
+
+# Enable caching for images
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+</IfModule>
+
+# Compress images if possible
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE image/jpeg
+    AddOutputFilterByType DEFLATE image/png
+    AddOutputFilterByType DEFLATE image/gif
+</IfModule> 

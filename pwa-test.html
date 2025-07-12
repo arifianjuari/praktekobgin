@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test PWA - Praktek Obgin</title>
+
+    <!-- Meta tags untuk PWA -->
+    <meta name="theme-color" content="#198754">
+    <meta name="description" content="Aplikasi Praktek Obgin">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Praktek Obgin">
+
+    <!-- Favicon dan ikon PWA -->
+    <link rel="icon" href="/assets/pwa/icons/praktekobgin_icon72x72.png">
+    <link rel="apple-touch-icon" href="/assets/pwa/icons/praktekobgin_icon192.png">
+
+    <!-- Manifest PWA -->
+    <link rel="manifest" href="/assets/pwa/manifest.json">
+
+    <!-- CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            padding: 20px;
+        }
+
+        .card {
+            margin-bottom: 20px;
+        }
+
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .status-success {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .status-warning {
+            background-color: #fff3cd;
+            color: #664d03;
+        }
+
+        .status-danger {
+            background-color: #f8d7da;
+            color: #842029;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="my-4">Test PWA - Praktek Obgin</h1>
+
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Status PWA</h5>
+            </div>
+            <div class="card-body">
+                <div id="pwa-status" class="status">Memeriksa status PWA...</div>
+                <div id="sw-status" class="status">Memeriksa Service Worker...</div>
+                <div id="online-status" class="status">Memeriksa status koneksi...</div>
+
+                <button id="install-btn" class="btn btn-success mt-3" style="display: none;">
+                    Instal Aplikasi
+                </button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Test Fitur Offline</h5>
+            </div>
+            <div class="card-body">
+                <p>Untuk menguji fitur offline:</p>
+                <ol>
+                    <li>Buka DevTools (F12 atau klik kanan > Inspect)</li>
+                    <li>Buka tab Network</li>
+                    <li>Centang "Offline"</li>
+                    <li>Refresh halaman</li>
+                </ol>
+                <p>Jika PWA berfungsi dengan baik, halaman akan tetap dimuat meskipun offline.</p>
+
+                <button id="cache-test-btn" class="btn btn-primary">
+                    Test Cache
+                </button>
+                <div id="cache-result" class="mt-3"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Test Notifikasi</h5>
+            </div>
+            <div class="card-body">
+                <button id="notification-btn" class="btn btn-info">
+                    Kirim Notifikasi Test
+                </button>
+                <div id="notification-status" class="status mt-3">Status notifikasi akan muncul di sini</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/pwa/register-sw.js"></script>
+
+    <script>
+        // Cek status PWA
+        document.addEventListener('DOMContentLoaded', function () {
+            // Cek Service Worker
+            if ('serviceWorker' in navigator) {
+                document.getElementById('sw-status').textContent = 'Service Worker didukung oleh browser ini';
+                document.getElementById('sw-status').className = 'status status-success';
+
+                navigator.serviceWorker.getRegistration().then(function (registration) {
+                    if (registration) {
+                        document.getElementById('sw-status').textContent = 'Service Worker terdaftar dan aktif';
+                    } else {
+                        document.getElementById('sw-status').textContent = 'Service Worker didukung tetapi belum terdaftar';
+                        document.getElementById('sw-status').className = 'status status-warning';
+                    }
+                });
+            } else {
+                document.getElementById('sw-status').textContent = 'Service Worker tidak didukung oleh browser ini';
+                document.getElementById('sw-status').className = 'status status-danger';
+            }
+
+            // Cek apakah dapat diinstal
+            const isInStandaloneMode = () =>
+                (window.matchMedia('(display-mode: standalone)').matches) ||
+                (window.navigator.standalone) ||
+                document.referrer.includes('android-app://');
+
+            if (isInStandaloneMode()) {
+                document.getElementById('pwa-status').textContent = 'Aplikasi berjalan dalam mode PWA';
+                document.getElementById('pwa-status').className = 'status status-success';
+            } else {
+                document.getElementById('pwa-status').textContent = 'Aplikasi berjalan di browser biasa';
+                document.getElementById('pwa-status').className = 'status status-warning';
+
+                // Tampilkan tombol instal jika tersedia
+                window.addEventListener('beforeinstallprompt', (e) => {
+                    e.preventDefault();
+                    let deferredPrompt = e;
+
+                    const installBtn = document.getElementById('install-btn');
+                    installBtn.style.display = 'block';
+
+                    installBtn.addEventListener('click', () => {
+                        installBtn.style.display = 'none';
+                        deferredPrompt.prompt();
+                        deferredPrompt.userChoice.then((choiceResult) => {
+                            if (choiceResult.outcome === 'accepted') {
+                                document.getElementById('pwa-status').textContent = 'Aplikasi berhasil diinstal';
+                                document.getElementById('pwa-status').className = 'status status-success';
+                            }
+                            deferredPrompt = null;
+                        });
+                    });
+                });
+            }
+
+            // Cek status online
+            function updateOnlineStatus() {
+                const status = navigator.onLine ? 'online' : 'offline';
+                if (status === 'online') {
+                    document.getElementById('online-status').textContent = 'Aplikasi online';
+                    document.getElementById('online-status').className = 'status status-success';
+                } else {
+                    document.getElementById('online-status').textContent = 'Aplikasi offline';
+                    document.getElementById('online-status').className = 'status status-warning';
+                }
+            }
+
+            window.addEventListener('online', updateOnlineStatus);
+            window.addEventListener('offline', updateOnlineStatus);
+            updateOnlineStatus();
+
+            // Test Cache
+            document.getElementById('cache-test-btn').addEventListener('click', function () {
+                caches.keys().then(function (cacheNames) {
+                    let result = '<h5>Cache yang tersedia:</h5><ul>';
+                    if (cacheNames.length === 0) {
+                        result = '<div class="alert alert-warning">Tidak ada cache yang ditemukan</div>';
+                    } else {
+                        cacheNames.forEach(function (cacheName) {
+                            result += '<li>' + cacheName + '</li>';
+                        });
+                        result += '</ul>';
+                    }
+                    document.getElementById('cache-result').innerHTML = result;
+                });
+            });
+
+            // Test Notifikasi
+            document.getElementById('notification-btn').addEventListener('click', function () {
+                if (!('Notification' in window)) {
+                    document.getElementById('notification-status').textContent = 'Notifikasi tidak didukung oleh browser ini';
+                    document.getElementById('notification-status').className = 'status status-danger';
+                    return;
+                }
+
+                if (Notification.permission === 'granted') {
+                    sendNotification();
+                } else if (Notification.permission !== 'denied') {
+                    Notification.requestPermission().then(function (permission) {
+                        if (permission === 'granted') {
+                            sendNotification();
+                        } else {
+                            document.getElementById('notification-status').textContent = 'Izin notifikasi ditolak';
+                            document.getElementById('notification-status').className = 'status status-warning';
+                        }
+                    });
+                } else {
+                    document.getElementById('notification-status').textContent = 'Izin notifikasi ditolak. Silakan ubah pengaturan browser Anda';
+                    document.getElementById('notification-status').className = 'status status-danger';
+                }
+            });
+
+            function sendNotification() {
+                const notification = new Notification('Test Notifikasi', {
+                    body: 'Ini adalah notifikasi test dari Aplikasi Praktek Obgin',
+                    icon: '/assets/pwa/icons/praktekobgin_icon192.png'
+                });
+
+                document.getElementById('notification-status').textContent = 'Notifikasi berhasil dikirim';
+                document.getElementById('notification-status').className = 'status status-success';
+
+                notification.onclick = function () {
+                    window.focus();
+                    notification.close();
+                };
+            }
+        });
+    </script>
+</body>
+
+</html>

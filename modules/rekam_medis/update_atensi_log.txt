@@ -1,0 +1,18 @@
+2025-07-03 10:50:48 - Request received
+2025-07-03 10:50:48 - Method: GET
+2025-07-03 10:50:48 - Is AJAX: No
+2025-07-03 17:50:48 - No Rawat: 20250311.009
+2025-07-03 17:50:48 - Error: SQLSTATE[22007]: Invalid datetime format: 1292 Truncated incorrect DOUBLE value: '71,75'
+2025-07-03 14:13:44 - Request received
+2025-07-03 14:13:44 - Method: GET
+2025-07-03 14:13:44 - Is AJAX: No
+2025-07-03 14:21:51 - Request received
+2025-07-03 14:21:51 - Method: GET
+2025-07-03 14:21:51 - Is AJAX: No
+2025-07-03 21:21:52 - No Rawat: 20250311.009
+2025-07-03 21:21:52 - Error: SQLSTATE[22007]: Invalid datetime format: 1292 Truncated incorrect DOUBLE value: '71,75'
+2025-07-04 23:33:20 - Request received
+2025-07-04 23:33:20 - Method: GET
+2025-07-04 23:33:20 - Is AJAX: No
+2025-07-05 06:33:20 - No Rawat: 20250705.001
+2025-07-05 06:33:20 - Query executed. Rows affected: 1

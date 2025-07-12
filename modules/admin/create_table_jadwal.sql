@@ -1,0 +1,20 @@
+CREATE TABLE IF NOT EXISTS jadwal_praktek (
+    ID_Jadwal_Praktek CHAR(36) NOT NULL,
+    ID_Tempat_Praktek CHAR(36) NOT NULL,
+    ID_Dokter CHAR(36) NOT NULL,
+    ID_Jadwal_Rutin CHAR(36) NULL,
+    Tanggal_Praktek DATE NOT NULL,
+    Jam_Mulai TIME NOT NULL,
+    Jam_Selesai TIME NOT NULL,
+    Status_Praktek ENUM('Buka', 'Tutup', 'Penuh') DEFAULT 'Buka',
+    Alasan_Tutup VARCHAR(255),
+    Tanggal_Buka_Kembali DATE,
+    Kuota_Pasien INT(11),
+    Jenis_Layanan VARCHAR(50),
+    createdAt DATETIME,
+    updatedAt DATETIME,
+    PRIMARY KEY (ID_Jadwal_Praktek),
+    FOREIGN KEY (ID_Tempat_Praktek) REFERENCES tempat_praktek(ID_Tempat_Praktek),
+    FOREIGN KEY (ID_Dokter) REFERENCES dokter(ID_Dokter),
+    FOREIGN KEY (ID_Jadwal_Rutin) REFERENCES jadwal_rutin(ID_Jadwal_Rutin) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4; 
