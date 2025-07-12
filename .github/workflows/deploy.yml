@@ -3,24 +3,32 @@ name: Deploy ke Hostinger via FTP
 on:
   push:
     branches:
-      - main  # Akan berjalan otomatis saat push ke branch main
+      - main  # Deploy otomatis saat push ke branch main
       - alpha_v1
       - alpha_v2
 
-  workflow_dispatch:  # Menambahkan opsi trigger manual di GitHub Actions
+  workflow_dispatch:  # Opsi trigger manual di GitHub Actions
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 30  # Menambahkan timeout di tingkat job
+    timeout-minutes: 30
+    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 2  # Mengambil hanya 2 commit terakhir untuk mempercepat
-
-      - name: Deploy via FTP
-        uses: SamKirkland/FTP-Deploy-Action@4.3.0
+      
+      # Prepare environment files
+      - name: Setup env variables
+        run: |
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .github/env-templates/.env.secret
+          echo "DB_PASS=${{ secrets.DB_PASS }}" >> .github/env-templates/.env.secret
+          
+      # Deploy aplikasi utama via FTP
+      - name: Deploy aplikasi via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USERNAME }}
@@ -38,19 +46,49 @@ jobs:
             **/vendor/**
             **/.idea/**
             **/.vscode/**
+            **/.github/env-templates/.env.secret
             
-      - name: Setup server environment
-        uses: appleboy/ssh-action@master
+      # Deploy template environment (terpisah)
+      - name: Deploy environment templates
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          script: |
-            cd /public_html
-            # Setup production database environment
-            echo "DB_HOST=localhost" > config.env
-            echo "DB_NAME=praktekobgin_data" >> config.env
-            echo "DB_USER=${{ secrets.DB_USER }}" >> config.env
-            echo "DB_PASS=${{ secrets.DB_PASS }}" >> config.env
-            echo "DB_PORT=3306" >> config.env
-            echo "APP_ENV=production" >> config.env
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./.github/env-templates/
+          server-dir: /public_html/.env-setup/
+          exclude: |
+            **/.env.secret
+      
+      # Deploy secret environment untuk diproses server-side
+      - name: Deploy environment secrets
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./.github/env-templates/.env.secret
+          server-dir: /public_html/.env-setup/.env.secret
+            
+      # Setup environment melalui FTP & PHP script
+      - name: Run setup script via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./
+          server-dir: /public_html/
+          include: |
+            .github/workflows/setup-env.php
+          dangerous-clean-slate: false
+
+      # Jalankan script setup via HTTP request (alternatif SSH)
+      - name: Trigger environment setup script
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: ${{ secrets.APP_URL }}/.env-setup/trigger.php
+          method: 'POST'
+          customHeaders: '{"Authorization": "${{ secrets.DEPLOY_TOKEN }}"}'
+          timeout: 10000
+          preventFailureOnNoResponse: true
