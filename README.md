@@ -27,6 +27,7 @@
    
    // Komentar atau hapus konfigurasi localhost
    // $base_url = 'http://localhost/antrian%20pasien';
+
    ```
 
 5. **Pengaturan Folder dan Hak Akses**
