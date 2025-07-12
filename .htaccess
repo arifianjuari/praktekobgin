@@ -16,7 +16,12 @@
 
 # Enable URL Rewriting
 RewriteEngine On
-RewriteBase /antrian%20pasien/
+RewriteBase /
+
+# Redirect www to non-www
+RewriteCond %{HTTP_HOST} ^www\.praktekobgin\.com$ [NC]
+RewriteRule ^(.*)$ http://praktekobgin.com/$1 [L,R=301]
+
 
 # Handle Authorization Header
 RewriteCond %{HTTP:Authorization} .
