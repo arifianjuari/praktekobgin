@@ -34,7 +34,7 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./
-          server-dir: /public_html/
+          server-dir: /web/praktekobgin.com/public_html/
           exclude: |
             **/.git*
             **/.git*/**
@@ -56,7 +56,7 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./.github/env-templates/
-          server-dir: /public_html/.env-setup/
+          server-dir: /web/praktekobgin.com/public_html/.env-setup/
           exclude: |
             **/.env.secret
       
@@ -68,7 +68,7 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./.github/env-templates/.env.secret
-          server-dir: /public_html/.env-setup/.env.secret
+          server-dir: /web/praktekobgin.com/public_html/.env-setup/.env.secret
             
       # Setup environment melalui FTP & PHP script
       - name: Run setup script via FTP
@@ -78,7 +78,7 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./
-          server-dir: /public_html/
+          server-dir: /web/praktekobgin.com/public_html/
           include: |
             .github/workflows/setup-env.php
           dangerous-clean-slate: false
