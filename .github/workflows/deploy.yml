@@ -27,17 +27,28 @@ jobs:
           echo "DB_PASS=${{ secrets.DB_PASS }}" >> .github/env-templates/.env.secret
           
       # Deploy aplikasi utama via FTP
-      - name: Deploy aplikasi dan env via SFTP
-        uses: appleboy/scp-action@v0.1.7
+      - name: Deploy aplikasi via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          host: ${{ secrets.FTP_HOST }}
+          server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          port: 22
-          source: .
-          target: /web/praktekobgin.com/public_html/
-          overwrite: true
-          rm: false
+          protocol: ftps
+          port: 21
+          local-dir: ./
+          server-dir: /web/praktekobgin.com/public_html/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            README.md
+            **/tests/**
+            **/.env*
+            **/config.env
+            **/vendor/**
+            **/.idea/**
+            **/.vscode/**
+            **/.github/env-templates/.env.secret
 
       # Jalankan script setup via HTTP request (alternatif SSH)
       - name: Trigger environment setup script
