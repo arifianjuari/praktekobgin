@@ -853,6 +853,9 @@ ob_start();
 </div>
 
 <script>
+    // Definisikan base_url untuk digunakan di JavaScript
+    const base_url = '<?= $base_url ?>';
+    
     document.addEventListener('DOMContentLoaded', function() {
         const formElement = document.getElementById('formPendaftaran');
         const submitBtn = document.getElementById('submitBtn');
@@ -1127,7 +1130,7 @@ ob_start();
             }
             // Enable tempatSelect saat data sudah siap
             const timestamp = new Date().getTime();
-            const url = '../controllers/get_tempat_by_layanan.php?layanan=' + encodeURIComponent(idLayanan) + '&_=' + timestamp;
+            const url = base_url + '/modules/pendaftaran/controllers/get_tempat_by_layanan.php?layanan=' + encodeURIComponent(idLayanan) + '&_=' + timestamp;
             fetch(url)
                 .then(response => {
                     if (!response.ok) throw new Error('Gagal memuat tempat praktek');
@@ -1179,7 +1182,7 @@ ob_start();
                 return;
             }
             const timestamp = new Date().getTime();
-            const url = '../controllers/get_dokter_by_layanan_tempat.php?layanan=' + encodeURIComponent(idLayanan) + '&tempat=' + encodeURIComponent(idTempat) + '&_=' + timestamp;
+            const url = base_url + '/modules/pendaftaran/controllers/get_dokter_by_layanan_tempat.php?layanan=' + encodeURIComponent(idLayanan) + '&tempat=' + encodeURIComponent(idTempat) + '&_=' + timestamp;
             fetch(url)
                 .then(response => {
                     if (!response.ok) throw new Error('Gagal memuat dokter');
@@ -1228,7 +1231,7 @@ ob_start();
                 return;
             }
             const timestamp = new Date().getTime();
-            const url = '../controllers/get_jadwal_by_layanan_tempat_dokter.php?layanan=' + encodeURIComponent(idLayanan) + '&tempat=' + encodeURIComponent(idTempat) + '&dokter=' + encodeURIComponent(idDokter) + '&_=' + timestamp;
+            const url = base_url + '/modules/pendaftaran/controllers/get_jadwal_by_layanan_tempat_dokter.php?layanan=' + encodeURIComponent(idLayanan) + '&tempat=' + encodeURIComponent(idTempat) + '&dokter=' + encodeURIComponent(idDokter) + '&_=' + timestamp;
             fetch(url)
                 .then(response => {
                     if (!response.ok) throw new Error('Gagal memuat jadwal');
