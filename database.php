@@ -14,7 +14,7 @@ if (file_exists(__DIR__ . '/config.php')) {
     require_once __DIR__ . '/config.php';
 }
 
-// Database untuk aplikasi praktekobgin di lokal - db2
+// Database untuk aplikasi antrian pasien - db2
 // $db2_host = getenv('DB_HOST') ?: '127.0.0.1';
 // $db2_username = getenv('DB_USER') ?: 'root';
 // $db2_password = getenv('DB_PASS') ?: 'root';
@@ -35,17 +35,12 @@ if (file_exists($local_config)) {
 
 // Konfigurasi DB: gunakan ENV jika ada, fallback hanya untuk development lokal!
 // Untuk VPS/production, pastikan variabel environment diatur di server.
-//$db2_host = getenv('DB_HOST') ?: '127.0.0.1';
-//$db2_username = getenv('DB_USER') ?: 'root';
-//$db2_password = getenv('DB_PASS') ?: 'root'; // Default password untuk MAMP
-//$db2_database = getenv('DB_NAME') ?: 'praktekobgin_data';
-//$db2_port = getenv('DB_PORT') ?: '8889'; // Default port untuk MAMP
+$db2_host = getenv('DB_HOST') ?: 'localhost';
+$db2_username = getenv('DB_USER') ?: 'praktekobgin_admin';
+$db2_password = getenv('DB_PASS') ?: 'Juari@2591'; // Default password untuk MAMP
+$db2_database = getenv('DB_NAME') ?: 'praktekobgin_data';
+$db2_port = getenv('DB_PORT') ?: '8889'; // Default port untuk MAMP
 
-$db2_host     = getenv('DB_HOST') ?: 'localhost';
-$db2_database = getenv('DB_DATABASE') ?: 'praktekobgin_db';
-$db2_username = getenv('DB_USERNAME') ?: 'arifianjuari';
-$db2_password = getenv('DB_PASSWORD') ?: 'Juari@2591';
-$db2_port     = getenv('DB_PORT') ?: '3306';
 
 // Improved error handling function
 function handleDatabaseError($message, $exception = null)

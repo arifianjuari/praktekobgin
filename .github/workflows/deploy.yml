@@ -36,7 +36,7 @@ jobs:
           protocol: ftp
           port: 21
           local-dir: ./
-          server-dir: /
+          server-dir: /www/wwwroot/praktekobgin.com/ # Ubah ke folder website di aaPanel
           exclude: |
             **/.git*
             **/.git*/**
@@ -48,7 +48,10 @@ jobs:
             **/vendor/**
             **/.idea/**
             **/.vscode/**
-            **/.github/env-templates/.env.secret
+            **/.github/
+            .DS_Store
+            .env.local
+            local.config.env
 
       # Jalankan script setup via HTTP request (alternatif SSH)
       - name: Trigger environment setup script
