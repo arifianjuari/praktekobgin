@@ -36,7 +36,7 @@ jobs:
           protocol: ftp
           port: 21
           local-dir: ./
-          server-dir: /www/wwwroot/praktekobgin.com/ # Ubah ke folder website di aaPanel
+          server-dir: / # Ubah ke folder website di aaPanel
           exclude: |
             **/.git*
             **/.git*/**
