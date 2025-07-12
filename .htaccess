@@ -38,9 +38,12 @@ RewriteRule ^$ /pendaftaran/form_pendaftaran_pasien.php [L,R=301]
 
 RewriteRule ^index\.php$ /pendaftaran/form_pendaftaran_pasien.php [L,R=301]
 
-# Redirect to HTTPS (uncomment if using SSL) - Dinonaktifkan untuk localhost
+# === REDIRECT TO HTTPS (PRODUCTION ONLY) ===
+# Untuk development lokal, biarkan baris di bawah ini tetap dalam komentar!
+# Aktifkan hanya jika SSL sudah terpasang di server production.
 # RewriteCond %{HTTPS} off
 # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+# === END REDIRECT TO HTTPS ===
 
 # Allow Cross-Origin Resource Sharing
 # Commented out due to missing headers module in MAMP Apache
