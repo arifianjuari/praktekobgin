@@ -21,11 +21,12 @@ require_once __DIR__ . '/../config/config.php';
     <meta name="apple-mobile-web-app-title" content="Praktek Obgin">
 
     <!-- Favicon dan ikon PWA -->
-    <link rel="icon" href="<?= $base_url ?>/assets/pwa/icons/praktekobgin_icon72x72.png">
-    <link rel="apple-touch-icon" href="<?= $base_url ?>/assets/pwa/icons/praktekobgin_icon192.png">
+    <link rel="icon" href="/assets/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="/assets/icons/icon-512x512.png">
 
     <!-- Manifest PWA -->
-    <link rel="manifest" href="<?= $base_url ?>/assets/pwa/manifest.json">
+    <link rel="manifest" href="/manifest.json">
 
     <!-- CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -36,19 +37,18 @@ require_once __DIR__ . '/../config/config.php';
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Service Worker Disabler -->
-    <script src="<?= $base_url ?>/assets/pwa/sw-disable.js"></script>
-    <!-- Script untuk memastikan service worker dinonaktifkan -->
+    <!-- PWA Service Worker Registration -->
     <script>
-        // Force hapus service worker saat halaman dimuat
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                for(let registration of registrations) {
-                    registration.unregister();
-                    console.log('Service Worker dinonaktifkan:', registration.scope);
-                }
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/service-worker.js')
+            .then(function(reg) {
+              console.log('Service Worker terdaftar:', reg.scope);
+            }).catch(function(error) {
+              console.log('Service Worker gagal:', error);
             });
-        }
+        });
+      }
     </script>
 </head>
 
