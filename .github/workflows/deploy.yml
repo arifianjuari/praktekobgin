@@ -57,7 +57,7 @@ jobs:
       - name: Trigger environment setup script
         uses: fjogeleit/http-request-action@v1
         with:
-          url: ${{ secrets.APP_URL }}/.env-setup/trigger.php
+          url: ${{ secrets.APP_URL }}/.env-setup/trigger.php # Pastikan APP_URL adalah URL lengkap (http/https)
           method: 'POST'
           customHeaders: '{"Authorization": "${{ secrets.DEPLOY_TOKEN }}"}'
           timeout: 10000
