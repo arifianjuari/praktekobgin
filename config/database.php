@@ -39,12 +39,13 @@ if (file_exists($local_config)) {
     }
 }
 
-// Konfigurasi DB: gunakan ENV jika ada, fallback hanya untuk development lokal!
-// Untuk VPS/production, pastikan variabel environment diatur di server.
+// Konfigurasi DB: gunakan ENV. Jangan pernah hardcode password di source code!
+// Atur DB_PASSWORD di file .env, local.config.env, atau environment server.
 $db2_host     = getenv('DB_HOST') ?: 'localhost';
 $db2_database = getenv('DB_DATABASE') ?: 'praktekobgin_db';
 $db2_username = getenv('DB_USERNAME') ?: 'arifianjuari';
-$db2_password = getenv('DB_PASSWORD') ?: 'Juari@2591';
+// Ambil password database hanya dari environment variable, tanpa fallback hardcode
+$db2_password = getenv('DB_PASSWORD'); // Pastikan DB_PASSWORD diatur di .env atau environment server
 $db2_port     = getenv('DB_PORT') ?: '3306';
 
 // Debug opsional (uncomment untuk cek value saat development)

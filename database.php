@@ -33,11 +33,12 @@ if (file_exists($local_config)) {
     }
 }
 
-// Konfigurasi DB: gunakan ENV jika ada, fallback hanya untuk development lokal!
-// Untuk VPS/production, pastikan variabel environment diatur di server.
+// Konfigurasi DB: gunakan ENV. Jangan pernah hardcode password di source code!
+// Atur DB_PASS di file .env, local.config.env, atau environment server.
 $db2_host = getenv('DB_HOST') ?: 'localhost';
 $db2_username = getenv('DB_USER') ?: 'arifianjuari';
-$db2_password = getenv('DB_PASS') ?: 'Juari@2591'; // Default password untuk MAMP
+// Ambil password database hanya dari environment variable, tanpa fallback hardcode
+$db2_password = getenv('DB_PASS'); // Pastikan DB_PASS diatur di .env, local.config.env, atau environment server
 $db2_database = getenv('DB_NAME') ?: 'praktekobgin_db';
 $db2_port = getenv('DB_PORT') ?: '3306'; // Default port untuk MAMP
 
