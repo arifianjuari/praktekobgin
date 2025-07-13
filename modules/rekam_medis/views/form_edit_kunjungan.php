@@ -179,7 +179,7 @@ if (!isset($kunjungan) || !$kunjungan) {
                         </thead>
                         <tbody>
                             <?php
-                            $db_config_path = dirname(__DIR__, 3) . '/config/database.php';
+                            $db_config_path = $_SERVER['DOCUMENT_ROOT'] . '/config/database.php';
                             if (!file_exists($db_config_path)) {
                                 echo "<pre>Debug: $db_config_path</pre>";
                                 die("Error: Config database.php tidak ditemukan di: $db_config_path");
