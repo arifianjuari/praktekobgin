@@ -188,8 +188,8 @@ if (!isset($kunjungan) || !$kunjungan) {
                             // Fallback jika env kosong
                             // if (empty($db2_host)) $db2_host = '127.0.0.1';
                             if (empty($db2_host)) $db2_host = 'localhost';
-                            if (empty($db2_username)) $db2_username = 'root';
-                            if (empty($db2_password)) $db2_password = 'root';
+                            if (empty($db2_username)) $db2_username = 'arifianjuari';
+                            if (empty($db2_password)) $db2_password = 'Juari@2591';
                             if (empty($db2_database)) $db2_database = 'praktekobgin_db';
                             if (empty($db2_port)) $db2_port = '8889';
                             // $conn = new mysqli($db2_host, $db2_username, $db2_password, $db2_database, $db2_port);
