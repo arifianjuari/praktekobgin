@@ -1,4 +1,23 @@
 <?php
+// --- Fallback pengisian layanan untuk dropdown jika belum di-set dari controller ---
+if (!isset($layanan_list)) {
+    try {
+        require_once dirname(__DIR__, 3) . '/config/database.php';
+        global $conn;
+        $query = "SELECT id_layanan, nama_layanan FROM menu_layanan WHERE status_aktif = 1 ORDER BY nama_layanan ASC";
+        $stmt = $conn->query($query);
+        $layanan_list = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
+    } catch (Exception $e) {
+        $layanan_list = [];
+        error_log('Gagal mengambil daftar layanan: ' . $e->getMessage());
+    }
+}
+if (!isset($id_layanan)) {
+    $id_layanan = isset($_GET['layanan']) ? $_GET['layanan'] : '';
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $id_layanan = trim($_POST['id_layanan'] ?? '');
+    }
+}
 // [INFO] File view ini hanya berisi konten utama.
 // Harus dirender melalui template/layout.php agar style dan struktur konsisten.
 // Jika butuh style/script khusus, set variabel $additional_css/$additional_js di controller.
@@ -901,64 +920,77 @@ ob_start();
                             </div>
 
                             <div class="row mb-4">
-                                <div class="col-md-12">
-                                    <h5 class="border-bottom pb-2">Informasi Kunjungan</h5>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="id_tempat_praktek" class="form-label">Tempat Praktek <span class="text-danger">*</span></label>
-                                        <select class="form-select" id="id_tempat_praktek" name="id_tempat_praktek" required>
-                                            <option value="">Pilih Tempat Praktek</option>
-                                            <?php foreach ($tempat_praktek as $tp): ?>
-                                                <option value="<?php echo htmlspecialchars($tp['ID_Tempat_Praktek']); ?>" <?php echo $id_tempat_praktek == $tp['ID_Tempat_Praktek'] ? 'selected' : ''; ?>>
-                                                    <?php echo htmlspecialchars($tp['Nama_Tempat']); ?>
-                                                </option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                        <div class="invalid-feedback">Tempat praktek harus dipilih</div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="id_dokter" class="form-label">Dokter <span class="text-danger">*</span></label>
-                                        <select class="form-select" id="id_dokter" name="id_dokter" required>
-                                            <?php foreach ($dokter as $d): ?>
-                                                <option value="<?php echo htmlspecialchars($d['ID_Dokter']); ?>" selected>
-                                                    <?php echo htmlspecialchars($d['Nama_Dokter']); ?> (<?php echo htmlspecialchars($d['Spesialisasi']); ?>)
-                                                </option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                        <div class="invalid-feedback">Dokter harus dipilih</div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="id_jadwal" class="form-label">Jadwal <span class="text-danger">*</span></label>
-                                        <select class="form-select" id="id_jadwal" name="id_jadwal" required>
-                                            <option value="">Pilih Tempat dan Dokter terlebih dahulu</option>
-                                        </select>
-                                        <div class="invalid-feedback">Jadwal harus dipilih</div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="keluhan" class="form-label">Keluhan</label>
-                                        <textarea class="form-control" id="keluhan" name="keluhan" rows="3"></textarea>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="yang_menyarankan" class="form-label">Yang menyarankan periksa kesini</label>
-                                        <input type="text" class="form-control" id="yang_menyarankan" name="yang_menyarankan" maxlength="50">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="mohon_keringanan" class="form-label">Minta Keringanan</label>
-                                        <textarea class="form-control" id="mohon_keringanan" name="mohon_keringanan" rows="2" placeholder="Alasan permohonan keringanan"></textarea>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="voucher_code" class="form-label">Kode Voucher</label>
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" id="voucher_code" name="voucher_code" placeholder="Masukkan kode voucher jika ada">
-                                            <button class="btn btn-outline-secondary" type="button" id="check_voucher">Cek Voucher</button>
-                                        </div>
-                                        <div id="voucher_feedback" class="form-text"></div>
-                                    </div>
-                                </div>
-                            </div>
+    <div class="col-md-12">
+        <h5 class="card-header text-teal text-uppercase pb-2 text-center" style="letter-spacing: 1.5px; font-weight: 600; background: #f8f9fa;">Informasi Kunjungan</h5>
+    </div>
+    <div class="col-md-6">
+        <div class="mb-3">
+            <label for="id_layanan" class="form-label">Layanan <span class="text-danger">*</span></label>
+            <select class="form-select" id="id_layanan" name="id_layanan" required>
+                <option value="">Pilih Layanan</option>
+                <?php foreach ($layanan_list as $layanan): ?>
+                    <option value="<?php echo htmlspecialchars($layanan['id_layanan']); ?>" <?php echo ($id_layanan == $layanan['id_layanan']) ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($layanan['nama_layanan']); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <div class="invalid-feedback">Layanan harus dipilih</div>
+        </div>
+        <div class="mb-3">
+            <label for="id_tempat_praktek" class="form-label">Tempat Praktek <span class="text-danger">*</span></label>
+            <select class="form-select" id="id_tempat_praktek" name="id_tempat_praktek" required>
+                <option value="">Pilih Tempat Praktek</option>
+                <?php foreach ($tempat_praktek as $tp): ?>
+                    <option value="<?php echo htmlspecialchars($tp['ID_Tempat_Praktek']); ?>" <?php echo $id_tempat_praktek == $tp['ID_Tempat_Praktek'] ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($tp['Nama_Tempat']); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <div class="invalid-feedback">Tempat praktek harus dipilih</div>
+        </div>
+        <div class="mb-3">
+            <label for="id_dokter" class="form-label">Dokter / Bidan <span class="text-danger">*</span></label>
+            <select class="form-select" id="id_dokter" name="id_dokter" required>
+                <option value="">Pilih Dokter</option>
+                <?php foreach ($dokter as $d): ?>
+                    <option value="<?php echo htmlspecialchars($d['ID_Dokter']); ?>" <?php echo $id_dokter == $d['ID_Dokter'] ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($d['Nama_Dokter']); ?> (<?php echo htmlspecialchars($d['Spesialisasi']); ?>)
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <div class="invalid-feedback">Dokter harus dipilih</div>
+        </div>
+        <div class="mb-3">
+            <label for="id_jadwal" class="form-label">Jadwal <span class="text-danger">*</span></label>
+            <select class="form-select" id="id_jadwal" name="id_jadwal" required>
+                <option value="">Pilih Tempat dan Dokter terlebih dahulu</option>
+            </select>
+            <div class="invalid-feedback">Jadwal harus dipilih</div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="mb-3">
+            <label for="keluhan" class="form-label">Keluhan</label>
+            <textarea class="form-control" id="keluhan" name="keluhan" rows="3"></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="yang_menyarankan" class="form-label">Yang menyarankan periksa kesini</label>
+            <input type="text" class="form-control" id="yang_menyarankan" name="yang_menyarankan" maxlength="50">
+        </div>
+        <div class="mb-3">
+            <label for="mohon_keringanan" class="form-label">Minta Keringanan</label>
+            <textarea class="form-control" id="mohon_keringanan" name="mohon_keringanan" rows="2" placeholder="Alasan permohonan keringanan"></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="voucher_code" class="form-label">Kode Voucher</label>
+            <div class="input-group">
+                <input type="text" class="form-control" id="voucher_code" name="voucher_code" placeholder="Masukkan kode voucher jika ada">
+                <button class="btn btn-outline-secondary" type="button" id="check_voucher">Cek Voucher</button>
+            </div>
+            <div id="voucher_feedback" class="form-text"></div>
+        </div>
+    </div>
+</div>
 
                             <div class="row">
                                 <div class="col-md-12">
@@ -1008,6 +1040,184 @@ ob_start();
             // Semua field form selain NIK
             const allFormFields = document.querySelectorAll('#formPendaftaran input:not(#no_ktp), #formPendaftaran select, #formPendaftaran textarea');
 
+            // Dropdown bertingkat dengan AJAX filter
+            const layananSelect = document.getElementById('id_layanan');
+            const tempatSelect = document.getElementById('id_tempat_praktek');
+            const dokterSelect = document.getElementById('id_dokter');
+            const jadwalSelect = document.getElementById('id_jadwal');
+            
+            // Definisi base_url untuk digunakan di AJAX
+            const base_url = window.location.protocol + '//' + window.location.host;
+            
+            // Filter tempat praktek berdasarkan layanan
+            layananSelect.addEventListener('change', function() {
+                const idLayanan = this.value;
+                // Reset value & disable berikutnya
+                tempatSelect.value = '';
+                dokterSelect.value = '';
+                jadwalSelect.value = '';
+                tempatSelect.disabled = true;
+                dokterSelect.disabled = true;
+                jadwalSelect.disabled = true;
+                // Reset isi
+                tempatSelect.innerHTML = '<option value="">Memuat tempat praktek...</option>';
+                dokterSelect.innerHTML = '<option value="">Pilih tempat praktek terlebih dahulu</option>';
+                jadwalSelect.innerHTML = '<option value="">Pilih tempat dan dokter terlebih dahulu</option>';
+                // Trigger validasi HTML5
+                tempatSelect.dispatchEvent(new Event('change'));
+                dokterSelect.dispatchEvent(new Event('change'));
+                jadwalSelect.dispatchEvent(new Event('change'));
+
+                if (!idLayanan) {
+                    tempatSelect.innerHTML = '<option value="">Pilih layanan terlebih dahulu</option>';
+                    tempatSelect.disabled = true;
+                    return;
+                }
+                
+                // Enable tempatSelect saat data sudah siap
+                const timestamp = new Date().getTime();
+                const url = base_url + '/modules/pendaftaran/controllers/get_tempat_by_layanan.php?layanan=' + encodeURIComponent(idLayanan) + '&_=' + timestamp;
+                
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Gagal memuat tempat praktek');
+                        return response.json();
+                    })
+                    .then(data => {
+                        tempatSelect.innerHTML = '';
+                        if (data.error) {
+                            tempatSelect.innerHTML = '<option value="">Error: ' + data.error + '</option>';
+                            tempatSelect.disabled = true;
+                            return;
+                        }
+                        if (!Array.isArray(data) || data.length === 0) {
+                            tempatSelect.innerHTML = '<option value="">Tidak ada tempat praktek aktif untuk layanan ini</option>';
+                            tempatSelect.disabled = true;
+                            return;
+                        }
+                        
+                        tempatSelect.innerHTML = '<option value="">Pilih Tempat Praktek</option>';
+                        data.forEach(function(tp) {
+                            const option = document.createElement('option');
+                            option.value = tp.ID_Tempat_Praktek;
+                            option.textContent = tp.Nama_Tempat;
+                            tempatSelect.appendChild(option);
+                        });
+                        tempatSelect.disabled = false;
+                    })
+                    .catch(error => {
+                        tempatSelect.innerHTML = '<option value="">Error: ' + error.message + '</option>';
+                        tempatSelect.disabled = true;
+                    });
+            });
+
+            // Filter dokter berdasarkan layanan & tempat praktek
+            tempatSelect.addEventListener('change', function() {
+                const idLayanan = layananSelect.value;
+                const idTempat = this.value;
+                dokterSelect.value = '';
+                jadwalSelect.value = '';
+                dokterSelect.disabled = true;
+                jadwalSelect.disabled = true;
+                dokterSelect.innerHTML = '<option value="">Memuat dokter...</option>';
+                jadwalSelect.innerHTML = '<option value="">Pilih tempat dan dokter terlebih dahulu</option>';
+                dokterSelect.dispatchEvent(new Event('change'));
+                jadwalSelect.dispatchEvent(new Event('change'));
+
+                if (!idLayanan || !idTempat) {
+                    dokterSelect.innerHTML = '<option value="">Pilih tempat praktek terlebih dahulu</option>';
+                    dokterSelect.disabled = true;
+                    return;
+                }
+                
+                const timestamp = new Date().getTime();
+                const url = base_url + '/modules/pendaftaran/controllers/get_dokter_by_layanan_tempat.php?layanan=' + encodeURIComponent(idLayanan) + '&tempat=' + encodeURIComponent(idTempat) + '&_=' + timestamp;
+                
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Gagal memuat dokter');
+                        return response.json();
+                    })
+                    .then(data => {
+                        dokterSelect.innerHTML = '';
+                        if (data.error) {
+                            dokterSelect.innerHTML = '<option value="">Error: ' + data.error + '</option>';
+                            dokterSelect.disabled = true;
+                            return;
+                        }
+                        if (!Array.isArray(data) || data.length === 0) {
+                            dokterSelect.innerHTML = '<option value="">Tidak ada dokter/bidan aktif untuk tempat & layanan ini</option>';
+                            dokterSelect.disabled = true;
+                            return;
+                        }
+                        
+                        dokterSelect.innerHTML = '<option value="">Pilih Dokter/Bidan</option>';
+                        data.forEach(function(d) {
+                            const option = document.createElement('option');
+                            option.value = d.ID_Dokter;
+                            option.textContent = d.Nama_Dokter + ' - ' + d.Spesialis;
+                            dokterSelect.appendChild(option);
+                        });
+                        dokterSelect.disabled = false;
+                    })
+                    .catch(error => {
+                        dokterSelect.innerHTML = '<option value="">Error: ' + error.message + '</option>';
+                        dokterSelect.disabled = true;
+                    });
+            });
+            
+            // Filter jadwal berdasarkan tempat & dokter
+            dokterSelect.addEventListener('change', function() {
+                const idTempat = tempatSelect.value;
+                const idDokter = this.value;
+                jadwalSelect.value = '';
+                jadwalSelect.disabled = true;
+                jadwalSelect.innerHTML = '<option value="">Memuat jadwal...</option>';
+                jadwalSelect.dispatchEvent(new Event('change'));
+
+                if (!idTempat || !idDokter) {
+                    jadwalSelect.innerHTML = '<option value="">Pilih dokter/bidan terlebih dahulu</option>';
+                    jadwalSelect.disabled = true;
+                    return;
+                }
+                
+                const timestamp = new Date().getTime();
+                const url = base_url + '/modules/pendaftaran/controllers/get_jadwal.php?tempat=' + encodeURIComponent(idTempat) + '&dokter=' + encodeURIComponent(idDokter) + '&_=' + timestamp;
+                
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Gagal memuat jadwal');
+                        return response.json();
+                    })
+                    .then(data => {
+                        jadwalSelect.innerHTML = '';
+                        if (data.error) {
+                            jadwalSelect.innerHTML = '<option value="">Error: ' + data.error + '</option>';
+                            jadwalSelect.disabled = true;
+                            return;
+                        }
+                        if (!Array.isArray(data) || data.length === 0) {
+                            jadwalSelect.innerHTML = '<option value="">Tidak ada jadwal tersedia untuk dokter & tempat ini</option>';
+                            jadwalSelect.disabled = true;
+                            return;
+                        }
+                        
+                        jadwalSelect.innerHTML = '<option value="">Pilih Jadwal</option>';
+                        data.forEach(function(j) {
+                            const option = document.createElement('option');
+                            // Pastikan gunakan ID_Jadwal_Rutin sebagai value
+                            option.value = j.ID_Jadwal_Rutin;
+                            option.textContent = j.Hari + ' ' + j.Jam_Mulai + '-' + j.Jam_Selesai;
+                            jadwalSelect.appendChild(option);
+                        });
+                        jadwalSelect.disabled = false;
+                    })
+                    .catch(error => {
+                        jadwalSelect.innerHTML = '<option value="">Error: ' + error.message + '</option>';
+                        jadwalSelect.disabled = true;
+                    });
+            });
+
             // Nonaktifkan semua field form kecuali NIK saat halaman dimuat
             allFormFields.forEach(field => {
                 field.disabled = true;
@@ -1033,9 +1243,9 @@ ob_start();
 
                 // Penanganan khusus untuk domain produksi
                 if (window.location.host === 'praktekobgin.com' || window.location.host === 'www.praktekobgin.com') {
-                    apiUrl = `${baseUrl}/pendaftaran/check_patient_rshb.php?nik=${nik}`;
+                    apiUrl = `${baseUrl}/modules/pendaftaran/controllers/check_patient_rshb.php?nik=${nik}`;
                 } else {
-                    apiUrl = `${baseUrl}/pendaftaran/check_patient_rshb.php?nik=${nik}`;
+                    apiUrl = `${baseUrl}/modules/pendaftaran/controllers/check_patient_rshb.php?nik=${nik}`;
                 }
 
                 console.log('Mengakses URL RSHB:', apiUrl);
@@ -1202,9 +1412,7 @@ ob_start();
             });
 
             // Load jadwal when tempat or dokter changes
-            const tempatSelect = document.getElementById('id_tempat_praktek');
-            const dokterSelect = document.getElementById('id_dokter');
-            const jadwalSelect = document.getElementById('id_jadwal');
+            // (Deklarasi sudah ada di atas, tidak perlu diulang di sini)
 
             function loadJadwal() {
                 var tempat = tempatSelect.value;

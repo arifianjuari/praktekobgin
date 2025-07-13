@@ -27,32 +27,19 @@ ob_start();
 error_log("check_patient_rshb.php called with NIK: " . (isset($_GET['nik']) ? $_GET['nik'] : 'not set'));
 
 try {
-    // Koneksi ke database RSHB
-    $db1_host = '103.76.149.29';
-    $db1_username = 'web_hasta';
-    $db1_password = '@Admin123/';
-    $db1_database = 'simsvbaru';
-
-    try {
-        $conn_rshb = new PDO(
-            "mysql:host=$db1_host;dbname=$db1_database;charset=utf8",
-            $db1_username,
-            $db1_password,
-            [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                PDO::ATTR_EMULATE_PREPARES => false
-            ]
-        );
-    } catch (PDOException $e) {
-        error_log("RSHB Database Connection Error: " . $e->getMessage());
-        throw new Exception("Tidak dapat terhubung ke database RSHB.");
+    // Gunakan koneksi database dari config.php
+    require_once __DIR__ . '/../../../config.php';
+    if (!isset($conn_db1) || !($conn_db1 instanceof PDO)) {
+        error_log("Koneksi database RSHB (conn_db1) tidak tersedia!");
+        throw new Exception("Koneksi database RSHB tidak tersedia.");
     }
+    $conn_rshb = $conn_db1;
 
     $nik = isset($_GET['nik']) ? trim($_GET['nik']) : '';
     $response = ['found' => false];
 
     if (strlen($nik) === 16) {
+        error_log("Mencari pasien berdasarkan NIK: $nik");
         try {
             $query = "SELECT no_ktp, nm_pasien, tgl_lahir, jk, no_tlp, alamat, kd_kec, pekerjaan, pekerjaanpj 
                     FROM pasien 
@@ -82,6 +69,8 @@ try {
                     'found' => true,
                     'patient' => $patient
                 ];
+            } else {
+                error_log("Pasien dengan NIK $nik tidak ditemukan di database RSHB.");
             }
         } catch (PDOException $e) {
             $response = [

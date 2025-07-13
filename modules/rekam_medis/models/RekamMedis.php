@@ -157,7 +157,7 @@ class RekamMedis
         try {
             $stmt = $this->pdo->prepare("
                 INSERT INTO penilaian_medis_ralan_kandungan (
-                    no_rawat, tanggal, kd_dokter,
+                    no_rawat, tanggal, kd_dokter, id_perujuk,
                     anamnesis, hubungan, keluhan_utama, rps, rpd,
                     rpk, rpo, alergi, keadaan, kesadaran,
                     gcs, td, nadi, rr, suhu, spo, bb, tb,
@@ -168,7 +168,7 @@ class RekamMedis
                     ultra, kardio, lab,
                     diagnosis, tata, konsul, edukasi, resep
                 ) VALUES (
-                    :no_rawat, :tanggal, :kd_dokter,
+                    :no_rawat, :tanggal, :kd_dokter, :id_perujuk,
                     :anamnesis, :hubungan, :keluhan_utama, :rps, :rpd,
                     :rpk, :rpo, :alergi, :keadaan, :kesadaran,
                     :gcs, :td, :nadi, :rr, :suhu, :spo, :bb, :tb,
@@ -185,6 +185,7 @@ class RekamMedis
                 ':no_rawat' => $data['no_rawat'],
                 ':tanggal' => $data['tanggal'],
                 ':kd_dokter' => $data['kd_dokter'],
+                ':id_perujuk' => isset($data['id_perujuk']) ? $data['id_perujuk'] : null,
                 ':anamnesis' => $data['anamnesis'],
                 ':hubungan' => $data['hubungan'],
                 ':keluhan_utama' => $data['keluhan_utama'],
@@ -245,6 +246,7 @@ class RekamMedis
         try {
             $stmt = $this->pdo->prepare("
                 UPDATE penilaian_medis_ralan_kandungan SET
+                    id_perujuk = ?,
                     anamnesis = ?, hubungan = ?, keluhan_utama = ?, rps = ?, rpd = ?,
                     rpk = ?, rpo = ?, alergi = ?, keadaan = ?, kesadaran = ?,
                     td = ?, nadi = ?, suhu = ?, rr = ?, bb = ?,
@@ -257,6 +259,7 @@ class RekamMedis
             ");
 
             $stmt->execute([
+                isset($data['id_perujuk']) ? $data['id_perujuk'] : null,
                 $data['anamnesis'],
                 $data['hubungan'],
                 $data['keluhan_utama'],

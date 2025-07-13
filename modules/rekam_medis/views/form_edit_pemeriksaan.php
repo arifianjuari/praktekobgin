@@ -962,41 +962,7 @@ if ($conn) {
                                         </table>
                                     </div>
                                     
-                                    <!-- Form Rujukan -->
-                                    <div class="card mt-3">
-                                        <div class="card-header bg-light">
-                                            <h6 class="card-title mb-0" style="font-size: 0.9rem;">Data Rujukan</h6>
-                                        </div>
-                                        <div class="card-body p-3">
-                                            <div class="mb-2">
-                                                <label for="nama_perujuk" class="form-label" style="font-size: 0.8rem; margin-bottom: 0.2rem;">Nama Perujuk</label>
-                                                <select class="form-select form-select-sm" id="id_perujuk" name="id_perujuk" style="font-size: 0.8rem;">
-                                                    <option value="">-- Pilih Perujuk --</option>
-                                                    <?php
-                                                    // Ambil data rujukan dari database
-                                                    try {
-                                                        $conn = getConnection();
-                                                        $sql = "SELECT id_perujuk, nama_perujuk, jenis_perujuk FROM rujukan ORDER BY nama_perujuk ASC";
-                                                        $stmt = $conn->prepare($sql);
-                                                        $stmt->execute();
-                                                        $rujukan = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                                                        
-                                                        foreach ($rujukan as $r) {
-                                                            $selected = (isset($pemeriksaan['id_perujuk']) && $pemeriksaan['id_perujuk'] == $r['id_perujuk']) ? 'selected' : '';
-                                                            echo "<option value='" . htmlspecialchars($r['id_perujuk']) . "' $selected>" . 
-                                                                 htmlspecialchars($r['nama_perujuk']) . ' (' . htmlspecialchars($r['jenis_perujuk']) . ")</option>";
-                                                        }
-                                                    } catch (PDOException $e) {
-                                                        error_log('Error fetching rujukan: ' . $e->getMessage());
-                                                    }
-                                                    ?>
-                                                </select>
-                                            </div>
 
-
-                                        </div>
-                                    </div>
-                                    <!-- End Form Rujukan -->
                                 </div>
                             </div>
 
@@ -1701,6 +1667,40 @@ if ($conn) {
                 <input type="hidden" name="no_rkm_medis" value="<?= $pasien['no_rkm_medis'] ?>">
 
                 <div class="row">
+                    <!-- Blok Data Rujukan dipindahkan ke dalam form -->
+                    <div class="col-md-12">
+                        <div class="card mt-3">
+                            <div class="card-header bg-light">
+                                <h6 class="card-title mb-0" style="font-size: 0.9rem;">Data Rujukan</h6>
+                            </div>
+                            <div class="card-body p-3">
+                                <div class="mb-2">
+                                    <label for="nama_perujuk" class="form-label" style="font-size: 0.8rem; margin-bottom: 0.2rem;">Nama Perujuk</label>
+                                    <select class="form-select form-select-sm" id="id_perujuk" name="id_perujuk" style="font-size: 0.8rem;">
+                                        <option value="">-- Pilih Perujuk --</option>
+                                        <?php
+                                        // Ambil data rujukan dari database
+                                        try {
+                                            $conn = getConnection();
+                                            $sql = "SELECT id_perujuk, nama_perujuk, jenis_perujuk FROM rujukan ORDER BY nama_perujuk ASC";
+                                            $stmt = $conn->prepare($sql);
+                                            $stmt->execute();
+                                            $rujukan = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                                            
+                                            foreach ($rujukan as $r) {
+                                                $selected = (isset($pemeriksaan['id_perujuk']) && $pemeriksaan['id_perujuk'] == $r['id_perujuk']) ? 'selected' : '';
+                                                echo "<option value='" . htmlspecialchars($r['id_perujuk']) . "' $selected>" . 
+                                                     htmlspecialchars($r['nama_perujuk']) . ' (' . htmlspecialchars($r['jenis_perujuk']) . ")</option>";
+                                            }
+                                        } catch (PDOException $e) {
+                                            error_log('Error fetching rujukan: ' . $e->getMessage());
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <!-- Kolom 1 -->
                     <div class="col-md-4">
 

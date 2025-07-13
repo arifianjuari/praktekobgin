@@ -1064,12 +1064,17 @@ class RekamMedisController
 
     public function simpanPenilaianRalan()
     {
+        // Validasi global agar string kosong jadi null untuk tb
+        if (isset($_POST['tb']) && $_POST['tb'] === '') {
+            $_POST['tb'] = null;
+        }
         $data = [
             'no_rawat' => $_POST['no_rkm_medis'] . '/' . date('Ymd'),
             'no_rkm_medis' => $_POST['no_rkm_medis'],
             'tanggal' => date('Y-m-d'),
             'jam' => date('H:i:s'),
             'kd_dokter' => $_SESSION['user_id'], // Sesuaikan dengan ID dokter yang login
+            'id_perujuk' => isset($_POST['id_perujuk']) && $_POST['id_perujuk'] !== '' ? $_POST['id_perujuk'] : null,
             'anamnesis' => $_POST['anamnesis'],
             'hubungan' => $_POST['hubungan'],
             'keluhan_utama' => $_POST['keluhan_utama'],
@@ -1714,10 +1719,14 @@ class RekamMedisController
             if (isset($_POST['no_rawat']) && strlen($_POST['no_rawat']) > 17) {
                 error_log("WARNING: no_rawat terlalu panjang: " . $_POST['no_rawat']);
             }
+            // Pastikan tb kosong dikonversi ke null
+            if (isset($_POST['tb']) && $_POST['tb'] === '') {
+                $_POST['tb'] = null;
+            }
             // Siapkan data untuk update
             $data = [
                 'no_rawat' => isset($_POST['no_rawat']) ? substr($_POST['no_rawat'], 0, 17) : null,
-                'id_perujuk' => $_POST['id_perujuk'] ?? null,
+                'id_perujuk' => (!empty($_POST['id_perujuk'])) ? $_POST['id_perujuk'] : null,
                 'keluhan_utama' => $_POST['keluhan_utama'] ?? null,
                 'rps' => $_POST['rps'] ?? null,
                 'rpd' => $_POST['rpd'] ?? null,
@@ -2042,9 +2051,10 @@ class RekamMedisController
                 $this->pdo->prepare("DELETE FROM reg_periksa_layanan WHERE no_reg = ?")->execute([$no_reg]);
 
                 // Simpan layanan baru
-                $stmtLayanan = $this->pdo->prepare("INSERT INTO reg_periksa_layanan \
-                    (no_reg, id_layanan, nama_layanan, kategori, harga, qty, keterangan, tgl_input) \
-                    VALUES (?, ?, ?, ?, ?, ?, ?, NOW())");
+                $stmtLayanan = $this->pdo->prepare(
+    "INSERT INTO reg_periksa_layanan (no_rawat, no_reg, id_layanan, nama_layanan, kategori, harga, qty, keterangan, tgl_input)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())"
+);
 
                 foreach ($_POST['layanan'] as $l) {
                     $id_layanan = $l['id_layanan'];
@@ -2053,7 +2063,9 @@ class RekamMedisController
                     $harga = $l['harga'];
                     $qty = isset($l['qty']) ? $l['qty'] : 1;
                     $keterangan = $l['keterangan'] ?? '';
-                    $stmtLayanan->execute([$no_reg, $id_layanan, $nama_layanan, $kategori, $harga, $qty, $keterangan]);
+                    $stmtLayanan->execute([
+    $new_data['no_rawat'], $no_reg, $id_layanan, $nama_layanan, $kategori, $harga, $qty, $keterangan
+]);
                 }
             }
 

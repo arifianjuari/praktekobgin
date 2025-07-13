@@ -1,17 +1,15 @@
 <?php
-// Pastikan tidak ada output sebelum header
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Cek apakah ada data kunjungan
+// Validasi data kunjungan
 if (!isset($kunjungan) || !$kunjungan) {
     $_SESSION['error'] = 'Data kunjungan tidak ditemukan';
     header('Location: index.php?module=rekam_medis');
     exit;
 }
 ?>
-
 <div class="container-fluid">
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
@@ -28,7 +26,6 @@ if (!isset($kunjungan) || !$kunjungan) {
                     <?php unset($_SESSION['error']) ?>
                 </div>
             <?php endif; ?>
-
             <?php if (isset($_SESSION['success'])): ?>
                 <div class="alert alert-success alert-dismissible fade show">
                     <?= $_SESSION['success'] ?>
@@ -36,7 +33,6 @@ if (!isset($kunjungan) || !$kunjungan) {
                     <?php unset($_SESSION['success']) ?>
                 </div>
             <?php endif; ?>
-
             <?php if (isset($_SESSION['warning'])): ?>
                 <div class="alert alert-warning alert-dismissible fade show">
                     <?= $_SESSION['warning'] ?>
@@ -44,47 +40,24 @@ if (!isset($kunjungan) || !$kunjungan) {
                     <?php unset($_SESSION['warning']) ?>
                 </div>
             <?php endif; ?>
-
-            <!-- Informasi Pasien -->
             <div class="row mb-4">
                 <div class="col-md-6">
                     <table class="table table-sm">
-                        <tr>
-                            <th width="150">No. Rawat</th>
-                            <td><?= $kunjungan['no_rawat'] ?></td>
-                        </tr>
-                        <tr>
-                            <th>No. Rekam Medis</th>
-                            <td><?= $kunjungan['no_rkm_medis'] ?></td>
-                        </tr>
-                        <tr>
-                            <th>Nama Pasien</th>
-                            <td><?= $kunjungan['nm_pasien'] ?></td>
-                        </tr>
+                        <tr><th width="150">No. Rawat</th><td><?= $kunjungan['no_rawat'] ?></td></tr>
+                        <tr><th>No. Rekam Medis</th><td><?= $kunjungan['no_rkm_medis'] ?></td></tr>
+                        <tr><th>Nama Pasien</th><td><?= $kunjungan['nm_pasien'] ?></td></tr>
+                        <tr><th>Tanggal Registrasi</th><td><?= $kunjungan['tgl_registrasi'] ?></td></tr>
+                        <tr><th>Jam Registrasi</th><td><?= $kunjungan['jam_reg'] ?></td></tr>
+                        <tr><th>No. Registrasi</th><td><?= $kunjungan['no_reg'] ?></td></tr>
                     </table>
                 </div>
             </div>
-
-            <form action="index.php?module=rekam_medis&action=update_kunjungan" method="post">
+            <form action="index.php?module=rekam_medis&action=update_kunjungan" method="post" id="formEditKunjungan">
                 <input type="hidden" name="no_rawat" value="<?= $kunjungan['no_rawat'] ?>">
                 <input type="hidden" name="no_rkm_medis" value="<?= $kunjungan['no_rkm_medis'] ?>">
-
-                <!-- Tanggal dan Waktu -->
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>Tanggal Registrasi</label>
-                            <input type="date" name="tgl_registrasi" class="form-control" value="<?= $kunjungan['tgl_registrasi'] ?>" required>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>Jam Registrasi</label>
-                            <input type="time" name="jam_reg" class="form-control" value="<?= $kunjungan['jam_reg'] ?>" required>
-                        </div>
-                    </div>
-                </div>
-
+                <input type="hidden" name="no_reg" value="<?= $kunjungan['no_reg'] ?>">
+                <input type="hidden" name="tgl_registrasi" value="<?= $kunjungan['tgl_registrasi'] ?>">
+                <input type="hidden" name="jam_reg" value="<?= $kunjungan['jam_reg'] ?>">
                 <!-- Status Bayar -->
                 <div class="row mb-3">
                     <div class="col-md-6">
@@ -97,7 +70,6 @@ if (!isset($kunjungan) || !$kunjungan) {
                         </div>
                     </div>
                 </div>
-
                 <!-- Rincian -->
                 <div class="row mb-3">
                     <div class="col-md-12">
@@ -123,10 +95,21 @@ if (!isset($kunjungan) || !$kunjungan) {
                         </div>
                     </div>
                 </div>
-
-                <!-- Tombol Aksi -->
+                <!-- Keranjang Layanan -->
+                <div class="mt-4">
+                    <h6 class="font-weight-bold">Keranjang Layanan (Nota)</h6>
+                    <table class="table table-bordered" id="keranjangLayanan">
+                        <thead>
+                            <tr><th>Nama Layanan</th><th>Kategori</th><th>Harga</th><th>Keterangan</th><th>Aksi</th></tr>
+                        </thead>
+                        <tbody><!-- Baris layanan terpilih akan muncul di sini --></tbody>
+                    </table>
+                    <div class="d-flex justify-content-end">
+                        <h6 class="mt-2">Total Biaya: <span id="totalBiaya">Rp 0</span></h6>
+                    </div>
+                </div>
                 <div class="form-group mt-4">
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary" id="btnSimpan">
                         <i class="fas fa-save"></i> Simpan Perubahan
                     </button>
                     <a href="index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=<?= $kunjungan['no_rkm_medis'] ?>" class="btn btn-secondary">
@@ -137,7 +120,6 @@ if (!isset($kunjungan) || !$kunjungan) {
         </div>
     </div>
 </div>
-
 <!-- Modal Daftar Layanan -->
 <div class="modal fade" id="modalDaftarLayanan" tabindex="-1" aria-labelledby="modalDaftarLayananLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
@@ -147,7 +129,6 @@ if (!isset($kunjungan) || !$kunjungan) {
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <!-- Filter Kategori -->
                 <div class="row mb-3">
                     <div class="col-md-4">
                         <select id="filter_kategori_layanan" class="form-select me-2">
@@ -162,49 +143,22 @@ if (!isset($kunjungan) || !$kunjungan) {
                         <input type="text" id="search_layanan" class="form-control" placeholder="Cari layanan...">
                     </div>
                 </div>
-
-                <!-- Tabel Layanan -->
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover" id="tabelLayanan">
                         <thead class="table-light">
-                            <tr>
-                                <th width="5%">
-                                    <input type="checkbox" id="checkAllLayanan" class="form-check-input">
-                                </th>
-                                <th width="30%">Nama Layanan</th>
-                                <th width="15%">Kategori</th>
-                                <th width="15%">Tarif</th>
-                                <th width="35%">Keterangan</th>
-                            </tr>
+                            <tr><th width="5%"><input type="checkbox" id="checkAllLayanan" class="form-check-input"></th><th width="30%">Nama Layanan</th><th width="15%">Kategori</th><th width="15%">Tarif</th><th width="35%">Keterangan</th></tr>
                         </thead>
                         <tbody>
                             <?php
-                            $db_config_path = $_SERVER['DOCUMENT_ROOT'] . '/config/database.php';
-                            if (!file_exists($db_config_path)) {
-                                echo "<pre>Debug: $db_config_path</pre>";
-                                die("Error: Config database.php tidak ditemukan di: $db_config_path");
-                            }
-                            require_once $db_config_path;
-                            global $db2_host, $db2_username, $db2_password, $db2_database, $db2_port;
-                            if (empty($db2_host)) $db2_host = 'localhost';
-                            if (empty($db2_database)) $db2_database = 'praktekobgin_db';
-                            if (empty($db2_port)) $db2_port = '8889';
-                            $conn = new mysqli($db2_host, $db2_username, $db2_password ?? '', $db2_database, $db2_port);
-
-                            if ($conn->connect_error) {
-                                die("Koneksi gagal: " . $conn->connect_error);
-                            }
-
+                            global $conn;
+                            if (!$conn) { die("Koneksi database tidak tersedia."); }
                             $sql = "SELECT * FROM menu_layanan WHERE status_aktif = 1 ORDER BY nama_layanan ASC";
-                            $result = $conn->query($sql);
-
-                            if ($result->num_rows > 0) {
-                                while ($row = $result->fetch_assoc()) {
+                            $stmt = $conn->prepare($sql);
+                            $stmt->execute();
+                            if ($stmt->rowCount() > 0) {
+                                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                                     echo "<tr class='layanan-row' data-kategori='" . htmlspecialchars($row['kategori']) . "'>";
-                                    echo "<td><input type='checkbox' class='form-check-input layanan-checkbox' 
-                                               data-nama='" . htmlspecialchars($row['nama_layanan']) . "'
-                                               data-tarif='" . htmlspecialchars(number_format($row['harga'], 0, ',', '.')) . "'
-                                               data-keterangan='" . htmlspecialchars($row['keterangan'] ?? '') . "'></td>";
+                                    echo "<td><input type='checkbox' class='form-check-input layanan-checkbox' value='" . htmlspecialchars($row['id_layanan']) . "' data-id_layanan='" . htmlspecialchars($row['id_layanan']) . "' data-nama='" . htmlspecialchars($row['nama_layanan']) . "' data-kategori='" . htmlspecialchars($row['kategori']) . "' data-tarif='" . htmlspecialchars(number_format($row['harga'], 0, ',', '.')) . "' data-harga='" . htmlspecialchars($row['harga']) . "' data-keterangan='" . htmlspecialchars($row['keterangan'] ?? '') . "'></td>";
                                     echo "<td>" . htmlspecialchars($row['nama_layanan']) . "</td>";
                                     echo "<td>" . htmlspecialchars($row['kategori']) . "</td>";
                                     echo "<td>Rp " . number_format($row['harga'], 0, ',', '.') . "</td>";
@@ -214,8 +168,6 @@ if (!isset($kunjungan) || !$kunjungan) {
                             } else {
                                 echo "<tr><td colspan='5' class='text-center'>Tidak ada data layanan</td></tr>";
                             }
-
-                            $conn->close();
                             ?>
                         </tbody>
                     </table>
@@ -223,114 +175,129 @@ if (!isset($kunjungan) || !$kunjungan) {
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                <button type="button" class="btn btn-primary" onclick="tambahkanLayananTerpilih()">Tambahkan Layanan Terpilih</button>
             </div>
         </div>
     </div>
 </div>
-
 <script>
-    // Fungsi untuk checkbox "Pilih Semua" layanan
-    document.getElementById('checkAllLayanan').addEventListener('change', function() {
-        var checkboxes = document.getElementsByClassName('layanan-checkbox');
-        for (var checkbox of checkboxes) {
-            checkbox.checked = this.checked;
+// --- Script identik proses submit dan keranjang dari form_tambah_pemeriksaan.php ---
+document.getElementById('formEditKunjungan').addEventListener('submit', function(e) {
+    var oldInputs = this.querySelectorAll('.input-layanan-terpilih');
+    oldInputs.forEach(function(input) { input.remove(); });
+    var checkboxes = document.getElementsByClassName('layanan-checkbox');
+    var layananArr = [];
+    for (var checkbox of checkboxes) {
+        if (checkbox.checked) {
+            var idLayanan = checkbox.value || checkbox.getAttribute('data-id_layanan') || '';
+            if (!idLayanan) continue;
+            var namaLayanan = checkbox.getAttribute('data-nama') || '';
+            var kategori = checkbox.getAttribute('data-kategori') || '';
+            var harga = checkbox.getAttribute('data-harga') || '';
+            var keterangan = checkbox.getAttribute('data-keterangan') || '';
+            var qty = 1;
+            layananArr.push({id_layanan:idLayanan, nama_layanan:namaLayanan, kategori:kategori, harga:harga, qty:qty, keterangan:keterangan});
         }
-    });
-
-    // Fungsi untuk menambahkan layanan yang dipilih ke textarea rincian DAN generate input hidden array untuk backend
-    function tambahkanLayananTerpilih() {
-        var checkboxes = document.getElementsByClassName('layanan-checkbox');
-        var rincianField = document.getElementById('rincian');
-        var layananTerpilih = [];
-        var layananArr = [];
-
-        // Hapus input layanan[] lama
-        var form = rincianField.closest('form');
-        var oldInputs = form.querySelectorAll('.input-layanan-terpilih');
-        oldInputs.forEach(function(input) { input.remove(); });
-
-        for (var checkbox of checkboxes) {
-            if (checkbox.checked) {
-                var idLayanan = checkbox.value;
-                var namaLayanan = checkbox.getAttribute('data-nama');
-                var kategori = checkbox.closest('tr').querySelectorAll('td')[2].textContent;
-                var tarif = checkbox.getAttribute('data-tarif').replace(/[^\d]/g, '');
-                var keterangan = checkbox.getAttribute('data-keterangan') || '';
-                var qty = 1;
-
-                // Untuk textarea rincian (tampilan)
-                var textLayanan = namaLayanan + ' - Rp ' + checkbox.getAttribute('data-tarif');
-                if (keterangan && keterangan.trim() !== '') {
-                    textLayanan += '\nKeterangan: ' + keterangan;
-                }
-                layananTerpilih.push(textLayanan);
-
-                // Untuk backend (hidden input array)
-                layananArr.push({
-                    id_layanan: idLayanan,
-                    nama_layanan: namaLayanan,
-                    kategori: kategori,
-                    harga: tarif,
-                    qty: qty,
-                    keterangan: keterangan
-                });
-            }
-        }
-
-        // Generate input hidden array
-        layananArr.forEach(function(l, i) {
-            var fields = ['id_layanan','nama_layanan','kategori','harga','qty','keterangan'];
-            fields.forEach(function(f) {
-                var input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'layanan['+i+']['+f+']';
-                input.value = l[f];
-                input.classList.add('input-layanan-terpilih');
-                form.appendChild(input);
-            });
-        });
-
-        // Update textarea rincian
-        if (layananTerpilih.length > 0) {
-            rincianField.value = layananTerpilih.join('\n\n');
-        } else {
-            rincianField.value = '';
-        }
-
-        $('#modalDaftarLayanan').modal('hide');
     }
-
-    // Filter untuk layanan
-    document.addEventListener('DOMContentLoaded', function() {
-        function filterLayanan() {
-            var kategori = document.getElementById('filter_kategori_layanan').value;
-            var searchTerm = document.getElementById('search_layanan').value.toLowerCase();
-            var rows = document.querySelectorAll('#tabelLayanan tbody tr.layanan-row');
-
-            rows.forEach(function(row) {
-                var rowKategori = row.getAttribute('data-kategori');
-                var namaLayanan = row.cells[1].textContent.toLowerCase();
-                var keterangan = row.cells[4].textContent.toLowerCase();
-
-                var showByKategori = kategori === '' || rowKategori === kategori;
-                var showBySearch = searchTerm === '' ||
-                    namaLayanan.includes(searchTerm) ||
-                    keterangan.includes(searchTerm);
-
-                if (showByKategori && showBySearch) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-
-            // Uncheck "Pilih Semua" checkbox saat filter berubah
-            document.getElementById('checkAllLayanan').checked = false;
-        }
-
-        // Event listener untuk filter kategori dan pencarian
-        document.getElementById('filter_kategori_layanan').addEventListener('change', filterLayanan);
-        document.getElementById('search_layanan').addEventListener('input', filterLayanan);
+    layananArr.forEach(function(l, i) {
+        ['id_layanan','nama_layanan','kategori','harga','qty','keterangan'].forEach(function(f) {
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'layanan['+i+']['+f+']';
+            input.value = l[f];
+            input.classList.add('input-layanan-terpilih');
+            var formUtama = document.getElementById('formEditKunjungan');
+            if (formUtama) {
+                formUtama.appendChild(input);
+            }
+        });
     });
+    var btnSimpan = document.getElementById('btnSimpan');
+    if (btnSimpan) {
+        btnSimpan.disabled = true;
+        btnSimpan.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+    }
+});
+document.getElementById('checkAllLayanan').addEventListener('change', function() {
+    var checkboxes = document.getElementsByClassName('layanan-checkbox');
+    for (var checkbox of checkboxes) {
+        checkbox.checked = this.checked;
+        checkbox.dispatchEvent(new Event('change'));
+    }
+});
+function formatRupiah(angka) {
+    return 'Rp ' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+var checkboxes = document.getElementsByClassName('layanan-checkbox');
+for (var checkbox of checkboxes) {
+    checkbox.addEventListener('change', function() {
+        updateKeranjang();
+    });
+}
+function updateKeranjang() {
+    var tbody = document.querySelector('#keranjangLayanan tbody');
+    tbody.innerHTML = '';
+    var total = 0;
+    var checkboxes = document.getElementsByClassName('layanan-checkbox');
+    var rincianArr = [];
+    var no = 1;
+    for (var checkbox of checkboxes) {
+        if (checkbox.checked) {
+            var nama = checkbox.getAttribute('data-nama');
+            var kategori = checkbox.closest('tr').querySelectorAll('td')[2].textContent;
+            var hargaStr = checkbox.getAttribute('data-tarif').replace(/[^\d]/g, '');
+            var harga = parseInt(hargaStr) || 0;
+            var keterangan = checkbox.getAttribute('data-keterangan');
+            var row = document.createElement('tr');
+            row.innerHTML = `<td>${nama}</td><td>${kategori}</td><td>${formatRupiah(harga)}</td><td>${keterangan}</td><td><button type="button" class="btn btn-danger btn-sm btn-hapus-layanan">Hapus</button></td>`;
+            tbody.appendChild(row);
+            total += harga;
+            rincianArr.push(no + '. ' + nama + ' (' + kategori + ') - ' + formatRupiah(harga) + (keterangan && keterangan.trim() !== '' ? '\n   Keterangan: ' + keterangan : ''));
+            no++;
+        }
+    }
+    document.getElementById('totalBiaya').textContent = formatRupiah(total);
+    var rincianField = document.getElementById('rincian');
+    if (rincianArr.length > 0) {
+        rincianField.value = rincianArr.join('\n');
+    } else {
+        rincianField.value = '';
+    }
+    var hapusBtns = document.getElementsByClassName('btn-hapus-layanan');
+    for (var btn of hapusBtns) {
+        btn.onclick = function() {
+            var row = this.closest('tr');
+            var nama = row.children[0].textContent;
+            for (var checkbox of checkboxes) {
+                if (checkbox.getAttribute('data-nama') === nama) {
+                    checkbox.checked = false;
+                    break;
+                }
+            }
+            updateKeranjang();
+        }
+    }
+}
+updateKeranjang();
+document.addEventListener('DOMContentLoaded', function() {
+    function filterLayanan() {
+        var kategori = document.getElementById('filter_kategori_layanan').value;
+        var searchTerm = document.getElementById('search_layanan').value.toLowerCase();
+        var rows = document.querySelectorAll('#tabelLayanan tbody tr.layanan-row');
+        rows.forEach(function(row) {
+            var rowKategori = row.getAttribute('data-kategori');
+            var namaLayanan = row.cells[1].textContent.toLowerCase();
+            var keterangan = row.cells[4].textContent.toLowerCase();
+            var showByKategori = kategori === '' || rowKategori === kategori;
+            var showBySearch = searchTerm === '' || namaLayanan.includes(searchTerm) || keterangan.includes(searchTerm);
+            if (showByKategori && showBySearch) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+        document.getElementById('checkAllLayanan').checked = false;
+    }
+    document.getElementById('filter_kategori_layanan').addEventListener('change', filterLayanan);
+    document.getElementById('search_layanan').addEventListener('input', filterLayanan);
+});
 </script>

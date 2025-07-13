@@ -202,7 +202,7 @@ error_log("Form tambah pemeriksaan - no_reg yang digenerate: " . $no_reg);
                                 echo "<tr><td colspan='6' class='text-center'>Tidak ada data layanan</td></tr>";
                             }
 
-                            
+
                             ?>
                         </tbody>
                     </table>
@@ -241,8 +241,10 @@ error_log("Form tambah pemeriksaan - no_reg yang digenerate: " . $no_reg);
     document.getElementById('formTambahKunjungan').addEventListener('submit', function(e) {
         // Hapus input layanan[] lama
         var oldInputs = this.querySelectorAll('.input-layanan-terpilih');
-        oldInputs.forEach(function(input) { input.remove(); });
-        
+        oldInputs.forEach(function(input) {
+            input.remove();
+        });
+
         // Ambil layanan yang dicentang
         var checkboxes = document.getElementsByClassName('layanan-checkbox');
         var layananArr = [];
@@ -255,17 +257,24 @@ error_log("Form tambah pemeriksaan - no_reg yang digenerate: " . $no_reg);
                 var harga = checkbox.getAttribute('data-harga') || '';
                 var keterangan = checkbox.getAttribute('data-keterangan') || '';
                 var qty = 1;
-                layananArr.push({id_layanan:idLayanan, nama_layanan:namaLayanan, kategori:kategori, harga:harga, qty:qty, keterangan:keterangan});
+                layananArr.push({
+                    id_layanan: idLayanan,
+                    nama_layanan: namaLayanan,
+                    kategori: kategori,
+                    harga: harga,
+                    qty: qty,
+                    keterangan: keterangan
+                });
             }
         }
         // Debug: tampilkan array layanan di console browser
         console.log('Layanan yang akan dikirim:', layananArr);
         // Tambahkan input hidden untuk setiap layanan
         layananArr.forEach(function(l, i) {
-            ['id_layanan','nama_layanan','kategori','harga','qty','keterangan'].forEach(function(f) {
+            ['id_layanan', 'nama_layanan', 'kategori', 'harga', 'qty', 'keterangan'].forEach(function(f) {
                 var input = document.createElement('input');
                 input.type = 'hidden';
-                input.name = 'layanan['+i+']['+f+']';
+                input.name = 'layanan[' + i + '][' + f + ']';
                 input.value = l[f];
                 input.classList.add('input-layanan-terpilih');
                 // Pastikan append ke form utama
@@ -327,7 +336,7 @@ error_log("Form tambah pemeriksaan - no_reg yang digenerate: " . $no_reg);
         // Isi textarea rincian otomatis
         var rincianField = document.getElementById('rincian');
         if (rincianArr.length > 0) {
-            rincianField.value = rincianArr.join('\n') + '\n---------------------\nTOTAL: ' + formatRupiah(total);
+            rincianField.value = rincianArr.join('\n');
         } else {
             rincianField.value = '';
         }
