@@ -184,9 +184,14 @@ error_log("Form tambah pemeriksaan - no_reg yang digenerate: " . $no_reg);
                                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                                     echo "<tr class='layanan-row' data-kategori='" . htmlspecialchars($row['kategori']) . "'>";
                                     echo "<td><input type='checkbox' class='form-check-input layanan-checkbox' 
+                                              value='" . htmlspecialchars($row['id_layanan']) . "' 
+                                              data-id_layanan='" . htmlspecialchars($row['id_layanan']) . "'
                                               data-nama='" . htmlspecialchars($row['nama_layanan']) . "'
+                                              data-kategori='" . htmlspecialchars($row['kategori']) . "'
                                               data-tarif='" . htmlspecialchars(number_format($row['harga'], 0, ',', '.')) . "'
+                                              data-harga='" . htmlspecialchars($row['harga']) . "'
                                               data-keterangan='" . htmlspecialchars($row['keterangan'] ?? '') . "'></td>";
+                                    echo "<td>" . htmlspecialchars($row['id_layanan']) . "</td>";
                                     echo "<td>" . htmlspecialchars($row['nama_layanan']) . "</td>";
                                     echo "<td>" . htmlspecialchars($row['kategori']) . "</td>";
                                     echo "<td>Rp " . number_format($row['harga'], 0, ',', '.') . "</td>";
@@ -194,7 +199,7 @@ error_log("Form tambah pemeriksaan - no_reg yang digenerate: " . $no_reg);
                                     echo "</tr>";
                                 }
                             } else {
-                                echo "<tr><td colspan='5' class='text-center'>Tidak ada data layanan</td></tr>";
+                                echo "<tr><td colspan='6' class='text-center'>Tidak ada data layanan</td></tr>";
                             }
 
                             
@@ -234,6 +239,42 @@ error_log("Form tambah pemeriksaan - no_reg yang digenerate: " . $no_reg);
 
 <script>
     document.getElementById('formTambahKunjungan').addEventListener('submit', function(e) {
+        // Hapus input layanan[] lama
+        var oldInputs = this.querySelectorAll('.input-layanan-terpilih');
+        oldInputs.forEach(function(input) { input.remove(); });
+        
+        // Ambil layanan yang dicentang
+        var checkboxes = document.getElementsByClassName('layanan-checkbox');
+        var layananArr = [];
+        for (var checkbox of checkboxes) {
+            if (checkbox.checked) {
+                var idLayanan = checkbox.value || checkbox.getAttribute('data-id_layanan') || '';
+                if (!idLayanan) continue; // skip jika tidak ada id_layanan
+                var namaLayanan = checkbox.getAttribute('data-nama') || '';
+                var kategori = checkbox.getAttribute('data-kategori') || '';
+                var harga = checkbox.getAttribute('data-harga') || '';
+                var keterangan = checkbox.getAttribute('data-keterangan') || '';
+                var qty = 1;
+                layananArr.push({id_layanan:idLayanan, nama_layanan:namaLayanan, kategori:kategori, harga:harga, qty:qty, keterangan:keterangan});
+            }
+        }
+        // Debug: tampilkan array layanan di console browser
+        console.log('Layanan yang akan dikirim:', layananArr);
+        // Tambahkan input hidden untuk setiap layanan
+        layananArr.forEach(function(l, i) {
+            ['id_layanan','nama_layanan','kategori','harga','qty','keterangan'].forEach(function(f) {
+                var input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'layanan['+i+']['+f+']';
+                input.value = l[f];
+                input.classList.add('input-layanan-terpilih');
+                // Pastikan append ke form utama
+                var formUtama = document.getElementById('formTambahKunjungan');
+                if (formUtama) {
+                    formUtama.appendChild(input);
+                }
+            });
+        });
         document.getElementById('btnSimpan').disabled = true;
         document.getElementById('btnSimpan').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
     });

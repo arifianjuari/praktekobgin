@@ -185,15 +185,11 @@ if (!isset($kunjungan) || !$kunjungan) {
                                 die("Error: Config database.php tidak ditemukan di: $db_config_path");
                             }
                             require_once $db_config_path;
-                            // Fallback jika env kosong
-                            // if (empty($db2_host)) $db2_host = '127.0.0.1';
+                            global $db2_host, $db2_username, $db2_password, $db2_database, $db2_port;
                             if (empty($db2_host)) $db2_host = 'localhost';
-                            if (empty($db2_username)) $db2_username = 'arifianjuari';
-                            if (empty($db2_password)) $db2_password = 'Juari@2591';
                             if (empty($db2_database)) $db2_database = 'praktekobgin_db';
                             if (empty($db2_port)) $db2_port = '8889';
-                            // $conn = new mysqli($db2_host, $db2_username, $db2_password, $db2_database, $db2_port);
-                            $conn = new mysqli($db2_host, $db2_username, $db2_password, $db2_database, $db2_port);
+                            $conn = new mysqli($db2_host, $db2_username, $db2_password ?? '', $db2_database, $db2_port);
 
                             if ($conn->connect_error) {
                                 die("Koneksi gagal: " . $conn->connect_error);
@@ -206,13 +202,13 @@ if (!isset($kunjungan) || !$kunjungan) {
                                 while ($row = $result->fetch_assoc()) {
                                     echo "<tr class='layanan-row' data-kategori='" . htmlspecialchars($row['kategori']) . "'>";
                                     echo "<td><input type='checkbox' class='form-check-input layanan-checkbox' 
-                                              data-nama='" . htmlspecialchars($row['nama_layanan']) . "'
-                                              data-tarif='" . htmlspecialchars(number_format($row['harga'], 0, ',', '.')) . "'
-                                              data-keterangan='" . htmlspecialchars($row['keterangan']) . "'></td>";
+                                               data-nama='" . htmlspecialchars($row['nama_layanan']) . "'
+                                               data-tarif='" . htmlspecialchars(number_format($row['harga'], 0, ',', '.')) . "'
+                                               data-keterangan='" . htmlspecialchars($row['keterangan'] ?? '') . "'></td>";
                                     echo "<td>" . htmlspecialchars($row['nama_layanan']) . "</td>";
                                     echo "<td>" . htmlspecialchars($row['kategori']) . "</td>";
                                     echo "<td>Rp " . number_format($row['harga'], 0, ',', '.') . "</td>";
-                                    echo "<td>" . htmlspecialchars($row['keterangan']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['keterangan'] ?? '') . "</td>";
                                     echo "</tr>";
                                 }
                             } else {
@@ -242,35 +238,64 @@ if (!isset($kunjungan) || !$kunjungan) {
         }
     });
 
-    // Fungsi untuk menambahkan layanan yang dipilih ke textarea rincian
+    // Fungsi untuk menambahkan layanan yang dipilih ke textarea rincian DAN generate input hidden array untuk backend
     function tambahkanLayananTerpilih() {
         var checkboxes = document.getElementsByClassName('layanan-checkbox');
         var rincianField = document.getElementById('rincian');
         var layananTerpilih = [];
+        var layananArr = [];
+
+        // Hapus input layanan[] lama
+        var form = rincianField.closest('form');
+        var oldInputs = form.querySelectorAll('.input-layanan-terpilih');
+        oldInputs.forEach(function(input) { input.remove(); });
 
         for (var checkbox of checkboxes) {
             if (checkbox.checked) {
+                var idLayanan = checkbox.value;
                 var namaLayanan = checkbox.getAttribute('data-nama');
-                var tarif = checkbox.getAttribute('data-tarif');
-                var keterangan = checkbox.getAttribute('data-keterangan');
+                var kategori = checkbox.closest('tr').querySelectorAll('td')[2].textContent;
+                var tarif = checkbox.getAttribute('data-tarif').replace(/[^\d]/g, '');
+                var keterangan = checkbox.getAttribute('data-keterangan') || '';
+                var qty = 1;
 
-                var textLayanan = namaLayanan + ' - Rp ' + tarif;
+                // Untuk textarea rincian (tampilan)
+                var textLayanan = namaLayanan + ' - Rp ' + checkbox.getAttribute('data-tarif');
                 if (keterangan && keterangan.trim() !== '') {
                     textLayanan += '\nKeterangan: ' + keterangan;
                 }
                 layananTerpilih.push(textLayanan);
+
+                // Untuk backend (hidden input array)
+                layananArr.push({
+                    id_layanan: idLayanan,
+                    nama_layanan: namaLayanan,
+                    kategori: kategori,
+                    harga: tarif,
+                    qty: qty,
+                    keterangan: keterangan
+                });
             }
         }
 
-        if (layananTerpilih.length > 0) {
-            var currentValue = rincianField.value;
-            var newValue = layananTerpilih.join('\n\n');
+        // Generate input hidden array
+        layananArr.forEach(function(l, i) {
+            var fields = ['id_layanan','nama_layanan','kategori','harga','qty','keterangan'];
+            fields.forEach(function(f) {
+                var input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'layanan['+i+']['+f+']';
+                input.value = l[f];
+                input.classList.add('input-layanan-terpilih');
+                form.appendChild(input);
+            });
+        });
 
-            if (currentValue && currentValue.trim() !== '') {
-                rincianField.value = currentValue + '\n\n' + newValue;
-            } else {
-                rincianField.value = newValue;
-            }
+        // Update textarea rincian
+        if (layananTerpilih.length > 0) {
+            rincianField.value = layananTerpilih.join('\n\n');
+        } else {
+            rincianField.value = '';
         }
 
         $('#modalDaftarLayanan').modal('hide');

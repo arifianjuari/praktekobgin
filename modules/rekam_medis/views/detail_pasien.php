@@ -1434,6 +1434,7 @@ $source_page = isset($_SESSION['source_page']) ? htmlspecialchars($_SESSION['sou
                                     }
                                     
                                     require_once $configFile;
+global $db2_host, $db2_username, $db2_password, $db2_database, $db2_port;
                                     
                                     // Check if database configuration exists
                                     $requiredVars = ['db2_host', 'db2_username', 'db2_database'];
@@ -1451,7 +1452,7 @@ $source_page = isset($_SESSION['source_page']) ? htmlspecialchars($_SESSION['sou
                                     error_log('Mencoba terhubung ke database: ' . $db2_host . '/' . $db2_database);
                                     
                                     // Create connection with error handling
-                                    $conn = new mysqli($db2_host, $db2_username, $db2_password ?? '', $db2_database, 8889);
+                                    $conn = new mysqli($db2_host, $db2_username, $db2_password ?? '', $db2_database, $db2_port);
 
                                     if ($conn->connect_error) {
                                         throw new Exception('Koneksi database gagal: ' . $conn->connect_error . 

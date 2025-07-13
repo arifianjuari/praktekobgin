@@ -889,6 +889,40 @@ class RekamMedisController
                 'Baru'
             ]);
 
+            // Debug POST layanan
+            error_log('DEBUG POST layanan: ' . print_r($_POST['layanan'] ?? null, true));
+            error_log('DEBUG TIPE layanan: ' . gettype($_POST['layanan'] ?? null));
+            error_log('DEBUG AKAN MASUK IF INSERT LAYANAN: ' . (isset($_POST['layanan']) && is_array($_POST['layanan']) && count($_POST['layanan']) > 0 ? 'YA' : 'TIDAK'));
+            // Tambahkan proses simpan layanan ke reg_periksa_layanan
+            if (isset($_POST['layanan']) && is_array($_POST['layanan']) && count($_POST['layanan']) > 0) {
+                $stmtLayanan = $this->pdo->prepare("INSERT INTO reg_periksa_layanan (no_reg, id_layanan, nama_layanan, kategori, harga, qty, keterangan, tgl_input) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())");
+                foreach ($_POST['layanan'] as $l) {
+                    try {
+                        $stmtLayanan->execute([
+                            $no_reg,
+                            $l['id_layanan'],
+                            $l['nama_layanan'],
+                            $l['kategori'],
+                            $l['harga'],
+                            $l['qty'] ?? 1,
+                            $l['keterangan'] ?? ''
+                        ]);
+                        error_log('SUKSES insert layanan ke reg_periksa_layanan: ' . json_encode([
+                            $no_reg,
+                            $l['id_layanan'],
+                            $l['nama_layanan'],
+                            $l['kategori'],
+                            $l['harga'],
+                            $l['qty'] ?? 1,
+                            $l['keterangan'] ?? ''
+                        ]));
+                    } catch (Exception $e) {
+                        error_log('GAGAL insert layanan ke reg_periksa_layanan: ' . $e->getMessage());
+                        error_log('Data gagal: ' . json_encode($l));
+                    }
+                }
+            }
+
             // 2. Simpan ke tabel tindakan_medis
             $stmt = $this->pdo->prepare("
                 INSERT INTO tindakan_medis (
@@ -1367,6 +1401,28 @@ class RekamMedisController
                 } else {
                     $_SESSION['success'] = "Kunjungan berhasil ditambahkan, namun gagal membuat data pemeriksaan awal";
                     error_log("Gagal menyimpan data pemeriksaan awal: " . print_r($stmt->errorInfo(), true));
+                }
+
+                // Tambahkan proses insert ke reg_periksa_layanan
+                if (!empty($_POST['layanan']) && is_array($_POST['layanan'])) {
+                    foreach ($_POST['layanan'] as $layanan) {
+    $stmtLayanan = $this->pdo->prepare("
+        INSERT INTO reg_periksa_layanan
+        (no_rawat, no_reg, id_layanan, nama_layanan, kategori, harga, qty, keterangan)
+        VALUES
+        (:no_rawat, :no_reg, :id_layanan, :nama_layanan, :kategori, :harga, :qty, :keterangan)
+    ");
+    $stmtLayanan->execute([
+        'no_rawat' => $_POST['no_rawat'],
+        'no_reg' => $_POST['no_reg'],
+        'id_layanan' => $layanan['id_layanan'],
+        'nama_layanan' => $layanan['nama_layanan'],
+        'kategori' => $layanan['kategori'],
+        'harga' => $layanan['harga'],
+        'qty' => $layanan['qty'],
+        'keterangan' => $layanan['keterangan']
+    ]);
+}
                 }
                 
                 header("Location: index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=" . $_POST['no_rkm_medis']);
@@ -1978,6 +2034,28 @@ class RekamMedisController
             $stmt->execute([$_POST['no_rawat']]);
             $new_data = $stmt->fetch(PDO::FETCH_ASSOC);
             error_log('Data baru: ' . json_encode($new_data));
+
+            // === BEST PRACTICE: Update reg_periksa_layanan ===
+            $no_reg = $new_data['no_reg'] ?? null;
+            if ($no_reg && isset($_POST['layanan']) && is_array($_POST['layanan'])) {
+                // Hapus layanan lama
+                $this->pdo->prepare("DELETE FROM reg_periksa_layanan WHERE no_reg = ?")->execute([$no_reg]);
+
+                // Simpan layanan baru
+                $stmtLayanan = $this->pdo->prepare("INSERT INTO reg_periksa_layanan \
+                    (no_reg, id_layanan, nama_layanan, kategori, harga, qty, keterangan, tgl_input) \
+                    VALUES (?, ?, ?, ?, ?, ?, ?, NOW())");
+
+                foreach ($_POST['layanan'] as $l) {
+                    $id_layanan = $l['id_layanan'];
+                    $nama_layanan = $l['nama_layanan'];
+                    $kategori = $l['kategori'];
+                    $harga = $l['harga'];
+                    $qty = isset($l['qty']) ? $l['qty'] : 1;
+                    $keterangan = $l['keterangan'] ?? '';
+                    $stmtLayanan->execute([$no_reg, $id_layanan, $nama_layanan, $kategori, $harga, $qty, $keterangan]);
+                }
+            }
 
             error_log('Update successful');
             $_SESSION['success'] = 'Data kunjungan berhasil diupdate';
