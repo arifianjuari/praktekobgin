@@ -261,7 +261,7 @@ $hari = isset($_GET['hari']) ? $_GET['hari'] : '';
 $jenis_layanan = isset($_GET['layanan']) ? $_GET['layanan'] : '';
 
 // Query data jadwal_rutin dengan filter dan join menu_layanan
-$sql = "SELECT jr.*, ml.nama_layanan, ml.kategori, ml.harga, ml.durasi_estimasi AS durasi, d.Nama_Dokter, d.Spesialisasi, tp.Nama_Tempat, tp.Alamat_Lengkap
+$sql = "SELECT jr.*, ml.nama_layanan, ml.kategori, ml.harga, ml.deskripsi AS deskripsi, ml.persiapan AS persiapan, ml.durasi_estimasi AS durasi, d.Nama_Dokter, d.Spesialisasi, tp.Nama_Tempat, tp.Alamat_Lengkap
         FROM jadwal_rutin jr
         JOIN menu_layanan ml ON jr.ID_Layanan = ml.id_layanan
         JOIN dokter d ON jr.ID_Dokter = d.ID_Dokter
@@ -403,7 +403,7 @@ foreach ($hari_order as $h) {
     </td>
     <td class="text-nowrap"><?= htmlspecialchars($j['Nama_Dokter'] ?? '-') ?></td>
     <td class="text-nowrap"><?= htmlspecialchars($j['Nama_Tempat'] ?? '-') ?></td>
-    <td class="text-nowrap"><?= htmlspecialchars($j['Jenis_Layanan'] ?? '-') ?></td>
+    <td class="text-nowrap"><?php echo htmlspecialchars($j['nama_layanan'] ?? '-'); ?></td>
     <td class="text-center"><?= htmlspecialchars($j['Kuota_Pasien'] ?? '-') ?></td>
     <td class="text-nowrap"><?= !is_null($j['harga']) ? 'Rp ' . number_format($j['harga'],0,',','.') : '-' ?></td>
     <td class="text-nowrap"><?= !is_null($j['durasi']) ? htmlspecialchars($j['durasi']) . ' menit' : '-' ?></td>

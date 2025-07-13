@@ -35,11 +35,24 @@ $database = $db1_database;
 
 // Only create this connection if it doesn't already exist (to avoid conflicts with config/database.php)
 if (!isset($conn) || !($conn instanceof PDO)) {
+    $pdo_options = [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_TIMEOUT => 5, // Fail after 5 seconds if cannot connect
+    ];
+    error_log("[config.php] Attempting DB1 connection...");
+    $start_time = microtime(true);
     try {
-        $conn_db1 = new PDO("mysql:host=$db1_host;dbname=$db1_database", $db1_username, $db1_password);
-        $conn_db1->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $conn_db1 = new PDO(
+            "mysql:host=$db1_host;dbname=$db1_database",
+            $db1_username,
+            $db1_password,
+            $pdo_options
+        );
+        $elapsed = round((microtime(true) - $start_time) * 1000);
+        error_log("[config.php] DB1 connection success in {$elapsed} ms");
     } catch (PDOException $e) {
-        error_log("Connection to DB1 (RS) failed: " . $e->getMessage());
+        $elapsed = round((microtime(true) - $start_time) * 1000);
+        error_log("[config.php] Connection to DB1 (RS) failed after {$elapsed} ms: " . $e->getMessage());
         // Don't die here, let the application continue if possible
     }
 }

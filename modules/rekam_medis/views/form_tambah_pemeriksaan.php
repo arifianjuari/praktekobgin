@@ -186,11 +186,11 @@ error_log("Form tambah pemeriksaan - no_reg yang digenerate: " . $no_reg);
                                     echo "<td><input type='checkbox' class='form-check-input layanan-checkbox' 
                                               data-nama='" . htmlspecialchars($row['nama_layanan']) . "'
                                               data-tarif='" . htmlspecialchars(number_format($row['harga'], 0, ',', '.')) . "'
-                                              data-keterangan='" . htmlspecialchars($row['keterangan']) . "'></td>";
+                                              data-keterangan='" . htmlspecialchars($row['keterangan'] ?? '') . "'></td>";
                                     echo "<td>" . htmlspecialchars($row['nama_layanan']) . "</td>";
                                     echo "<td>" . htmlspecialchars($row['kategori']) . "</td>";
                                     echo "<td>Rp " . number_format($row['harga'], 0, ',', '.') . "</td>";
-                                    echo "<td>" . htmlspecialchars($row['keterangan']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['keterangan'] ?? '') . "</td>";
                                     echo "</tr>";
                                 }
                             } else {
@@ -205,15 +205,35 @@ error_log("Form tambah pemeriksaan - no_reg yang digenerate: " . $no_reg);
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                <button type="button" class="btn btn-primary" onclick="tambahkanLayananTerpilih()">Tambahkan Layanan Terpilih</button>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Tabel Keranjang Layanan -->
+<div class="mt-4">
+    <h6 class="font-weight-bold">Keranjang Layanan (Nota)</h6>
+    <table class="table table-bordered" id="keranjangLayanan">
+        <thead>
+            <tr>
+                <th>Nama Layanan</th>
+                <th>Kategori</th>
+                <th>Harga</th>
+                <th>Keterangan</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Baris layanan terpilih akan muncul di sini -->
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-end">
+        <h6 class="mt-2">Total Biaya: <span id="totalBiaya">Rp 0</span></h6>
+    </div>
+</div>
+
 <script>
     document.getElementById('formTambahKunjungan').addEventListener('submit', function(e) {
-        // Disable tombol submit untuk mencegah klik ganda
         document.getElementById('btnSimpan').disabled = true;
         document.getElementById('btnSimpan').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
     });
@@ -223,42 +243,73 @@ error_log("Form tambah pemeriksaan - no_reg yang digenerate: " . $no_reg);
         var checkboxes = document.getElementsByClassName('layanan-checkbox');
         for (var checkbox of checkboxes) {
             checkbox.checked = this.checked;
+            checkbox.dispatchEvent(new Event('change'));
         }
     });
 
-    // Fungsi untuk menambahkan layanan yang dipilih ke textarea rincian
-    function tambahkanLayananTerpilih() {
-        var checkboxes = document.getElementsByClassName('layanan-checkbox');
-        var rincianField = document.getElementById('rincian');
-        var layananTerpilih = [];
+    // Fungsi untuk format angka ke rupiah
+    function formatRupiah(angka) {
+        return 'Rp ' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
 
+    // Tambahkan/kurangi layanan ke keranjang otomatis
+    var checkboxes = document.getElementsByClassName('layanan-checkbox');
+    for (var checkbox of checkboxes) {
+        checkbox.addEventListener('change', function() {
+            updateKeranjang();
+        });
+    }
+
+    function updateKeranjang() {
+        var tbody = document.querySelector('#keranjangLayanan tbody');
+        tbody.innerHTML = '';
+        var total = 0;
+        var checkboxes = document.getElementsByClassName('layanan-checkbox');
+        var rincianArr = [];
+        var no = 1;
         for (var checkbox of checkboxes) {
             if (checkbox.checked) {
-                var namaLayanan = checkbox.getAttribute('data-nama');
-                var tarif = checkbox.getAttribute('data-tarif');
+                var nama = checkbox.getAttribute('data-nama');
+                var kategori = checkbox.closest('tr').querySelectorAll('td')[2].textContent;
+                var hargaStr = checkbox.getAttribute('data-tarif').replace(/[^\d]/g, '');
+                var harga = parseInt(hargaStr) || 0;
                 var keterangan = checkbox.getAttribute('data-keterangan');
-
-                var textLayanan = namaLayanan + ' - Rp ' + tarif;
-                if (keterangan && keterangan.trim() !== '') {
-                    textLayanan += '\nKeterangan: ' + keterangan;
+                var row = document.createElement('tr');
+                row.innerHTML = `<td>${nama}</td><td>${kategori}</td><td>${formatRupiah(harga)}</td><td>${keterangan}</td><td><button type="button" class="btn btn-danger btn-sm btn-hapus-layanan">Hapus</button></td>`;
+                tbody.appendChild(row);
+                total += harga;
+                rincianArr.push(no + '. ' + nama + ' (' + kategori + ') - ' + formatRupiah(harga) + (keterangan && keterangan.trim() !== '' ? '\n   Keterangan: ' + keterangan : ''));
+                no++;
+            }
+        }
+        document.getElementById('totalBiaya').textContent = formatRupiah(total);
+        // Isi textarea rincian otomatis
+        var rincianField = document.getElementById('rincian');
+        if (rincianArr.length > 0) {
+            rincianField.value = rincianArr.join('\n') + '\n---------------------\nTOTAL: ' + formatRupiah(total);
+        } else {
+            rincianField.value = '';
+        }
+        // Event hapus layanan dari keranjang
+        var hapusBtns = document.getElementsByClassName('btn-hapus-layanan');
+        for (var btn of hapusBtns) {
+            btn.onclick = function() {
+                var row = this.closest('tr');
+                var nama = row.children[0].textContent;
+                // Uncheck checkbox yang sesuai
+                for (var checkbox of checkboxes) {
+                    if (checkbox.getAttribute('data-nama') === nama) {
+                        checkbox.checked = false;
+                        break;
+                    }
                 }
-                layananTerpilih.push(textLayanan);
+                updateKeranjang();
             }
         }
-
-        if (layananTerpilih.length > 0) {
-            var currentValue = rincianField.value;
-            var newValue = layananTerpilih.join('\n\n');
-
-            if (currentValue && currentValue.trim() !== '') {
-                rincianField.value = currentValue + '\n\n' + newValue;
-            } else {
-                rincianField.value = newValue;
-            }
-        }
-
-        $('#modalDaftarLayanan').modal('hide');
     }
+
+    // Jalankan updateKeranjang pertama kali jika ada layanan terpilih
+    updateKeranjang();
 
     // Filter untuk layanan
     document.addEventListener('DOMContentLoaded', function() {

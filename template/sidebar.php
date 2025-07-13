@@ -1018,12 +1018,12 @@ function is_current_module($module, $action = null)
     <div class="d-flex justify-content-between align-items-center py-3 px-3">
         <div class="d-flex align-items-center">
             <a href="<?php echo clean_url($base_url); ?>" class="d-flex align-items-center text-decoration-none me-2">
-                                <img src="/assets/pwa/logopraktekobgin.png" alt="Logo Praktek Obgin" class="sidebar-logo sidebar-logo-full me-2" style="height: 38px; width: auto; object-fit: contain;" />
-                                <img src="/assets/pwa/icons/praktekobgin_icon72x72.png" alt="Logo Mini" class="sidebar-logo sidebar-logo-mini me-2" style="height: 38px; width: auto; object-fit: contain; display: none;" />
+                <img src="/assets/pwa/logopraktekobgin.png" alt="Logo Praktek Obgin" class="sidebar-logo sidebar-logo-full me-2" style="height: 38px; width: auto; object-fit: contain;" />
+                <img src="/assets/pwa/icons/praktekobgin_icon72x72.png" alt="Logo Mini" class="sidebar-logo sidebar-logo-mini me-2" style="height: 38px; width: auto; object-fit: contain; display: none;" />
             </a>
-            <?php if ($is_logged_in): ?>
-                <a href="<?php echo clean_url($base_url); ?>/modules/auth/controllers/logout.php" class="btn btn-sm btn-outline-danger" title="Logout" style="font-size: 0.7rem; padding: 0.15rem 0.4rem;">
-                    <i class="bi bi-box-arrow-right"></i>
+            <?php if (!$is_logged_in): ?>
+                <a href="<?php echo clean_url($base_url); ?>/router.php?module=login" class="btn btn-sm btn-outline-primary ms-1" title="Login" style="font-size: 0.7rem; padding: 0.15rem 0.4rem;">
+                    <i class="bi bi-box-arrow-in-right"></i>
                 </a>
             <?php endif; ?>
         </div>
@@ -1283,6 +1283,15 @@ function is_current_module($module, $action = null)
                 <span class="menu-text">Edukasi</span>
             </a>
         </li>
+        <?php if ($is_logged_in): ?>
+            <li class="nav-item d-flex justify-content-end">
+                <div class="me-3">
+                    <a href="<?php echo clean_url($base_url); ?>/modules/auth/controllers/logout.php" class="btn btn-icon btn-outline-danger p-1" title="Logout" style="font-size: 1rem; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </a>
+                </div>
+            </li>
+        <?php endif; ?>
     </ul>
 
     <!-- User section at bottom -->
@@ -1303,10 +1312,7 @@ function is_current_module($module, $action = null)
                 </ul>
             </div>
         <?php else: ?>
-            <a href="<?= $base_url ?>/router.php?module=login" class="btn btn-primary btn-sm mx-2" data-title="Login">
-                <i class="bi bi-box-arrow-in-right"></i>
-                <span class="menu-text ms-2">Login</span>
-            </a>
+
         <?php endif; ?>
     </div>
 </div>
