@@ -179,10 +179,10 @@ if (!isset($kunjungan) || !$kunjungan) {
                         </thead>
                         <tbody>
                             <?php
-                            // Gunakan path relatif dari root aplikasi
-                            $db_config_path = __DIR__ . '/../../../../config/database.php';
+                            $db_config_path = dirname(__DIR__, 3) . '/config/database.php';
                             if (!file_exists($db_config_path)) {
-                                die("Error: File konfigurasi database tidak ditemukan.");
+                                echo "<pre>Debug: $db_config_path</pre>";
+                                die("Error: Config database.php tidak ditemukan di: $db_config_path");
                             }
                             require_once $db_config_path;
                             // Fallback jika env kosong
