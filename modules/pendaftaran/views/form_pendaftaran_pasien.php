@@ -1378,26 +1378,51 @@ ob_start();
 
 <!-- Floating Shortcut Button -->
 <a href="<?= $base_url ?>/modules/pendaftaran/controllers/antrian.php" class="floating-antrian-btn" title="Lihat Antrian">
-    <i class="bi bi-list-check"></i>
+    <span class="antrian-label">Antrian</span>
 </a>
+
+<!-- Floating Jadwal Button -->
+<a href="<?= $base_url ?>/jadwal.php" class="floating-jadwal-btn" title="Lihat Jadwal">
+    <span class="jadwal-label">Jadwal</span>
+</a>
+
 <style>
     /* Floating Button */
     .floating-antrian-btn {
         position: fixed;
-        bottom: 30px;
-        right: 30px;
-        width: 60px;
-        height: 60px;
+        bottom: 20px;
+        right: 20px;
+        height: auto;
         background-color: #007bff;
         color: white;
-        border-radius: 50%;
+        border-radius: 20px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 24px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         transition: all 0.3s ease;
         z-index: 1000;
+        padding: 8px 16px;
+        text-decoration: none;
+    }
+
+    .floating-antrian-btn .antrian-label {
+        font-size: 0.8rem;
+        font-weight: 500;
+        font-family: 'Inter', Arial, sans-serif;
+        color: #fff;
+        white-space: nowrap;
+    }
+
+    @media (max-width: 600px) {
+        .floating-antrian-btn {
+            bottom: 15px;
+            right: 15px;
+            padding: 6px 12px;
+        }
+        .floating-antrian-btn .antrian-label {
+            font-size: 0.75rem;
+        }
     }
 
     .floating-antrian-btn:hover {
@@ -1407,8 +1432,49 @@ ob_start();
         color: white;
     }
 
-    .floating-antrian-btn i {
-        pointer-events: none;
+    /* Floating Jadwal Button */
+    .floating-jadwal-btn {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        height: auto;
+        background-color: #28a745; /* Green color for distinction */
+        color: white;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        z-index: 1000;
+        padding: 8px 16px;
+        text-decoration: none;
+    }
+
+    .floating-jadwal-btn .jadwal-label {
+        font-size: 0.8rem;
+        font-weight: 500;
+        font-family: 'Inter', Arial, sans-serif;
+        color: #fff;
+        white-space: nowrap;
+    }
+
+    .floating-jadwal-btn:hover {
+        background-color: #218838;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        color: white;
+    }
+
+    @media (max-width: 600px) {
+        .floating-jadwal-btn {
+            top: 15px;
+            right: 15px;
+            padding: 6px 12px;
+        }
+        .floating-jadwal-btn .jadwal-label {
+            font-size: 0.75rem;
+        }
     }
 
     @media (max-width: 600px) {

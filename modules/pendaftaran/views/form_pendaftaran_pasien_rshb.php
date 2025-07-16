@@ -89,34 +89,31 @@ try {
     $tempat_praktek = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Find RS Bhayangkara Batu in the tempat_praktek array and set its ID as default
-    if (empty($id_tempat_praktek)) {
-        foreach ($tempat_praktek as $tp) {
-            if (stripos($tp['Nama_Tempat'], $default_tempat_nama) !== false) {
-                $id_tempat_praktek = $tp['ID_Tempat_Praktek'];
-                break;
-            }
-        }
-    }
+    // Jangan set default tempat praktek secara otomatis.
+// Biarkan user memilih sendiri setelah memilih layanan
+// if (empty($id_tempat_praktek)) {
+//     foreach ($tempat_praktek as $tp) {
+//         if (stripos($tp['Nama_Tempat'], $default_tempat_nama) !== false) {
+//             $id_tempat_praktek = $tp['ID_Tempat_Praktek'];
+//             break;
+//         }
+//     }
+// }
 } catch (PDOException $e) {
     error_log("Database Error: " . $e->getMessage());
     $tempat_praktek = array();
 }
 
-// Set default dokter Arifian
+// Set default dokter Arifian (tidak otomatis dipilih)
 $default_dokter_id = 'b81a5b13-1bd4-4298-b294-285735630c0d';
 
-// Ambil data dokter
+// Ambil data dokter (hanya dokter aktif yang ditentukan)
 try {
-    // Untuk sementara hanya tampilkan dokter Arifian
     $query = "SELECT * FROM dokter WHERE ID_Dokter = :id_dokter AND Status_Aktif = 1";
     $stmt = $conn->prepare($query);
     $stmt->execute(['id_dokter' => $default_dokter_id]);
     $dokter = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Set default value untuk id_dokter jika belum diset
-    if (empty($id_dokter)) {
-        $id_dokter = $default_dokter_id;
-    }
+    // Jangan set $id_dokter secara otomatis. Biarkan user memilih setelah memilih tempat.
 } catch (PDOException $e) {
     error_log("Database Error: " . $e->getMessage());
     $dokter = [];
@@ -1075,6 +1072,13 @@ ob_start();
             
             // Definisi base_url untuk digunakan di AJAX
             const base_url = window.location.protocol + '//' + window.location.host;
+
+            // Set initial disabled state if masih kosong
+            if (!layananSelect.value) {
+                tempatSelect.disabled = true;
+                dokterSelect.disabled = true;
+                jadwalSelect.disabled = true;
+            }
             
             // Filter tempat praktek berdasarkan layanan
             layananSelect.addEventListener('change', function() {
@@ -1573,7 +1577,7 @@ ob_start();
                 return true;
             });
 
-            if (tempatSelect.value && dokterSelect.value) {
+            if (layananSelect.value && tempatSelect.value && dokterSelect.value) {
                 loadJadwal();
             }
 
