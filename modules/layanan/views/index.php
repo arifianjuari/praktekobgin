@@ -437,11 +437,8 @@
     
     <script>
     function redirectToRegistration(layananId) {
-        <?php if ($is_logged_in): ?>
-            window.location.href = '<?= $base_url ?>/pendaftaran/form_pendaftaran_pasien.php?layanan=' + encodeURIComponent(layananId);
-        <?php else: ?>
-            window.location.href = '<?= $base_url ?>/login.php?redirect=<?= urlencode($_SERVER["REQUEST_URI"]) ?>';
-        <?php endif; ?>
+                    // Always redirect to form pendaftaran
+            window.location.href = '<?= $base_url ?>/modules/pendaftaran/views/form_pendaftaran_pasien.php?layanan=' + encodeURIComponent(layananId);
     }
     
     document.addEventListener('DOMContentLoaded', function() {

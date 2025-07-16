@@ -79,8 +79,8 @@
             <div class="card article-card">
                 <div class="card-body">
                     <h5 class="card-title mb-3">
-                        <a href="<?= $base_url ?>/edukasi/<?= htmlspecialchars($artikel['slug'] ?? '') ?>"
-                            class="text-decoration-none text-dark">
+                        <a href="<?= $base_url ?>/edukasi-detail.php?id=<?= htmlspecialchars($artikel['id_edukasi'] ?? '') ?>"
+                            class="stretched-link text-decoration-none text-dark">
                             <?= htmlspecialchars($artikel['judul'] ?? '') ?>
                         </a>
                     </h5>

@@ -19,7 +19,7 @@ if (!isset($conn)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo isset($page_title) ? $page_title : 'Klinik App'; ?></title>
+    <title><?php echo isset($page_title) ? $page_title : 'Praktekobgin'; ?></title>
 
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#198754">
@@ -41,14 +41,16 @@ if (!isset($conn)) {
         body {
             min-height: 100vh;
             background-color: #f5f5f5;
-            overflow-x: hidden; /* Mencegah scrollbar horizontal */
+            overflow-x: hidden;
+            /* Mencegah scrollbar horizontal */
         }
-        
+
         .main-content {
             margin-left: 280px;
             padding: 20px;
             transition: margin-left 0.3s ease;
-            width: calc(100% - 280px); /* Lebar dikurangi margin sidebar */
+            width: calc(100% - 280px);
+            /* Lebar dikurangi margin sidebar */
             max-width: 100%;
             box-sizing: border-box;
         }
@@ -60,9 +62,10 @@ if (!isset($conn)) {
         }
 
         /* Perbaikan untuk sidebar collapse */
-        .sidebar.minimized ~ .main-content {
+        .sidebar.minimized~.main-content {
             margin-left: 60px;
-            width: calc(100% - 60px); /* Lebar dikurangi margin sidebar yang diminimalkan */
+            width: calc(100% - 60px);
+            /* Lebar dikurangi margin sidebar yang diminimalkan */
         }
 
         /* Perbaikan tampilan alert */
@@ -115,14 +118,14 @@ if (!isset($conn)) {
     ?>
 
     <div class="main-content">
-        <!-- Debug marker untuk membantu diagnosa -->  
+        <!-- Debug marker untuk membantu diagnosa -->
         <!-- DEBUG: Layout rendering start -->
-        
+
         <?php
         // Log debugging untuk layout
         error_log("Layout rendering - Content length: " . (isset($content) ? strlen($content) : 'variable not set'));
         ?>
-    
+
         <?php
         // Display any flash messages
         if (isset($_SESSION['success_message'])): ?>
@@ -145,18 +148,18 @@ if (!isset($conn)) {
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         <?php endif; ?>
-        
+
         <?php if (isset($_GET['debug']) && $_GET['debug'] === 'layout'): ?>
-        <!-- DEBUGGING INFO - Hanya tampil jika parameter debug=layout ditambahkan ke URL -->
-        <div style="background:#f8f9fa; padding:10px; margin-bottom:20px; border:1px solid #ddd;">
-            <h5>Layout Debug Info</h5>
-            <ul>
-                <li>Content variable: <?= isset($content) ? 'defined' : 'not defined' ?></li>
-                <li>Content length: <?= isset($content) ? strlen($content) : 'N/A' ?> bytes</li>
-                <li>Request URI: <?= $_SERVER['REQUEST_URI'] ?></li>
-                <li>PHP Version: <?= PHP_VERSION ?></li>
-            </ul>
-        </div>
+            <!-- DEBUGGING INFO - Hanya tampil jika parameter debug=layout ditambahkan ke URL -->
+            <div style="background:#f8f9fa; padding:10px; margin-bottom:20px; border:1px solid #ddd;">
+                <h5>Layout Debug Info</h5>
+                <ul>
+                    <li>Content variable: <?= isset($content) ? 'defined' : 'not defined' ?></li>
+                    <li>Content length: <?= isset($content) ? strlen($content) : 'N/A' ?> bytes</li>
+                    <li>Request URI: <?= $_SERVER['REQUEST_URI'] ?></li>
+                    <li>PHP Version: <?= PHP_VERSION ?></li>
+                </ul>
+            </div>
         <?php endif; ?>
 
         <?php if (!empty($content)): ?>
@@ -176,19 +179,19 @@ if (!isset($conn)) {
                 <p><small>Debug: Content variable is <?= isset($content) ? 'empty' : 'not defined' ?>.</small></p>
             </div>
         <?php endif; ?>
-        
+
         <!-- DEBUG: Layout rendering end -->
     </div>
 
     <!-- Tombol Install PWA hanya di halaman login -->
     <?php
-        // Cek apakah sedang di halaman login
-        $isLoginPage = false;
-        if (isset($page_title) && stripos($page_title, 'login') !== false) {
-            $isLoginPage = true;
-        } elseif (isset($_SERVER['REQUEST_URI']) && (stripos($_SERVER['REQUEST_URI'], 'login') !== false)) {
-            $isLoginPage = true;
-        }
+    // Cek apakah sedang di halaman login
+    $isLoginPage = false;
+    if (isset($page_title) && stripos($page_title, 'login') !== false) {
+        $isLoginPage = true;
+    } elseif (isset($_SERVER['REQUEST_URI']) && (stripos($_SERVER['REQUEST_URI'], 'login') !== false)) {
+        $isLoginPage = true;
+    }
     ?>
     <?php if ($isLoginPage): ?>
         <button id="install-button">Instal Aplikasi</button>
@@ -210,7 +213,7 @@ if (!isset($conn)) {
     <?php endif; ?>
 
     <?php echo isset($additional_scripts) ? $additional_scripts : ''; ?>
-    
+
     <!-- Script untuk menangani sidebar collapse dengan benar -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -218,7 +221,7 @@ if (!isset($conn)) {
             function checkSidebarState() {
                 const sidebar = document.querySelector('.sidebar');
                 const mainContent = document.querySelector('.main-content');
-                
+
                 if (sidebar && mainContent) {
                     // Tambahkan CSS inline untuk memastikan main-content menyesuaikan dengan benar
                     if (sidebar.classList.contains('minimized')) {
@@ -239,10 +242,10 @@ if (!isset($conn)) {
                     }
                 }
             }
-            
+
             // Periksa status sidebar saat halaman dimuat
             checkSidebarState();
-            
+
             // Tambahkan event listener untuk tombol toggle sidebar
             const toggleButtons = document.querySelectorAll('#toggleSidebar, #toggleMobileSidebar');
             toggleButtons.forEach(button => {
@@ -253,10 +256,10 @@ if (!isset($conn)) {
                     });
                 }
             });
-            
+
             // Tambahkan event listener untuk window resize
             window.addEventListener('resize', checkSidebarState);
-            
+
             // Tambahkan MutationObserver untuk memantau perubahan pada sidebar
             const sidebar = document.querySelector('.sidebar');
             if (sidebar) {
@@ -268,9 +271,11 @@ if (!isset($conn)) {
                         }
                     });
                 });
-                
+
                 // Mulai observasi pada sidebar untuk perubahan atribut
-                observer.observe(sidebar, { attributes: true });
+                observer.observe(sidebar, {
+                    attributes: true
+                });
             }
         });
     </script>
