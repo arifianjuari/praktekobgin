@@ -39,7 +39,9 @@ if (!empty($missing_extensions)) {
 }
 
 // Cek keberadaan dan permission folder upload
-$upload_dir = '../uploads/edukasi/';
+// Tentukan direktori upload relatif dari document root agar URL gambar konsisten
+$upload_dir_relative = '/uploads/edukasi/';
+$upload_dir = rtrim($_SERVER['DOCUMENT_ROOT'], '/') . $upload_dir_relative;
 if (!file_exists($upload_dir)) {
     if (!@mkdir($upload_dir, 0755, true)) {
         die("Gagal membuat direktori upload: $upload_dir");
@@ -47,7 +49,7 @@ if (!file_exists($upload_dir)) {
 }
 
 if (!is_writable($upload_dir)) {
-    die("Direktori upload tidak writable: $upload_dir silahkan coba secara online");
+    die("Direktori upload tidak writable: $upload_dir. Silakan periksa permission folder atau sesuaikan path.");
 }
 
 // Konfigurasi upload dan optimasi gambar
