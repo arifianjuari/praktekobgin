@@ -1050,7 +1050,7 @@ error_log("Data pasien: " . json_encode($pasien));
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-end mb-3">
+                        <div class="d-flex justify-content-start mb-3">
                             <a href="index.php?module=rekam_medis&action=tambah_pemeriksaan&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>&source=<?= $_SESSION['source_page'] ?><?= isset($_GET['no_rawat']) ? '&no_rawat=' . $_GET['no_rawat'] : '' ?>" class="btn btn-primary btn-sm">
                                 <i class="fas fa-plus"></i> Tambah Kunjungan
                             </a>
@@ -1060,27 +1060,46 @@ error_log("Data pasien: " . json_encode($pasien));
                                 <table class="table table-sm table-bordered table-striped table-resizable">
                                     <thead>
                                         <tr>
-                                            <th>Waktu Pemeriksaan<div class="resizer"></div>
-                                            </th>
-                                            <th>Keluhan Utama<div class="resizer"></div>
-                                            </th>
-                                            <th>Diagnosis<div class="resizer"></div>
-                                            </th>
-                                            <th>Tatalaksana<div class="resizer"></div>
-                                            </th>
-                                            <th>Resep<div class="resizer"></div>
-                                            </th>
-                                            <th>Layanan<div class="resizer"></div>
-                                            </th>
-                                            <th width="120">Aksi<div class="resizer"></div>
-                                            </th>
-                                        </tr>
+    <th width="120">Aksi<div class="resizer"></div></th>
+    <th>Waktu Pemeriksaan<div class="resizer"></div></th>
+    <th>Keluhan Utama<div class="resizer"></div></th>
+    <th>Diagnosis<div class="resizer"></div></th>
+    <th>Tatalaksana<div class="resizer"></div></th>
+    <th>Resep<div class="resizer"></div></th>
+    <th>Layanan<div class="resizer"></div></th>
+</tr>
                                     </thead>
                                     <tbody>
                                         <?php foreach ($riwayatPemeriksaan as $rp): ?>
                                             <tr>
-                                                <td>
-                                                    <strong><?= date('d-m-Y', strtotime($rp['tgl_registrasi'])) ?> <?= $rp['jam_reg'] ?></strong>
+    <td>
+        <?php
+        $no_rawat = isset($rp['no_rawat']) ? htmlspecialchars($rp['no_rawat']) : '';
+        $source_page = isset($_SESSION['source_page']) ? htmlspecialchars($source_page) : '';
+        ?>
+        <div class="btn-group">
+            <?php
+            // Tombol Edit/Tambah Pemeriksaan:
+            // - Jika keluhan_utama kosong (belum ada data), arahkan ke form_penilaian_medis_ralan_kandungan untuk input baru
+            // - Jika sudah ada data, arahkan ke form_edit_pemeriksaan untuk edit
+            ?>
+            <a href="index.php?module=rekam_medis&action=<?= empty($rp['keluhan_utama']) ? 'form_penilaian_medis_ralan_kandungan' : 'form_edit_pemeriksaan' ?>&no_rawat=<?= $no_rawat ?>&source=<?= $source_page ?>" class="btn btn-success btn-sm" title="<?= empty($rp['keluhan_utama']) ? 'Input Pemeriksaan Baru' : 'Edit Pemeriksaan' ?>">
+                <?= empty($rp['keluhan_utama']) ? 'Input' : 'Edit' ?>
+            </a>
+            <a href="index.php?module=rekam_medis&action=edit_kunjungan&no_rawat=<?= $no_rawat ?>&source=<?= $source_page ?>" class="btn btn-warning btn-sm">
+                <i class="fas fa-edit"></i>
+            </a>
+            <?php
+            $no_rawat = isset($rp['no_rawat']) ? htmlspecialchars($rp['no_rawat']) : '';
+            $source_page = isset($_SESSION['source_page']) ? htmlspecialchars($source_page) : '';
+            ?>
+            <a href="index.php?module=rekam_medis&action=hapus_kunjungan&no_rawat=<?= $no_rawat ?>&source=<?= $source_page ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus kunjungan ini?')">
+                <i class="fas fa-trash"></i>
+            </a>
+        </div>
+    </td>
+    <td>
+        <strong><?= date('d-m-Y', strtotime($rp['tgl_registrasi'])) ?> <?= $rp['jam_reg'] ?></strong>
                                                     <?php if (!empty($rp['nm_dokter'])): ?>
                                                         <br><small>Dr. <?= $rp['nm_dokter'] ?></small>
                                                     <?php endif; ?>
@@ -1090,7 +1109,7 @@ error_log("Data pasien: " . json_encode($pasien));
                                                 <td><?= $rp['diagnosis'] ?: '-' ?></td>
                                                 <td><?= $rp['tata'] ?: '-' ?></td>
                                                 <td><?= $rp['resep'] ?: '-' ?></td>
-                                                <td style="max-width:180px; font-size: 90%">
+
 <?php
 if (!empty($rp['rincian'])) {
     $lines = explode("\n", str_replace(["\r\n", "\r"], "\n", trim($rp['rincian'])));
@@ -1115,31 +1134,6 @@ if (!empty($rp['rincian'])) {
 ?>
 </td>
                                                 <td>
-                                                    <?php
-                                                    $no_rawat = isset($rp['no_rawat']) ? htmlspecialchars($rp['no_rawat']) : '';
-                                                    $source_page = isset($_SESSION['source_page']) ? htmlspecialchars($_SESSION['source_page']) : '';
-                                                    ?>
-                                                    <div class="btn-group">
-                                                        <?php
-                                                        // Tombol Edit/Tambah Pemeriksaan:
-                                                        // - Jika keluhan_utama kosong (belum ada data), arahkan ke form_penilaian_medis_ralan_kandungan untuk input baru
-                                                        // - Jika sudah ada data, arahkan ke form_edit_pemeriksaan untuk edit
-                                                        ?>
-                                                        <a href="index.php?module=rekam_medis&action=<?= empty($rp['keluhan_utama']) ? 'form_penilaian_medis_ralan_kandungan' : 'form_edit_pemeriksaan' ?>&no_rawat=<?= $no_rawat ?>&source=<?= $source_page ?>" class="btn btn-success btn-sm" title="<?= empty($rp['keluhan_utama']) ? 'Input Pemeriksaan Baru' : 'Edit Pemeriksaan' ?>">
-                                                            <?= empty($rp['keluhan_utama']) ? 'Input' : 'Edit' ?>
-                                                        </a>
-                                                        <a href="index.php?module=rekam_medis&action=edit_kunjungan&no_rawat=<?= $no_rawat ?>&source=<?= $source_page ?>" class="btn btn-warning btn-sm">
-                                                            <i class="fas fa-edit"></i>
-                                                        </a>
-                                                        <?php
-                                                        $no_rawat = isset($rp['no_rawat']) ? htmlspecialchars($rp['no_rawat']) : '';
-                                                        $source_page = isset($_SESSION['source_page']) ? htmlspecialchars($_SESSION['source_page']) : '';
-                                                        ?>
-                                                        <a href="index.php?module=rekam_medis&action=hapus_kunjungan&no_rawat=<?= $no_rawat ?>&source=<?= $source_page ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus kunjungan ini?')">
-                                                            <i class="fas fa-trash"></i>
-                                                        </a>
-                                                    </div>
-
                                                     <!-- Modal Detail Pemeriksaan -->
                                                     <div class="modal fade" id="modalDetail<?= str_replace('/', '', $rp['no_rawat']) ?>" tabindex="-1" aria-labelledby="modalDetailLabel<?= str_replace('/', '', $rp['no_rawat']) ?>" aria-hidden="true">
                                                         <div class="modal-dialog modal-lg">
