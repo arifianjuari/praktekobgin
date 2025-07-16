@@ -133,6 +133,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $alamat = trim($_POST['alamat'] ?? '');
     $kd_kec = trim($_POST['kd_kec'] ?? '');
     $pekerjaan = trim($_POST['pekerjaan'] ?? '');
+
+    // Optional fields: convert empty strings to NULL
+    if ($kd_kec === '') {
+        $kd_kec = null;
+    }
+    if ($pekerjaan === '') {
+        $pekerjaan = null;
+    }
+    // Prevent SQL truncation warnings by limiting pekerjaan length (assumed 15 chars)
+    if (!is_null($pekerjaan) && strlen($pekerjaan) > 15) {
+        $pekerjaan = substr($pekerjaan, 0, 15);
+    }
     $id_layanan = trim($_POST['id_layanan'] ?? '');
     $keluhan = trim($_POST['keluhan'] ?? '');
     $yang_menyarankan = trim($_POST['yang_menyarankan'] ?? '');

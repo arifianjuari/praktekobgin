@@ -1671,7 +1671,7 @@ if ($conn) {
                     <div class="col-md-12">
                         <div class="card mt-3">
                             <div class="card-header bg-light">
-                                <h6 class="card-title mb-0" style="font-size: 0.9rem;">Data Rujukan</h6>
+
                             </div>
                             <div class="card-body p-3">
                                 <div class="mb-2">

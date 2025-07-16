@@ -150,6 +150,12 @@ if (isset($_SESSION['success_message'])) {
     // Hapus session setelah digunakan
     unset($_SESSION['success_message']);
     unset($_SESSION['id_pendaftaran']);
+
+    // Reset dropdown selections after a successful registration so that the next entry starts fresh
+    $id_layanan = '';
+    $id_tempat_praktek = '';
+    $id_dokter = '';
+    $id_jadwal = '';
 }
 
 // Periksa koneksi database
@@ -170,6 +176,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $alamat = trim($_POST['alamat'] ?? '');
     $kd_kec = trim($_POST['kd_kec'] ?? '');
     $pekerjaan = trim($_POST['pekerjaan'] ?? '');
+
+    // Allow Wilayah (kd_kec) and Pekerjaan to be optional
+    // Convert empty strings to NULL so that the database will accept NULL when the user leaves these fields blank
+    if ($kd_kec === '') {
+        $kd_kec = null;
+    }
+    if ($pekerjaan === '') {
+        $pekerjaan = null;
+    }
+
+    // Prevent SQLSTATE[01000]: Warning: 1265 Data truncated for column 'pekerjaan'
+    // by limiting the length to the database column size (assumed 15 characters)
+    if (!is_null($pekerjaan) && strlen($pekerjaan) > 15) {
+        $pekerjaan = substr($pekerjaan, 0, 15);
+    }
     $keluhan = trim($_POST['keluhan'] ?? '');
     $yang_menyarankan = trim($_POST['yang_menyarankan'] ?? '');
     $id_tempat_praktek = trim($_POST['id_tempat_praktek'] ?? '');
@@ -678,6 +699,7 @@ ob_start();
                                 <thead>
                                     <tr>
                                         <th>Status</th>
+                                        <th>Aksi</th>
                                         <th>No. Reg</th>
                                         <th>Tgl Registrasi</th>
                                         <th>Jam</th>
@@ -693,13 +715,18 @@ ob_start();
                                 <tbody>
                                     <?php if (empty($registered_patients)): ?>
                                         <tr>
-                                            <td colspan="11" class="text-center">Tidak ada data pasien terdaftar</td>
+                                            <td colspan="12" class="text-center">Tidak ada data pasien terdaftar</td>
                                         </tr>
                                     <?php else: ?>
                                         <?php foreach ($registered_patients as $patient): ?>
                                             <tr>
                                                 <td class="<?php echo (strtolower($patient['stts']) == 'sudah') ? 'bg-success text-white' : 'bg-warning text-dark'; ?>">
                                                     <?php echo htmlspecialchars($patient['stts']); ?>
+                                                </td>
+                                                <td>
+                                                    <button type="button" class="btn btn-sm btn-outline-primary copy-nik-btn" data-nik="<?php echo htmlspecialchars($patient['no_ktp']); ?>" title="Salin NIK ke form pendaftaran">
+                                                        <i class="bi bi-plus-circle"></i>
+                                                    </button>
                                                 </td>
                                                 <td><?php echo htmlspecialchars($patient['no_reg']); ?></td>
                                                 <td><?php echo htmlspecialchars(date('d-m-Y', strtotime($patient['tgl_registrasi']))); ?></td>
@@ -1676,8 +1703,26 @@ ob_start();
     }
 ";
 
-    // Add JavaScript function for WhatsApp button
+    // Add JavaScript function for WhatsApp button and include copy_nik_to_form.js
     $additional_js = "
+    // Script untuk tombol Salin NIK ke form pendaftaran
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest('.copy-nik-btn');
+        if (btn) {
+            const nik = btn.getAttribute('data-nik');
+            const nikInput = document.getElementById('no_ktp');
+            if (nikInput) {
+                nikInput.value = nik;
+                // Trigger event input agar script lain yang bergantung pada perubahan input dijalankan
+                nikInput.dispatchEvent(new Event('input', { bubbles: true }));
+                nikInput.focus();
+                // Efek visual sederhana
+                nikInput.classList.add('bg-success', 'text-white');
+                setTimeout(() => nikInput.classList.remove('bg-success', 'text-white'), 800);
+            }
+        }
+    });
+
     // Fungsi untuk membuka WhatsApp dengan pesan default
     function openWhatsApp(number) {
         const defaultMessage = 'Halo, ini dari RS. Kami ingin menginformasikan mengenai jadwal kunjungan Anda.';

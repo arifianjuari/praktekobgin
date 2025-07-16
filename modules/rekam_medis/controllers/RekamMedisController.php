@@ -202,21 +202,37 @@ class RekamMedisController
         }
 
         try {
-            // Buat koneksi langsung ke database
-            require_once __DIR__ . '/../../../config/database.php';
-
-
-
-            $pdo = new PDO(
-                "mysql:host=$db2_host;dbname=$db2_database;charset=utf8mb4",
-                $db2_username,
-                $db2_password,
-                [
-                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                    PDO::ATTR_EMULATE_PREPARES => false
-                ]
-            );
+            // Gunakan fungsi getConnection yang sudah ada
+            function getLocalConnection() {
+                global $db2_host, $db2_username, $db2_password, $db2_database, $db2_port;
+                
+                // Jika variabel global belum diset, ambil dari environment atau gunakan default
+                if (!isset($db2_host)) $db2_host = getenv('DB_HOST') ?: '127.0.0.1';
+                if (!isset($db2_username)) $db2_username = getenv('DB_USER') ?: 'arifianjuari';
+                if (!isset($db2_password)) $db2_password = getenv('DB_PASS') ?: 'Juari@2591';
+                if (!isset($db2_database)) $db2_database = getenv('DB_NAME') ?: 'praktekobgin_data';
+                if (!isset($db2_port)) $db2_port = getenv('DB_PORT') ?: '8889';
+                
+                try {
+                    $pdo = new PDO(
+                        "mysql:host=$db2_host;port=$db2_port;dbname=$db2_database;charset=utf8mb4",
+                        $db2_username,
+                        $db2_password,
+                        [
+                            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                            PDO::ATTR_EMULATE_PREPARES => false
+                        ]
+                    );
+                    return $pdo;
+                } catch (PDOException $e) {
+                    error_log("Database connection error in hapusPasien: " . $e->getMessage());
+                    throw $e;
+                }
+            }
+            
+            // Buat koneksi database
+            $pdo = getLocalConnection();
 
             error_log("Koneksi database berhasil dibuat");
 
