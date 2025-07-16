@@ -1656,6 +1656,46 @@ ob_start();
         });
     </script>
 
+    <!-- Floating Button Daftar Antrian -->
+    <a href="/index.php?module=rekam_medis&action=manajemen_antrian" class="floating-daftar-antrian" title="Lihat Daftar Antrian">
+        <i class="bi bi-card-list"></i> Daftar Antrian
+    </a>
+    <style>
+        .floating-daftar-antrian {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            z-index: 9999;
+            background: #0d6efd;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 50px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .floating-daftar-antrian:hover {
+            background: #084298;
+            color: #fff;
+            text-decoration: none;
+        }
+        .floating-daftar-antrian i {
+            font-size: 1.3em;
+        }
+        @media (max-width: 600px) {
+            .floating-daftar-antrian {
+                padding: 10px 14px;
+                font-size: 1em;
+                right: 12px;
+                bottom: 12px;
+            }
+        }
+    </style>
+
     <?php
     $content = ob_get_clean();
 

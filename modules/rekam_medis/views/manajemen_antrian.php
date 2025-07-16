@@ -241,12 +241,52 @@ try {
                 <div class="card-header py-2">
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Manajemen Praktekobgin</h5>
-                        <a href="<?= BASE_URL ?>/pendaftaran/form_pendaftaran_pasien.php?redirect=manajemen_antrian"
-                            class="btn btn-primary btn-sm"
-                            data-bs-toggle="tooltip"
-                            title="Tambah Pendaftaran">
-                            <i class="bi bi-plus-circle me-1"></i> Pendaftaran Baru
-                        </a>
+                        <div class="d-flex gap-2">
+                            <a href="<?= BASE_URL ?>/pendaftaran/form_pendaftaran_pasien.php?redirect=manajemen_antrian"
+                                class="btn btn-primary btn-sm"
+                                data-bs-toggle="tooltip"
+                                title="Tambah Pendaftaran">
+                                <i class="bi bi-plus-circle me-1"></i> Pendaftaran Baru
+                            </a>
+                            <a href="/modules/pendaftaran/views/form_pendaftaran_pasien_rshb.php" class="floating-pendaftaran-rshb" title="Pendaftaran dari RSHB">
+    <i class="bi bi-plus-circle"></i> Pendaftaran dari RSHB
+</a>
+<style>
+    .floating-pendaftaran-rshb {
+        position: fixed;
+        right: 24px;
+        bottom: 24px;
+        z-index: 9999;
+        background: #6c757d;
+        color: #fff;
+        padding: 12px 20px;
+        border-radius: 50px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        transition: background 0.2s;
+    }
+    .floating-pendaftaran-rshb:hover {
+        background: #495057;
+        color: #fff;
+        text-decoration: none;
+    }
+    .floating-pendaftaran-rshb i {
+        font-size: 1.3em;
+    }
+    @media (max-width: 600px) {
+        .floating-pendaftaran-rshb {
+            padding: 10px 14px;
+            font-size: 1em;
+            right: 12px;
+            bottom: 12px;
+        }
+    }
+</style>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body">
