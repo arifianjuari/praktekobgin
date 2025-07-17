@@ -257,12 +257,6 @@ try {
 
     <div class="main-content">
         <div class="container-fluid">
-            <div class="row mb-3">
-                <div class="col-12">
-                    <h2 class="page-title">Formularium</h2>
-                    <p class="text-muted">Kelola data obat dan formularium klinik</p>
-                </div>
-            </div>
 
             <?php if (isset($success_message)): ?>
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -310,6 +304,7 @@ try {
                                         <tr>
                                             <th>No</th>
                                             <th>Nama Obat</th>
+                                            <th>Nama Generik</th>
                                             <th>Bentuk Sediaan</th>
                                             <th>Dosis</th>
                                             <th>Harga</th>
@@ -332,6 +327,7 @@ try {
                                             <tr data-id="<?= $row['id_obat'] ?>">
                                                 <td><?= $no++ ?></td>
                                                 <td class="editable" data-field="nama_obat"><?= htmlspecialchars($row['nama_obat']) ?></td>
+                                                <td class="editable" data-field="nama_generik"><?= htmlspecialchars($row['nama_generik'] ?? '') ?></td>
                                                 <td class="editable" data-field="bentuk_sediaan"><?= htmlspecialchars($row['bentuk_sediaan']) ?></td>
                                                 <td class="editable" data-field="dosis"><?= htmlspecialchars($row['dosis'] ?? '') ?></td>
                                                 <td class="editable" data-field="harga" data-value="<?= $raw_harga ?>"><?= formatRupiah($row['harga']) ?></td>
