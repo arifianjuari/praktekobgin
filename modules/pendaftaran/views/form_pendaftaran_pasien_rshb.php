@@ -342,29 +342,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 error_log("Memperbarui data pasien dengan NIK: " . $no_ktp);
 
-                $query = "UPDATE pasien SET 
-                    nm_pasien = ?, 
-                    jk = ?, 
-                    tgl_lahir = ?, 
-                    alamat = ?, 
-                    pekerjaan = ?, 
-                    no_tlp = ?, 
-                    umur = ?, 
-                    kd_kec = ? 
-                    WHERE no_ktp = ?";
+                // Build dynamic update query to avoid overwriting existing data with NULL when wilayah or pekerjaan is left blank
+                $setClauses = [
+                    "nm_pasien = ?",
+                    "jk = ?",
+                    "tgl_lahir = ?",
+                    "alamat = ?",
+                    "no_tlp = ?",
+                    "umur = ?"
+                ];
 
-                $stmt = $conn->prepare($query);
-                $stmt->execute([
+                $params = [
                     $nama_pasien,
                     $jenis_kelamin,
                     $tanggal_lahir,
                     $alamat,
-                    $pekerjaan,
                     $nomor_telepon,
-                    $umur,
-                    $kd_kec,
-                    $no_ktp
-                ]);
+                    $umur
+                ];
+
+                // Only update pekerjaan if the user provided a value
+                if (!is_null($pekerjaan) && $pekerjaan !== '') {
+                    $setClauses[] = "pekerjaan = ?";
+                    $params[] = $pekerjaan;
+                }
+
+                // Only update wilayah (kd_kec) if the user selected a value
+                if (!is_null($kd_kec) && $kd_kec !== '') {
+                    $setClauses[] = "kd_kec = ?";
+                    $params[] = $kd_kec;
+                }
+
+                $setClauseString = implode(', ', $setClauses);
+                $query = "UPDATE pasien SET {$setClauseString} WHERE no_ktp = ?";
+                $params[] = $no_ktp;
+
+                $stmt = $conn->prepare($query);
+                $stmt->execute($params);
 
                 error_log("Data pasien berhasil diperbarui");
             }
