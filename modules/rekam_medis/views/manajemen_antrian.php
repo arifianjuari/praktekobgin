@@ -249,43 +249,46 @@ try {
                                 <i class="bi bi-plus-circle me-1"></i> Pendaftaran Baru
                             </a>
                             <a href="/modules/pendaftaran/views/form_pendaftaran_pasien_rshb.php" class="floating-pendaftaran-rshb" title="Pendaftaran dari RSHB">
-    <i class="bi bi-plus-circle"></i> Pendaftaran dari RSHB
-</a>
-<style>
-    .floating-pendaftaran-rshb {
-        position: fixed;
-        right: 24px;
-        bottom: 24px;
-        z-index: 9999;
-        background: #6c757d;
-        color: #fff;
-        padding: 12px 20px;
-        border-radius: 50px;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.18);
-        font-size: 1.1rem;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        text-decoration: none;
-        transition: background 0.2s;
-    }
-    .floating-pendaftaran-rshb:hover {
-        background: #495057;
-        color: #fff;
-        text-decoration: none;
-    }
-    .floating-pendaftaran-rshb i {
-        font-size: 1.3em;
-    }
-    @media (max-width: 600px) {
-        .floating-pendaftaran-rshb {
-            padding: 10px 14px;
-            font-size: 1em;
-            right: 12px;
-            bottom: 12px;
-        }
-    }
-</style>
+                                <i class="bi bi-plus-circle"></i> Pendaftaran dari RSHB
+                            </a>
+                            <style>
+                                .floating-pendaftaran-rshb {
+                                    position: fixed;
+                                    right: 24px;
+                                    bottom: 24px;
+                                    z-index: 9999;
+                                    background: #6c757d;
+                                    color: #fff;
+                                    padding: 12px 20px;
+                                    border-radius: 50px;
+                                    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+                                    font-size: 1.1rem;
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 8px;
+                                    text-decoration: none;
+                                    transition: background 0.2s;
+                                }
+
+                                .floating-pendaftaran-rshb:hover {
+                                    background: #495057;
+                                    color: #fff;
+                                    text-decoration: none;
+                                }
+
+                                .floating-pendaftaran-rshb i {
+                                    font-size: 1.3em;
+                                }
+
+                                @media (max-width: 600px) {
+                                    .floating-pendaftaran-rshb {
+                                        padding: 10px 14px;
+                                        font-size: 1em;
+                                        right: 12px;
+                                        bottom: 12px;
+                                    }
+                                }
+                            </style>
                         </div>
                     </div>
                 </div>
@@ -698,10 +701,10 @@ try {
                             }
                             $grouped_antrian[$key]['data'][] = $a;
                         }
-                        
+
                         // Sort each group's data by Waktu_Perkiraan
                         foreach ($grouped_antrian as &$group) {
-                            usort($group['data'], function($a, $b) {
+                            usort($group['data'], function ($a, $b) {
                                 if (empty($a['Waktu_Perkiraan']) && empty($b['Waktu_Perkiraan'])) {
                                     return 0;
                                 } elseif (empty($a['Waktu_Perkiraan'])) {
@@ -780,7 +783,7 @@ try {
                                                                     title="Lihat Rekam Medis">
                                                                     <i class="bi bi-clipboard2-pulse"></i>
                                                                 </a>
-                                                                
+
                                                                 <?php if ($a['Status_Pendaftaran'] !== 'Menunggu Konfirmasi'): ?>
                                                                     <button type="button" class="btn btn-sm btn-outline-warning btn-icon"
                                                                         onclick="updateStatusDirect('<?= $a['ID_Pendaftaran'] ?>', 'Menunggu Konfirmasi')"
@@ -835,9 +838,9 @@ try {
                                                                     if (!empty($a['Waktu_Perkiraan'])) {
                                                                         $pesan .= "\n\nWaktu perkiraan Anda diperiksa: " . date('H:i', strtotime($a['Waktu_Perkiraan'])) . " WIB.";
                                                                     }
-                                                                    
+
                                                                     // Tambahkan pesan untuk melihat antrian
-                                                                    $pesan .= "\n\nLihat antrian anda di https://praktekobgin.com/pendaftaran/antrian.php";
+                                                                    $pesan .= "\n\nLihat antrian anda di https://praktekobgin.com/modules/pendaftaran/controllers/antrian.php";
 
                                                                     // Encode pesan untuk URL
                                                                     $pesan_encoded = urlencode($pesan);
