@@ -3205,6 +3205,32 @@ echo "<!-- END FORM EDIT -->\n";
         // Buka di tab baru
         window.open(url, '_blank');
     }
+
+    // Define printResep function
+    function printResep() {
+        console.log('printResep called'); // Debug marker
+        // Ambil isi dari textarea resep
+        const isiResep = document.getElementById('resep').value.trim();
+
+        // Validasi isi resep
+        if (!isiResep) {
+            alert('Mohon isi data resep terlebih dahulu sebelum mencetak');
+            return;
+        }
+
+        const noRawat = '<?= $pemeriksaan['no_rawat'] ?>';
+        const namaPasien = '<?= $pasien['nm_pasien'] ?>';
+        const noRm = '<?= $pasien['no_rkm_medis'] ?>';
+
+        // Redirect ke halaman print dengan parameter
+        const url = 'modules/rekam_medis/print_resep.php?isi=' + encodeURIComponent(isiResep) +
+            '&no_rawat=' + encodeURIComponent(noRawat) +
+            '&nama=' + encodeURIComponent(namaPasien) +
+            '&no_rm=' + encodeURIComponent(noRm);
+
+        // Buka di tab baru
+        window.open(url, '_blank');
+    }
 </script>
 
 
@@ -4319,29 +4345,6 @@ echo "<!-- END FORM EDIT -->\n";
         // updateResumeFormat();
     }
 
-    function printResep() {
-        // Ambil isi dari textarea resep
-        const isiResep = document.getElementById('resep').value.trim();
-
-        // Validasi isi resep
-        if (!isiResep) {
-            alert('Mohon isi data resep terlebih dahulu sebelum mencetak');
-            return;
-        }
-
-        const noRawat = '<?= $pemeriksaan['no_rawat'] ?>';
-        const namaPasien = '<?= $pasien['nm_pasien'] ?>';
-        const noRm = '<?= $pasien['no_rkm_medis'] ?>';
-
-        // Redirect ke halaman print dengan parameter
-        const url = 'modules/rekam_medis/print_resep.php?isi=' + encodeURIComponent(isiResep) +
-            '&no_rawat=' + encodeURIComponent(noRawat) +
-            '&nama=' + encodeURIComponent(namaPasien) +
-            '&no_rm=' + encodeURIComponent(noRm);
-
-        // Buka di tab baru
-        window.open(url, '_blank');
-    }
 
 
     function printCeklist() {
