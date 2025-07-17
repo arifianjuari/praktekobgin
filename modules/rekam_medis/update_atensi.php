@@ -45,7 +45,7 @@ if (empty($no_rawat)) {
 
 try {
     // Jalankan query update
-    $query = "UPDATE penilaian_medis_ralan_kandungan SET atensi = NULL WHERE no_rawat = :no_rawat";
+    $query = "UPDATE penilaian_medis_ralan_kandungan SET atensi = NULL, tanggal_kontrol = NULL WHERE no_rawat = :no_rawat";
     $stmt = $conn->prepare($query);
     $stmt->execute(['no_rawat' => $no_rawat]);
 
