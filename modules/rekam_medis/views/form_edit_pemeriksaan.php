@@ -3179,6 +3179,32 @@ echo "<!-- END FORM EDIT -->\n";
         // Buka di tab baru
         window.open(url, '_blank');
     }
+
+    // Define printEdukasi function
+    function printEdukasi() {
+        console.log('printEdukasi called'); // Debug marker
+        // Ambil isi dari textarea edukasi
+        const isiEdukasi = document.getElementById('edukasi').value.trim();
+
+        // Validasi isi edukasi
+        if (!isiEdukasi) {
+            alert('Mohon isi data edukasi terlebih dahulu sebelum mencetak');
+            return;
+        }
+
+        const noRawat = '<?= $pemeriksaan['no_rawat'] ?>';
+        const namaPasien = '<?= $pasien['nm_pasien'] ?>';
+        const noRm = '<?= $pasien['no_rkm_medis'] ?>';
+
+        // Redirect ke halaman print dengan parameter
+        const url = 'modules/rekam_medis/print_edukasi.php?isi=' + encodeURIComponent(isiEdukasi) +
+            '&no_rawat=' + encodeURIComponent(noRawat) +
+            '&nama=' + encodeURIComponent(namaPasien) +
+            '&no_rm=' + encodeURIComponent(noRm);
+
+        // Buka di tab baru
+        window.open(url, '_blank');
+    }
 </script>
 
 
@@ -4317,29 +4343,6 @@ echo "<!-- END FORM EDIT -->\n";
         window.open(url, '_blank');
     }
 
-    function printEdukasi() {
-        // Ambil isi dari textarea edukasi
-        const isiEdukasi = document.getElementById('edukasi').value.trim();
-
-        // Validasi isi edukasi
-        if (!isiEdukasi) {
-            alert('Mohon isi data edukasi terlebih dahulu sebelum mencetak');
-            return;
-        }
-
-        const noRawat = '<?= $pemeriksaan['no_rawat'] ?>';
-        const namaPasien = '<?= $pasien['nm_pasien'] ?>';
-        const noRm = '<?= $pasien['no_rkm_medis'] ?>';
-
-        // Redirect ke halaman print dengan parameter
-        const url = 'modules/rekam_medis/print_edukasi.php?isi=' + encodeURIComponent(isiEdukasi) +
-            '&no_rawat=' + encodeURIComponent(noRawat) +
-            '&nama=' + encodeURIComponent(namaPasien) +
-            '&no_rm=' + encodeURIComponent(noRm);
-
-        // Buka halaman print di tab baru
-        window.open(url, '_blank');
-    }
 
     function printCeklist() {
         // Ambil isi dari ceklist content
