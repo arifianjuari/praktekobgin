@@ -3153,6 +3153,32 @@ echo "<!-- END FORM EDIT -->\n";
         // Buka di tab baru
         window.open(url, '_blank');
     }
+
+    // Define printUsg function
+    function printUsg() {
+        console.log('printUsg called'); // Debug marker
+        // Ambil isi dari textarea ultrasonografi
+        const isiUsg = document.getElementById('ultrasonografi').value.trim();
+
+        // Validasi isi USG
+        if (!isiUsg) {
+            alert('Mohon isi data hasil USG terlebih dahulu sebelum mencetak');
+            return;
+        }
+
+        const noRawat = '<?= $pemeriksaan['no_rawat'] ?>';
+        const namaPasien = '<?= $pasien['nm_pasien'] ?>';
+        const noRm = '<?= $pasien['no_rkm_medis'] ?>';
+
+        // Redirect ke halaman print dengan parameter
+        const url = 'modules/rekam_medis/print_usg.php?isi=' + encodeURIComponent(isiUsg) +
+            '&no_rawat=' + encodeURIComponent(noRawat) +
+            '&nama=' + encodeURIComponent(namaPasien) +
+            '&no_rm=' + encodeURIComponent(noRm);
+
+        // Buka di tab baru
+        window.open(url, '_blank');
+    }
 </script>
 
 
@@ -3567,35 +3593,6 @@ echo "<!-- END FORM EDIT -->\n";
         });
     }
     }
-
-
-
-    function printUsg() {
-        // Ambil isi dari textarea ultrasonografi
-        const isiUsg = document.getElementById('ultrasonografi').value.trim();
-
-        // Validasi isi USG
-        if (!isiUsg) {
-            alert('Mohon isi data hasil USG terlebih dahulu sebelum mencetak');
-            return;
-        }
-
-        const noRawat = '<?= $pemeriksaan['no_rawat'] ?>';
-        const namaPasien = '<?= $pasien['nm_pasien'] ?>';
-        const noRm = '<?= $pasien['no_rkm_medis'] ?>';
-
-        // Redirect ke halaman print dengan parameter
-        const url = 'modules/rekam_medis/print_usg.php?isi=' + encodeURIComponent(isiUsg) +
-            '&no_rawat=' + encodeURIComponent(noRawat) +
-            '&nama=' + encodeURIComponent(namaPasien) +
-            '&no_rm=' + encodeURIComponent(noRm);
-
-        // Buka di tab baru
-        window.open(url, '_blank');
-    }
-
-
-
 
 
     function gunakanDiagnosis(isi) {
