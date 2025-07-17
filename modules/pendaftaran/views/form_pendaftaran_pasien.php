@@ -141,9 +141,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($pekerjaan === '') {
         $pekerjaan = null;
     }
-    // Prevent SQL truncation warnings by limiting pekerjaan length (assumed 15 chars)
-    if (!is_null($pekerjaan) && strlen($pekerjaan) > 15) {
-        $pekerjaan = substr($pekerjaan, 0, 15);
+
+    /*
+     * Validasi nilai pekerjaan agar sesuai dengan tipe ENUM di kolom `pasien.pekerjaan`.
+     * Jika nilai yang dikirim dari form tidak ada di daftar ENUM, fallback ke 'Lainnya'
+     * (jika tersedia) atau nilai pertama di daftar ENUM. Hal ini mencegah warning
+     * "SQLSTATE[01000]: Warning: 1265 Data truncated for column 'pekerjaan' at row 1".
+     */
+    if (!is_null($pekerjaan)) {
+        try {
+            $enumStmt = $conn->query("SHOW COLUMNS FROM pasien LIKE 'pekerjaan'");
+            $enumInfo = $enumStmt ? $enumStmt->fetch(PDO::FETCH_ASSOC) : null;
+            if ($enumInfo && isset($enumInfo['Type']) && preg_match("/^enum\\((.*)\\)$/", $enumInfo['Type'], $m)) {
+                // Ambil daftar nilai ENUM sebagai array tanpa kutip
+                $enumValues = array_map(function ($v) {
+                    return trim($v, "' ");
+                }, explode(',', $m[1]));
+
+                // Jika nilai pekerjaan tidak ada di daftar ENUM, gunakan fallback
+                if (!in_array($pekerjaan, $enumValues, true)) {
+                    $pekerjaan = in_array('Lainnya', $enumValues, true) ? 'Lainnya' : $enumValues[0];
+                }
+            }
+        } catch (Exception $e) {
+            // Jika gagal mendapatkan definisi ENUM, log error tetapi lanjutkan proses
+            error_log('Enum validation error for pekerjaan: ' . $e->getMessage());
+        }
     }
     $id_layanan = trim($_POST['id_layanan'] ?? '');
     $keluhan = trim($_POST['keluhan'] ?? '');
