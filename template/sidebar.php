@@ -1104,14 +1104,7 @@ function is_current_module($module, $action = null)
                             <span class="menu-text">Pasien Rawat Jalan</span>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a href="<?php echo clean_url($base_url); ?>/index.php?module=rekam_medis&action=data_pasien"
-                            class="nav-link <?php echo is_current_module('rekam_medis', 'data_pasien') ? 'active' : ''; ?>" data-title="Data Pasien">
-                            <i class="bi bi-person-vcard"></i>
-                            <span class="menu-text">Data Pasien</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
+                                        <li class="nav-item">
                         <a href="<?php echo clean_url($base_url); ?>/index.php?module=rekam_medis&action=daftar_atensi"
                             class="nav-link <?php echo is_current_module('rekam_medis', 'daftar_atensi') ? 'active' : ''; ?>" data-title="Daftar Atensi">
                             <i class="bi bi-exclamation-circle"></i>
@@ -1230,11 +1223,18 @@ function is_current_module($module, $action = null)
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="<?php echo $base_url; ?>/modules/admin/controllers/statistik_laporan.php" class="nav-link <?php echo is_current_page('/modules/admin/controllers/statistik_laporan.php') ? 'active' : ''; ?>" data-title="Statistik dan Laporan">
-                            <i class="bi bi-graph-up"></i>
-                            <span class="menu-text">Statistik dan Laporan</span>
-                        </a>
-                    </li>
+    <a href="<?php echo $base_url; ?>/modules/admin/controllers/statistik_laporan.php" class="nav-link <?php echo is_current_page('/modules/admin/controllers/statistik_laporan.php') ? 'active' : ''; ?>" data-title="Statistik dan Laporan">
+        <i class="bi bi-graph-up"></i>
+        <span class="menu-text">Statistik dan Laporan</span>
+    </a>
+</li>
+<li class="nav-item">
+    <a href="<?php echo clean_url($base_url); ?>/index.php?module=rekam_medis&action=data_pasien"
+        class="nav-link <?php echo is_current_module('rekam_medis', 'data_pasien') ? 'active' : ''; ?>" data-title="Data Pasien">
+        <i class="bi bi-person-vcard"></i>
+        <span class="menu-text">Data Pasien</span>
+    </a>
+</li>
                 </ul>
             </li>
         <?php endif; ?>

@@ -191,8 +191,8 @@ $status_filter = isset($_GET['status_atensi']) ? $_GET['status_atensi'] : '';
                 "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Indonesian.json"
             },
             "order": [
-                [3, "desc"]
-            ], // Urutkan berdasarkan tanggal periksa secara descending
+                [4, "asc"]
+            ], // Urutkan berdasarkan tanggal kontrol secara ascending (terdekat di atas)
             "pageLength": 25
         });
 
