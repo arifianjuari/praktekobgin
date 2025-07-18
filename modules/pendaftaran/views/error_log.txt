@@ -321,3 +321,31 @@
 [06-Jul-2025 20:13:48 Asia/Jakarta] Including layout template from: /Users/arifianjuari/Library/CloudStorage/GoogleDrive-arifianjuari@gmail.com/My Drive/01 PAPA/05 DEVELOPMENT/praktekobgin/template/layout.php
 [06-Jul-2025 20:13:48 Asia/Jakarta] Layout rendering - Content length: 7373
 [06-Jul-2025 20:13:48 Asia/Jakarta] Database connection closed explicitly
+[17-Jul-2025 08:15:32 Asia/Jakarta] Pendaftaran sukses page loaded with ID: REG-20250717-0001
+[17-Jul-2025 08:15:32 Asia/Jakarta] Pendaftaran data found for ID: REG-20250717-0001
+[17-Jul-2025 08:15:32 Asia/Jakarta] Content buffer length before ob_get_clean: 7374
+[17-Jul-2025 08:15:32 Asia/Jakarta] Buffer setelah ob_get_contents: 7374
+[17-Jul-2025 08:15:32 Asia/Jakarta] Content successfully captured, length: 7374 bytes
+[17-Jul-2025 08:15:32 Asia/Jakarta] Content preview: <!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pendaftaran Berhasil | Praktik Obstetri Ginekol...
+[17-Jul-2025 08:15:32 Asia/Jakarta] Including layout template from: /Users/arifianjuari/Library/CloudStorage/GoogleDrive-arifianjuari@gmail.com/My Drive/01 PAPA/05 DEVELOPMENT/praktekobgin/template/layout.php
+[17-Jul-2025 08:15:32 Asia/Jakarta] Layout rendering - Content length: 7374
+[17-Jul-2025 08:15:32 Asia/Jakarta] Database connection closed explicitly
+[17-Jul-2025 08:15:53 Asia/Jakarta] Pendaftaran sukses page loaded with ID: REG-20250717-0002
+[17-Jul-2025 08:15:53 Asia/Jakarta] Pendaftaran data found for ID: REG-20250717-0002
+[17-Jul-2025 08:15:53 Asia/Jakarta] Content buffer length before ob_get_clean: 7374
+[17-Jul-2025 08:15:53 Asia/Jakarta] Buffer setelah ob_get_contents: 7374
+[17-Jul-2025 08:15:53 Asia/Jakarta] Content successfully captured, length: 7374 bytes
+[17-Jul-2025 08:15:53 Asia/Jakarta] Content preview: <!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pendaftaran Berhasil | Praktik Obstetri Ginekol...
+[17-Jul-2025 08:15:53 Asia/Jakarta] Including layout template from: /Users/arifianjuari/Library/CloudStorage/GoogleDrive-arifianjuari@gmail.com/My Drive/01 PAPA/05 DEVELOPMENT/praktekobgin/template/layout.php
+[17-Jul-2025 08:15:53 Asia/Jakarta] Layout rendering - Content length: 7374
+[17-Jul-2025 08:15:53 Asia/Jakarta] Database connection closed explicitly

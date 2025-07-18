@@ -885,7 +885,7 @@ if ($conn) {
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link collapsed" id="grafik-imt-tab" data-toggle="collapse" href="#grafik-imt" role="tab">
+                    <a class="nav-link collapsed" id="grafik-imt-tab" data-toggle="collapse" href="#grafik-imt" role="tab" style="display:none;">
                         <i class="fas fa-chart-line mr-1"></i> Grafik BB Kehamilan <i class="fas fa-chevron-down"></i>
                     </a>
                 </li>
@@ -961,7 +961,7 @@ if ($conn) {
                                             </tr>
                                         </table>
                                     </div>
-                                    
+
 
                                 </div>
                             </div>
@@ -988,10 +988,10 @@ if ($conn) {
                                     <div class="card-body p-0">
                                         <div class="p-3" style="font-size: 0.75rem;">
                                             <div id="ceklistContent"
-    contenteditable="true"
-    style="white-space: pre-wrap; line-height: 1.3; min-height: 100px; outline: none; font-size: 0.7rem;"
-    data-no-rkm-medis="<?= $pasien['no_rkm_medis'] ?>"><?= !empty($pemeriksaan['ceklist']) ? $pemeriksaan['ceklist'] : '-' ?></div>
-<input type="hidden" name="ceklist" id="ceklistHidden" value="<?= !empty($pemeriksaan['ceklist']) ? htmlspecialchars($pemeriksaan['ceklist']) : '' ?>">
+                                                contenteditable="true"
+                                                style="white-space: pre-wrap; line-height: 1.3; min-height: 100px; outline: none; font-size: 0.7rem;"
+                                                data-no-rkm-medis="<?= $pasien['no_rkm_medis'] ?>"><?= !empty($pemeriksaan['ceklist']) ? $pemeriksaan['ceklist'] : '-' ?></div>
+                                            <input type="hidden" name="ceklist" id="ceklistHidden" value="<?= !empty($pemeriksaan['ceklist']) ? htmlspecialchars($pemeriksaan['ceklist']) : '' ?>">
                                             <!-- Catatan Pasien (editable & AJAX save) -->
                                             <div class="mt-3">
                                                 <label for="catatanPasienContent2" style="font-size:0.75rem; font-weight:bold;">Catatan Pasien</label>
@@ -1348,7 +1348,7 @@ if ($conn) {
                 </div>
 
                 <!-- Tab Grafik Peningkatan Berat Badan -->
-                <div class="tab-pane fade collapse" id="grafik-imt" role="tabpanel">
+                <div class="tab-pane fade collapse" id="grafik-imt" role="tabpanel" style="display:none;">
                     <div class="mb-3 d-flex justify-content-between">
                         <h6 class="font-weight-bold">Grafik Peningkatan Berat Badan Kehamilan</h6>
                         <button id="printGrafikIMT" type="button" class="btn btn-primary btn-sm">
@@ -1686,11 +1686,11 @@ if ($conn) {
                                             $stmt = $conn->prepare($sql);
                                             $stmt->execute();
                                             $rujukan = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                                            
+
                                             foreach ($rujukan as $r) {
                                                 $selected = (isset($pemeriksaan['id_perujuk']) && $pemeriksaan['id_perujuk'] == $r['id_perujuk']) ? 'selected' : '';
-                                                echo "<option value='" . htmlspecialchars($r['id_perujuk']) . "' $selected>" . 
-                                                     htmlspecialchars($r['nama_perujuk']) . ' (' . htmlspecialchars($r['jenis_perujuk']) . ")</option>";
+                                                echo "<option value='" . htmlspecialchars($r['id_perujuk']) . "' $selected>" .
+                                                    htmlspecialchars($r['nama_perujuk']) . ' (' . htmlspecialchars($r['jenis_perujuk']) . ")</option>";
                                             }
                                         } catch (PDOException $e) {
                                             error_log('Error fetching rujukan: ' . $e->getMessage());
@@ -1745,11 +1745,7 @@ if ($conn) {
                             </div>
                         </div>
 
-                    </div>
-
-                    <!-- Kolom 2 -->
-                    <div class="col-md-4">
-                        <!-- Pemeriksaan Fisik -->
+                        <!-- Pemeriksaan Fisik (moved below Anamnesis) -->
                         <div class="card mb-3">
                             <div class="card-header">
                                 <h6 class="m-0 font-weight-bold text-primary">Pemeriksaan Fisik</h6>
@@ -1796,6 +1792,11 @@ if ($conn) {
                             </div>
                         </div>
 
+                    </div>
+
+                    <!-- Kolom 2 -->
+                    <div class="col-md-4">
+
                         <!-- Pemeriksaan Penunjang -->
                         <div class="card mb-3">
                             <div class="card-header">
@@ -1826,44 +1827,7 @@ if ($conn) {
                             </div>
                         </div>
 
-                        <!-- Tombol Pilih Gambar Edukasi -->
-                        <div class="card mb-3">
-                            <div class="card-header">
-                                <h6 class="m-0 font-weight-bold text-primary">Gambar Edukasi</h6>
-                            </div>
-                            <div class="card-body">
-                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalPilihGambarEdukasi">
-                                    <i class="fas fa-images"></i> Pilih Gambar Edukasi
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Gambar Edukasi Terpilih -->
-                        <div class="card mb-3" id="cardGambarEdukasi" style="display: none;">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h6 class="m-0 font-weight-bold text-primary">Gambar Edukasi Terpilih</h6>
-                                <button type="button" class="btn btn-sm btn-danger" onclick="hapusGambarTerpilih()">
-                                    <i class="fas fa-trash"></i> Hapus
-                                </button>
-                            </div>
-                            <div class="card-body">
-                                <input type="hidden" name="gambar_edukasi" id="gambarEdukasiInput">
-                                <input type="hidden" name="judul_gambar_edukasi" id="judulGambarEdukasiInput">
-                                <div class="text-center">
-                                    <a href="#" onclick="bukaGambarDiTabBaru(); return false;" style="cursor: pointer;" title="Klik untuk membuka gambar di tab baru">
-                                        <img id="gambarEdukasiTerpilih" src="" class="img-fluid" style="max-height: 300px;" alt="Gambar Edukasi">
-                                    </a>
-                                    <p class="mt-2" id="judulGambarEdukasiTerpilih"></p>
-                                    <small class="text-muted">(Klik gambar untuk membuka di tab baru)</small>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <!-- Kolom 3 -->
-                    <div class="col-md-4">
-                        <!-- Diagnosis & Tatalaksana -->
+                        <!-- Diagnosis & Tatalaksana (moved below Pemeriksaan Penunjang) -->
                         <div class="card mb-3">
                             <div class="card-header">
                                 <h6 class="m-0 font-weight-bold text-primary">Diagnosis & Tatalaksana</h6>
@@ -1937,12 +1901,56 @@ if ($conn) {
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
 
+                        <!-- Tombol Pilih Gambar Edukasi -->
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h6 class="m-0 font-weight-bold text-primary">Gambar Edukasi</h6>
+                            </div>
+                            <div class="card-body">
+                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalPilihGambarEdukasi">
+                                    <i class="fas fa-images"></i> Pilih Gambar Edukasi
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Gambar Edukasi Terpilih -->
+                        <div class="card mb-3" id="cardGambarEdukasi" style="display: none;">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h6 class="m-0 font-weight-bold text-primary">Gambar Edukasi Terpilih</h6>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="hapusGambarTerpilih()">
+                                    <i class="fas fa-trash"></i> Hapus
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <input type="hidden" name="gambar_edukasi" id="gambarEdukasiInput">
+                                <input type="hidden" name="judul_gambar_edukasi" id="judulGambarEdukasiInput">
+                                <div class="text-center">
+                                    <a href="#" onclick="bukaGambarDiTabBaru(); return false;" style="cursor: pointer;" title="Klik untuk membuka gambar di tab baru">
+                                        <img id="gambarEdukasiTerpilih" src="" class="img-fluid" style="max-height: 300px;" alt="Gambar Edukasi">
+                                    </a>
+                                    <p class="mt-2" id="judulGambarEdukasiTerpilih"></p>
+                                    <small class="text-muted">(Klik gambar untuk membuka di tab baru)</small>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Kolom 3 -->
+                    <div class="col-md-4">
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h6 class="m-0 font-weight-bold text-primary">Resume</h6>
+                            </div>
+                            <div class="card-body">
                                 <div class="mb-3">
                                     <label>Resume</label>
                                     <div class="row">
                                         <div class="col-md-8">
-                                            <textarea name="resume" id="resume" class="form-control auto-resize" rows="10" style="overflow-y: hidden; resize: none;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"><?= isset($pemeriksaan['resume']) ? $pemeriksaan['resume'] : '' ?></textarea>
+                                            <textarea name="resume" id="resume" class="form-control auto-resize" rows="15" style="overflow-y: hidden; resize: none;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"><?= isset($pemeriksaan['resume']) ? $pemeriksaan['resume'] : '' ?></textarea>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="card border">
@@ -5092,13 +5100,13 @@ echo "<!-- END FORM EDIT -->\n";
     // Update semua fungsi template untuk menggunakan error handler
 
 
-// (Auto-fill jenis perujuk removed as no longer needed)
+    // (Auto-fill jenis perujuk removed as no longer needed)
     document.addEventListener('DOMContentLoaded', function() {
         const perujukSelect = document.getElementById('nama_perujuk');
-        
+
         // Set nilai awal jika ada data yang dipilih
 
-        
+
         // Tambahkan event listener untuk perubahan select
 
     });
