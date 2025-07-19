@@ -3384,6 +3384,12 @@ echo "<!-- END FORM EDIT -->\n";
             });
         });
 
+        // --- Explicitly re-apply auto-resize for Riwayat Sekarang after its value is set ---
+        var rpsTextarea = document.getElementById('riwayat_sekarang');
+        if (rpsTextarea && rpsTextarea.value.trim() !== '') {
+            autoResizeTextarea(rpsTextarea);
+        }
+
         // Auto-resize for Resume
         const resumeTextarea = document.getElementById('resume');
         if (resumeTextarea) {
@@ -3810,50 +3816,59 @@ echo "<!-- END FORM EDIT -->\n";
     });
 
     // Fungsi untuk menambahkan obat yang dipilih ke field resep
-    function tambahkanObatTerpilih() {
-        var checkboxes = document.getElementsByClassName('obat-checkbox');
-        var resepField = document.getElementById('resep');
-        var obatTerpilih = [];
+    // Fungsi global agar inline onclick dapat berjalan
+window.tambahkanObatTerpilih = function() {
+        const resepField = document.getElementById('resep');
+        if (!resepField) return; // Safety check
 
-        for (var checkbox of checkboxes) {
-            if (checkbox.checked) {
-                var namaObat = checkbox.getAttribute('data-nama');
-                var bentukSediaan = checkbox.getAttribute('data-bentuk-sediaan');
-                var dosis = checkbox.getAttribute('data-dosis');
-                // Menghilangkan pengambilan data-catatan
+        // Kumpulkan semua checkbox yang tercentang
+        const lines = [];
+        document.querySelectorAll('.obat-checkbox:checked').forEach(cb => {
+            const nama          = cb.dataset.nama || '';
+            const bentukSediaan = cb.dataset.bentukSediaan || '';
+            const dosis         = cb.dataset.dosis || '';
 
-                // Format: [nama_obat]     No.
-                //          [dosis]
-                var textObat = namaObat + '     No.X';
-                textObat += '\n         ' + dosis;
-
-                // Menghilangkan penambahan catatan ke teks obat
-
-                obatTerpilih.push(textObat);
+            // Format:
+            // [nama_obat]     No.X
+            //          [bentuk_sediaan] [dosis]
+            let text = nama.trim();
+            if (text) {
+                text += '     No.X';
             }
-        }
-
-        if (obatTerpilih.length > 0) {
-            var currentValue = resepField.value;
-            var newValue = obatTerpilih.join('\n\n');
-
-            if (currentValue && currentValue.trim() !== '') {
-                resepField.value = currentValue + '\n\n' + newValue;
-            } else {
-                resepField.value = newValue;
+            const dosisLine = [bentukSediaan, dosis].filter(Boolean).join(' ').trim();
+            if (dosisLine) {
+                text += '\n         ' + dosisLine;
             }
-            // Auto-resize after adding content
-            autoResizeTextarea(resepField);
-        }
+            if (text) {
+                lines.push(text);
+            }
+        });
 
-        // Tutup modal menggunakan Bootstrap 5 API
-        const modalElement = document.getElementById('modalDaftarTemplateResep');
-        const modalInstance = bootstrap.Modal.getInstance(modalElement);
-        if (modalInstance) {
-            modalInstance.hide();
+        // Jika tidak ada obat yang dipilih, hentikan fungsi
+        if (!lines.length) return;
+
+        // Gabungkan dengan resep yang telah ada (jika ada)
+        const newValue = lines.join('\n\n');
+        if (resepField.value && resepField.value.trim() !== '') {
+            resepField.value = resepField.value.trimEnd() + '\n\n' + newValue;
         } else {
-            // Fallback ke jQuery jika instance tidak ditemukan
-            $('#modalDaftarTemplateResep').modal('hide');
+            resepField.value = newValue;
+        }
+
+        // Sesuaikan tinggi textarea agar sesuai dengan konten
+        autoResizeTextarea(resepField);
+        // Trigger event 'input' supaya listener lain (jika ada) ikut merespon perubahan
+        resepField.dispatchEvent(new Event('input'));
+
+        // Tutup modal Daftar Formularium
+        const modalElement = document.getElementById('modalDaftarTemplateResep');
+        if (modalElement) {
+            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+            if (modalInstance) {
+                modalInstance.hide();
+            } else if (typeof $ !== 'undefined') {
+                $('#modalDaftarTemplateResep').modal('hide');
+            }
         }
     }
 
@@ -5352,6 +5367,9 @@ echo "<!-- END FORM EDIT -->\n";
 <!-- Tambahkan Chart.js dan script grafik IMT -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
 <script src="../../modules/rekam_medis/js/grafik_imt.js"></script>
+<!-- Robust autoresize fix for Riwayat Sekarang textarea -->
+<script src="../../modules/rekam_medis/js/resize_fix.js"></script>
+<script src="modules/rekam_medis/views/form_edit_pemeriksaan_global.js"></script>
 
 <!-- Modal Kalkulator IMT -->
 <div class="modal fade" id="modalHitungIMT" tabindex="-1" aria-labelledby="modalHitungIMTLabel" aria-hidden="true">
