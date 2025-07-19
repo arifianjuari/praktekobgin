@@ -153,15 +153,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit();
 }
 
-// Ambil data jadwal rutin
+// Ambil data jadwal rutin dengan filter
+$filter_hari = $_GET['filter_hari'] ?? '';
+$filter_dokter = $_GET['filter_dokter'] ?? '';
+$filter_tempat = $_GET['filter_tempat'] ?? '';
+$filter_layanan = $_GET['filter_layanan'] ?? '';
+$filter_status = $_GET['filter_status'] ?? '';
+
+$where = [];
+$params = [];
+if ($filter_hari !== '') {
+    $where[] = 'jr.Hari = :hari';
+    $params[':hari'] = $filter_hari;
+}
+if ($filter_dokter !== '') {
+    $where[] = 'jr.ID_Dokter = :dokter';
+    $params[':dokter'] = $filter_dokter;
+}
+if ($filter_tempat !== '') {
+    $where[] = 'jr.ID_Tempat_Praktek = :tempat';
+    $params[':tempat'] = $filter_tempat;
+}
+if ($filter_layanan !== '') {
+    $where[] = 'jr.ID_Layanan = :layanan';
+    $params[':layanan'] = $filter_layanan;
+}
+if ($filter_status !== '') {
+    $where[] = 'jr.Status_Aktif = :status';
+    $params[':status'] = $filter_status;
+}
+$where_sql = count($where) > 0 ? 'WHERE ' . implode(' AND ', $where) : '';
+
 try {
     $query = "SELECT jr.*, tp.Nama_Tempat, d.Nama_Dokter, ml.nama_layanan 
               FROM jadwal_rutin jr
               JOIN tempat_praktek tp ON jr.ID_Tempat_Praktek = tp.ID_Tempat_Praktek
               JOIN dokter d ON jr.ID_Dokter = d.ID_Dokter
               LEFT JOIN menu_layanan ml ON jr.ID_Layanan = ml.id_layanan
+              $where_sql
               ORDER BY FIELD(jr.Hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'), jr.Jam_Mulai";
-    $stmt = $conn->query($query);
+    $stmt = $conn->prepare($query);
+    $stmt->execute($params);
     $jadwal_rutin = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     $_SESSION['error'] = "Error: " . $e->getMessage();
@@ -178,6 +210,61 @@ ob_start();
             <i class="bi bi-plus-circle"></i> Tambah Jadwal Rutin
         </button>
     </div>
+
+    <!-- Filter Form -->
+    <form method="GET" class="row g-2 mb-3 align-items-end bg-light p-3 rounded">
+        <div class="col-md-2">
+            <label class="form-label">Hari</label>
+            <select name="filter_hari" class="form-select">
+                <option value="">Semua Hari</option>
+                <?php $hariList = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+                foreach ($hariList as $hari): ?>
+                    <option value="<?php echo $hari; ?>" <?php if ($filter_hari === $hari) echo 'selected'; ?>><?php echo $hari; ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Dokter</label>
+            <select name="filter_dokter" class="form-select">
+                <option value="">Semua Dokter</option>
+                <?php foreach (getDaftarDokter() as $dokter): ?>
+                    <option value="<?php echo $dokter['ID_Dokter']; ?>" <?php if ($filter_dokter === $dokter['ID_Dokter']) echo 'selected'; ?>><?php echo htmlspecialchars($dokter['Nama_Dokter']); ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Tempat Praktek</label>
+            <select name="filter_tempat" class="form-select">
+                <option value="">Semua Tempat</option>
+                <?php foreach (getDaftarTempatPraktek() as $tp): ?>
+                    <option value="<?php echo $tp['ID_Tempat_Praktek']; ?>" <?php if ($filter_tempat === $tp['ID_Tempat_Praktek']) echo 'selected'; ?>><?php echo htmlspecialchars($tp['Nama_Tempat']); ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Layanan</label>
+            <select name="filter_layanan" class="form-select">
+                <option value="">Semua Layanan</option>
+                <?php foreach (getDaftarLayanan() as $layanan): ?>
+                    <option value="<?php echo $layanan['id_layanan']; ?>" <?php if ($filter_layanan === $layanan['id_layanan']) echo 'selected'; ?>><?php echo htmlspecialchars($layanan['nama_layanan']); ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Status</label>
+            <select name="filter_status" class="form-select">
+                <option value="">Semua Status</option>
+                <option value="1" <?php if ($filter_status === '1') echo 'selected'; ?>>Aktif</option>
+                <option value="0" <?php if ($filter_status === '0') echo 'selected'; ?>>Tidak Aktif</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-success">Filter</button>
+        </div>
+        <div class="col-auto">
+            <a href="jadwal_rutin.php" class="btn btn-secondary ms-2">Reset</a>
+        </div>
+    </form>
 
     <?php if (isset($_SESSION['success'])): ?>
         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -208,7 +295,7 @@ ob_start();
                             <th>No</th>
                             <th>Hari</th>
                             <th>Jam</th>
-                            <th>Dokter</th>
+                            <th>Dokter/Bidan</th>
                             <th>Tempat Praktek</th>
                             <th>Kuota</th>
                             <th>Layanan</th>
