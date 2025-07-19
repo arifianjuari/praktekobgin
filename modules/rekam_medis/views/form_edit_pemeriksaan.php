@@ -842,7 +842,7 @@ if ($conn) {
 <div class="container-fluid">
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <h6 class="m-0 font-weight-bold text-primary">Edit Pemeriksaan Kandungan</h6>
+
             <a href="index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>" class="btn btn-sm btn-secondary">
                 <i class="fas fa-arrow-left"></i> Lihat Rekam Medis
             </a>
@@ -862,11 +862,18 @@ if ($conn) {
                 </div>
             <?php endif; ?>
 
+            <!-- Hide All Tabs Button -->
+
             <!-- Tabs -->
-            <ul class="nav nav-tabs mb-0" id="myTab" role="tablist">
+            <ul class="nav nav-tabs mb-0 align-items-center" id="myTab" role="tablist">
+                <li class="nav-item d-flex align-items-center" style="margin-right: 4px;">
+                    <button type="button" class="btn btn-warning btn-sm" id="hideAllTabsBtn" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Sembunyikan Semua Tab">
+                        <i class="fas fa-eye-slash"></i>
+                    </button>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link active" id="identitas-tab" data-toggle="collapse" href="#identitas" role="tab" aria-expanded="true" aria-controls="identitas">
-                        <i class="fas fa-user mr-1"></i> Data Praktekobgin <i class="fas fa-chevron-down"></i>
+                        <i class="fas fa-user mr-1"></i> Identitas <i class="fas fa-chevron-down"></i>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -895,6 +902,92 @@ if ($conn) {
                     </a>
                 </li>
             </ul>
+            <script>
+                // Hide all tab panes when the Hide button is clicked
+                document.addEventListener('DOMContentLoaded', function() {
+                    const hideBtn = document.getElementById('hideAllTabsBtn');
+                    if (!hideBtn) return;
+
+                    hideBtn.addEventListener('click', function() {
+                        // Close any tab panes / collapse elements currently shown
+                        const shownElements = document.querySelectorAll('#myTabContent .collapse.show, #myTabContent .tab-pane.show');
+                        shownElements.forEach(function(el) {
+                            if (typeof bootstrap !== 'undefined' && bootstrap.Collapse) {
+                                let bs = bootstrap.Collapse.getInstance(el);
+                                if (!bs) {
+                                    bs = new bootstrap.Collapse(el, {
+                                        toggle: false
+                                    });
+                                }
+                                bs.hide();
+                                // Reset inline height to remove leftover space
+                                el.style.height = '';
+                            } else if (typeof $ !== 'undefined' && typeof $(el).collapse === 'function') {
+                                $(el).collapse('hide');
+                                el.style.height = '';
+                            } else {
+                                el.classList.remove('show', 'active');
+                                el.style.height = '';
+                            }
+                        });
+
+                        // Deactivate nav link visuals
+                        const navLinks = document.querySelectorAll('#myTab .nav-link');
+                        navLinks.forEach(function(link) {
+                            const targetSelector = link.getAttribute('href');
+                            if (targetSelector && targetSelector.startsWith('#')) {
+                                const collapseEl = document.querySelector(targetSelector);
+                                if (collapseEl) {
+                                    // Prefer Bootstrap's collapse API if available
+                                    if (typeof bootstrap !== 'undefined' && bootstrap.Collapse) {
+                                        let bsCollapse = bootstrap.Collapse.getInstance(collapseEl);
+                                        if (!bsCollapse) {
+                                            bsCollapse = new bootstrap.Collapse(collapseEl, {
+                                                toggle: false
+                                            });
+                                        }
+                                        bsCollapse.hide();
+                                    } else if (typeof $ !== 'undefined' && typeof $(collapseEl).collapse === 'function') {
+                                        // Fallback for Bootstrap 4 with jQuery
+                                        $(collapseEl).collapse('hide');
+                                    } else {
+                                        // Ultimate fallback – just remove classes
+                                        collapseEl.classList.remove('show', 'active');
+                                    }
+                                }
+                            }
+                            // Deactivate nav link visuals
+                            link.classList.remove('active', 'show');
+                        });
+                        // Hide the entire tab content container to remove blank space
+                        const tabContent = document.getElementById('myTabContent');
+                        if (tabContent) {
+                            tabContent.style.display = 'none';
+                        }
+                    });
+
+                    // When any nav link is clicked, ensure the tab content container becomes visible again
+                    document.querySelectorAll('#myTab .nav-link').forEach(function(lnk) {
+                        lnk.addEventListener('click', function(e) {
+                            const tabContent = document.getElementById('myTabContent');
+                            if (tabContent) {
+                                tabContent.style.display = 'block';
+                            }
+                            // Clear leftover inline heights and force-hide all tab panes except the one being opened
+                            const allTabPanes = document.querySelectorAll('#myTabContent .tab-pane');
+                            allTabPanes.forEach(function(pane) {
+                                if (!lnk.classList.contains('active')) {
+                                    pane.classList.remove('show', 'active');
+                                }
+                                pane.style.height = '';
+                            });
+                            document.querySelectorAll('#myTabContent .collapse').forEach(function(c) {
+                                c.style.height = '';
+                            });
+                        });
+                    });
+                });
+            </script>
 
             <!-- Tab Content -->
             <div class="tab-content" id="myTabContent">
@@ -1668,12 +1761,16 @@ if ($conn) {
 
                 <div class="row">
                     <!-- Blok Data Rujukan dipindahkan ke dalam form -->
-                    <div class="col-md-12">
-                        <div class="card mt-3">
-                            <div class="card-header bg-light">
 
+                    <!-- Kolom 1 -->
+                    <div class="col-md-4">
+
+                        <!-- Nama Perujuk -->
+                        <div class="card mb-3 mt-0">
+                            <div class="card-header bg-light" style="padding-top:0.6rem; padding-bottom:0.6rem;">
+                                <h6 class="m-0 font-weight-bold text-primary">Info Rujukan</h6>
                             </div>
-                            <div class="card-body p-3">
+                            <div class="card-body p-3 pt-2 pb-2">
                                 <div class="mb-2">
                                     <label for="nama_perujuk" class="form-label" style="font-size: 0.8rem; margin-bottom: 0.2rem;">Nama Perujuk</label>
                                     <select class="form-select form-select-sm" id="id_perujuk" name="id_perujuk" style="font-size: 0.8rem;">
@@ -1686,7 +1783,6 @@ if ($conn) {
                                             $stmt = $conn->prepare($sql);
                                             $stmt->execute();
                                             $rujukan = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
                                             foreach ($rujukan as $r) {
                                                 $selected = (isset($pemeriksaan['id_perujuk']) && $pemeriksaan['id_perujuk'] == $r['id_perujuk']) ? 'selected' : '';
                                                 echo "<option value='" . htmlspecialchars($r['id_perujuk']) . "' $selected>" .
@@ -1700,9 +1796,6 @@ if ($conn) {
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <!-- Kolom 1 -->
-                    <div class="col-md-4">
 
 
                         <!-- Anamnesis -->
