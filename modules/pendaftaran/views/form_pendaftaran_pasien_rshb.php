@@ -609,6 +609,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Tampilkan notifikasi sukses di halaman yang sama
                 $success = true;
                 $_SESSION['id_pendaftaran'] = $id_pendaftaran;
+                // Reset layanan agar dropdown kembali ke default
+                $id_layanan = '';
                 
                 // Set tanggal filter untuk refresh halaman
                 if (isset($_POST['filter_date'])) {
