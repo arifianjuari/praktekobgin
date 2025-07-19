@@ -1082,7 +1082,7 @@ if ($conn) {
                                         <div class="p-3" style="font-size: 0.75rem;">
                                             <div id="ceklistContent"
                                                 contenteditable="true"
-                                                style="white-space: pre-wrap; line-height: 1.3; min-height: 100px; outline: none; font-size: 0.7rem;"
+                                                style="white-space: pre-wrap; line-height: 1.3; min-height: 20px; outline: none; font-size: 0.7rem;"
                                                 data-no-rkm-medis="<?= $pasien['no_rkm_medis'] ?>"><?= !empty($pemeriksaan['ceklist']) ? $pemeriksaan['ceklist'] : '-' ?></div>
                                             <input type="hidden" name="ceklist" id="ceklistHidden" value="<?= !empty($pemeriksaan['ceklist']) ? htmlspecialchars($pemeriksaan['ceklist']) : '' ?>">
                                             <!-- Catatan Pasien (editable & AJAX save) -->
@@ -1091,7 +1091,7 @@ if ($conn) {
                                                 <div class="d-flex align-items-center gap-2">
                                                     <div id="catatanPasienContent2"
                                                         contenteditable="true"
-                                                        style="white-space: pre-wrap; line-height: 1.3; min-height: 60px; outline: none; font-size: 0.7rem; border:1px solid #e0e0e0; border-radius:4px; padding:8px; width:100%; background:#f9f9f9;"
+                                                        style="flex-grow:1; min-height: 40px; border: 1px solid #ced4da; border-radius: 4px; padding: 6px 12px; font-size: 0.8rem; line-height: 1.3; white-space: pre-wrap; outline: none;"
                                                         data-no-rkm-medis="<?= $pasien['no_rkm_medis'] ?>"><?= htmlspecialchars($pasien['catatan_pasien'] ?? '-') ?></div>
                                                     <button type="button" id="saveCatatanPasien2" class="btn btn-xs btn-success" style="display:none; font-size:0.7rem; padding:0.2rem 0.5rem;">
                                                         <i class="fas fa-save"></i>
@@ -2043,7 +2043,7 @@ if ($conn) {
                                     <label>Resume</label>
                                     <div class="row">
                                         <div class="col-md-8">
-                                            <textarea name="resume" id="resume" class="form-control auto-resize smaller-text" rows="30" style="overflow-y: hidden; resize: none;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"><?= isset($pemeriksaan['resume']) ? $pemeriksaan['resume'] : '' ?></textarea>
+                                            <textarea name="resume" id="resume" class="form-control auto-resize smaller-text" rows="40" style="overflow-y: hidden; resize: none;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"><?= isset($pemeriksaan['resume']) ? $pemeriksaan['resume'] : '' ?></textarea>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="card border">
