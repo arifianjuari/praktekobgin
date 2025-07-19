@@ -79,6 +79,7 @@ try {
             p.nm_pasien as Nama_Pasien,
             p.Keluhan,
             p.mohon_keringanan,
+            p.yang_menyarankan,
             p.Status_Pendaftaran,
             p.Waktu_Pendaftaran,
             p.Waktu_Perkiraan,
@@ -764,6 +765,7 @@ try {
                                                     <th class="text-center small fw-normal">Keluhan</th>
                                                     <th class="text-center small fw-normal">Mohon Keringanan</th>
                                                     <th class="text-center small fw-normal">Gratis</th>
+                                                    <th class="text-center small fw-normal">Saran dari</th>
                                                     <th class="text-center small fw-normal">Status</th>
                                                 </tr>
                                             </thead>
@@ -884,6 +886,7 @@ try {
                                                                 <span class="badge bg-secondary">Tidak</span>
                                                             <?php endif; ?>
                                                         </td>
+                                                        <td><?= !empty($a['yang_menyarankan']) ? htmlspecialchars($a['yang_menyarankan']) : '-' ?></td>
                                                         <td>
                                                             <span class="badge <?= getStatusBadgeClass($a['Status_Pendaftaran']) ?>">
                                                                 <?= htmlspecialchars($a['Status_Pendaftaran']) ?>

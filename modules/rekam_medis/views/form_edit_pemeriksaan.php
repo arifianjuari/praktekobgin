@@ -1019,10 +1019,6 @@ if ($conn) {
                                                 <th class="text-muted px-3">Tgl Periksa</th>
                                                 <td class="px-3"><?= date('d-m-Y H:i', strtotime($pemeriksaan['tanggal'])) ?></td>
                                             </tr>
-                                            <tr>
-                                                <th class="text-muted px-3">Rujukan</th>
-                                                <td class="px-3"><?= $pemeriksaan['rujukan'] ?? '-' ?></td>
-                                            </tr>
                                         </table>
                                     </div>
                                 </div>
@@ -1769,9 +1765,9 @@ if ($conn) {
                         <div class="card mb-3 mt-0">
                             <div class="card-header bg-light" style="padding-top:0.6rem; padding-bottom:0.6rem;">
                                 <h6 class="m-0 font-weight-bold text-primary d-inline-block">Info Rujukan</h6>
-<a href="modules/admin/controllers/data_rujukan.php" class="btn btn-sm btn-success float-end ms-2" title="Tambah Rujukan">
-    <i class="fas fa-plus"></i>
-</a>
+                                <a href="modules/admin/controllers/data_rujukan.php" class="btn btn-sm btn-success float-end ms-2" title="Tambah Rujukan">
+                                    <i class="fas fa-plus"></i>
+                                </a>
                             </div>
                             <div class="card-body p-3 pt-2 pb-2">
                                 <div class="mb-2">
@@ -3817,16 +3813,16 @@ echo "<!-- END FORM EDIT -->\n";
 
     // Fungsi untuk menambahkan obat yang dipilih ke field resep
     // Fungsi global agar inline onclick dapat berjalan
-window.tambahkanObatTerpilih = function() {
+    window.tambahkanObatTerpilih = function() {
         const resepField = document.getElementById('resep');
         if (!resepField) return; // Safety check
 
         // Kumpulkan semua checkbox yang tercentang
         const lines = [];
         document.querySelectorAll('.obat-checkbox:checked').forEach(cb => {
-            const nama          = cb.dataset.nama || '';
+            const nama = cb.dataset.nama || '';
             const bentukSediaan = cb.dataset.bentukSediaan || '';
-            const dosis         = cb.dataset.dosis || '';
+            const dosis = cb.dataset.dosis || '';
 
             // Format:
             // [nama_obat]     No.X
