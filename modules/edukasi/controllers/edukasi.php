@@ -38,7 +38,7 @@ $kategori_list = [
 
 try {
     // Buat query dasar
-    $query = "SELECT * FROM edukasi WHERE status_aktif = 1";
+    $query = "SELECT * FROM edukasi WHERE status_aktif = 1 AND ditampilkan_beranda = 1";
     $params = [];
 
     // Tambahkan filter kategori jika ada

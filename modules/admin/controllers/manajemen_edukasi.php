@@ -211,7 +211,7 @@ if (isset($_POST['tambah'])) {
     $tag = isset($_POST['tag']) ? $_POST['tag'] : '';
     $status_aktif = isset($_POST['status_aktif']) ? 1 : 0;
     $ditampilkan_beranda = isset($_POST['ditampilkan_beranda']) ? 1 : 0;
-    $urutan_tampil = isset($_POST['urutan_tampil']) ? $_POST['urutan_tampil'] : null;
+    $urutan_tampil = isset($_POST['urutan_tampil']) && trim($_POST['urutan_tampil']) !== '' ? (int)$_POST['urutan_tampil'] : null;
     $dibuat_oleh = $_SESSION['user_id'];
     $link_video = isset($_POST['link_video']) ? $_POST['link_video'] : '';
 
@@ -246,7 +246,11 @@ if (isset($_POST['tambah'])) {
             $stmt->bindParam(':tag', $tag);
             $stmt->bindParam(':status_aktif', $status_aktif);
             $stmt->bindParam(':ditampilkan_beranda', $ditampilkan_beranda);
-            $stmt->bindParam(':urutan_tampil', $urutan_tampil);
+            if ($urutan_tampil === null) {
+                $stmt->bindValue(':urutan_tampil', null, PDO::PARAM_NULL);
+            } else {
+                $stmt->bindValue(':urutan_tampil', $urutan_tampil, PDO::PARAM_INT);
+            }
             $stmt->bindParam(':dibuat_oleh', $dibuat_oleh);
 
             $stmt->execute();
@@ -267,7 +271,7 @@ if (isset($_POST['edit'])) {
     $tag = isset($_POST['tag']) ? $_POST['tag'] : '';
     $status_aktif = isset($_POST['status_aktif']) ? 1 : 0;
     $ditampilkan_beranda = isset($_POST['ditampilkan_beranda']) ? 1 : 0;
-    $urutan_tampil = isset($_POST['urutan_tampil']) ? $_POST['urutan_tampil'] : null;
+    $urutan_tampil = isset($_POST['urutan_tampil']) && trim($_POST['urutan_tampil']) !== '' ? (int)$_POST['urutan_tampil'] : null;
     $link_video = isset($_POST['link_video']) ? $_POST['link_video'] : '';
 
     try {
@@ -349,7 +353,11 @@ if (isset($_POST['edit'])) {
         $stmt->bindParam(':tag', $tag);
         $stmt->bindParam(':status_aktif', $status_aktif);
         $stmt->bindParam(':ditampilkan_beranda', $ditampilkan_beranda);
-        $stmt->bindParam(':urutan_tampil', $urutan_tampil);
+        if ($urutan_tampil === null) {
+            $stmt->bindValue(':urutan_tampil', null, PDO::PARAM_NULL);
+        } else {
+            $stmt->bindValue(':urutan_tampil', $urutan_tampil, PDO::PARAM_INT);
+        }
 
         $stmt->execute();
         $success_message = "Artikel edukasi berhasil diperbarui";
@@ -424,6 +432,20 @@ if (isset($_GET['hapus'])) {
     }
 }
 
+// Proses toggle tampil
+if (isset($_POST['toggle_tampil'], $_POST['id_edukasi'], $_POST['tampil_baru'])) {
+    $id_edukasi = $_POST['id_edukasi'];
+    $tampil_baru = $_POST['tampil_baru'] == '1' ? 1 : 0;
+    try {
+        $stmt = $conn->prepare("UPDATE edukasi SET ditampilkan_beranda = :tampil WHERE id_edukasi = :id");
+        $stmt->bindParam(':tampil', $tampil_baru, PDO::PARAM_INT);
+        $stmt->bindParam(':id', $id_edukasi);
+        $stmt->execute();
+        $success_message = $tampil_baru ? 'Artikel kini ditampilkan di beranda.' : 'Artikel disembunyikan dari beranda.';
+    } catch (PDOException $e) {
+        $error_message = "Gagal update status tampil: " . $e->getMessage();
+    }
+}
 // Ambil data untuk ditampilkan
 try {
     $stmt = $conn->query("SELECT * FROM edukasi ORDER BY created_at DESC");
@@ -457,24 +479,27 @@ try {
     <style>
         /* Base Styles */
         body {
-            overflow-x: hidden; /* Prevent horizontal scrollbar */
+            overflow-x: hidden;
+            /* Prevent horizontal scrollbar */
         }
-        
+
         /* Main Content Layout */
         .main-content {
             margin-left: 240px;
             padding: 20px;
             transition: margin-left 0.3s ease, width 0.3s ease;
-            width: calc(100% - 240px); /* Width minus sidebar width */
+            width: calc(100% - 240px);
+            /* Width minus sidebar width */
             box-sizing: border-box;
         }
-        
+
         /* Adjust main content when sidebar is minimized */
-        .sidebar.minimized ~ .main-content {
+        .sidebar.minimized~.main-content {
             margin-left: 60px;
-            width: calc(100% - 60px); /* Width minus minimized sidebar width */
+            width: calc(100% - 60px);
+            /* Width minus minimized sidebar width */
         }
-        
+
         /* Mobile adjustments */
         @media (max-width: 991.98px) {
             .main-content {
@@ -482,7 +507,7 @@ try {
                 width: 100%;
             }
         }
-        
+
         .article-image-preview {
             max-width: 200px;
             height: auto;
@@ -535,6 +560,7 @@ try {
                                             <th>Kategori</th>
                                             <th>Status</th>
                                             <th>Tanggal Dibuat</th>
+                                            <th>Tampil</th>
                                             <th>Aksi</th>
                                         </tr>
                                     </thead>
@@ -553,6 +579,16 @@ try {
                                                     </span>
                                                 </td>
                                                 <td><?= !empty($row['created_at']) ? date('d/m/Y H:i', strtotime($row['created_at'])) : '-' ?></td>
+                                                <td>
+                                                    <form method="post" style="display:inline-block;" onsubmit="return confirm('Ubah status tampil artikel ini?');">
+                                                        <input type="hidden" name="toggle_tampil" value="1">
+                                                        <input type="hidden" name="id_edukasi" value="<?= $row['id_edukasi'] ?>">
+                                                        <input type="hidden" name="tampil_baru" value="<?= $row['ditampilkan_beranda'] ? 0 : 1 ?>">
+                                                        <button type="submit" class="btn btn-sm <?= $row['ditampilkan_beranda'] ? 'btn-success' : 'btn-secondary' ?>" title="Klik untuk <?= $row['ditampilkan_beranda'] ? 'sembunyikan' : 'tampilkan' ?> di beranda">
+                                                            <i class="bi <?= $row['ditampilkan_beranda'] ? 'bi-eye-fill' : 'bi-eye-slash-fill' ?>"></i>
+                                                        </button>
+                                                    </form>
+                                                </td>
                                                 <td>
                                                     <button type="button" class="btn btn-sm btn-info"
                                                         data-bs-toggle="modal"
