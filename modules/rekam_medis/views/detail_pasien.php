@@ -1109,13 +1109,12 @@ error_log("Data pasien: " . json_encode($pasien));
                                                 <td><?= $rp['diagnosis'] ?: '-' ?></td>
                                                 <td><?= $rp['tata'] ?: '-' ?></td>
                                                 <td><?= $rp['resep'] ?: '-' ?></td>
-
+                                                <td>
 <?php
 if (!empty($rp['rincian'])) {
     $lines = explode("\n", str_replace(["\r\n", "\r"], "\n", trim($rp['rincian'])));
     $output = '';
     $first = true;
-    
     foreach ($lines as $line) {
         $line = trim($line);
         if ($line !== '') {
@@ -1126,12 +1125,12 @@ if (!empty($rp['rincian'])) {
             $first = false;
         }
     }
-    
     echo $output ?: '-';
 } else {
     echo '-';
 }
 ?>
+                                                </td>
 </td>
                                                 <td>
                                                     <!-- Modal Detail Pemeriksaan -->
