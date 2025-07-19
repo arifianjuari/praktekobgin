@@ -2043,7 +2043,7 @@ if ($conn) {
                                     <label>Resume</label>
                                     <div class="row">
                                         <div class="col-md-8">
-                                            <textarea name="resume" id="resume" class="form-control auto-resize smaller-text" rows="20" style="overflow-y: hidden; resize: none;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"><?= isset($pemeriksaan['resume']) ? $pemeriksaan['resume'] : '' ?></textarea>
+                                            <textarea name="resume" id="resume" class="form-control auto-resize smaller-text" rows="30" style="overflow-y: hidden; resize: none;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"><?= isset($pemeriksaan['resume']) ? $pemeriksaan['resume'] : '' ?></textarea>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="card border">
