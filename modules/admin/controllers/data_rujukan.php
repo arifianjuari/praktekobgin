@@ -161,6 +161,11 @@ try {
 
     <div class="main-content">
         <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-12">
+                    <a href="javascript:history.back()" class="btn btn-secondary btn-sm mb-2"><i class="fas fa-arrow-left"></i> Kembali</a>
+                </div>
+            </div>
             <div class="row mb-3">
                 <div class="col-12">
                     <h2 class="page-title">Data Rujukan</h2>

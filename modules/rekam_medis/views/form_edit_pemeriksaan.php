@@ -1768,7 +1768,10 @@ if ($conn) {
                         <!-- Nama Perujuk -->
                         <div class="card mb-3 mt-0">
                             <div class="card-header bg-light" style="padding-top:0.6rem; padding-bottom:0.6rem;">
-                                <h6 class="m-0 font-weight-bold text-primary">Info Rujukan</h6>
+                                <h6 class="m-0 font-weight-bold text-primary d-inline-block">Info Rujukan</h6>
+<a href="modules/admin/controllers/data_rujukan.php" class="btn btn-sm btn-success float-end ms-2" title="Tambah Rujukan">
+    <i class="fas fa-plus"></i>
+</a>
                             </div>
                             <div class="card-body p-3 pt-2 pb-2">
                                 <div class="mb-2">
