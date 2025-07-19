@@ -1813,7 +1813,7 @@ if ($conn) {
                                     <div class="row">
                                         <div class="col-md-9">
                                             <!-- Modified textarea with auto-resize class and styling -->
-                                            <textarea name="rps" id="riwayat_sekarang" class="form-control form-control-sm auto-resize" rows="2" style="overflow-y: hidden; resize: none;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"><?= isset($pemeriksaan['rps']) ? $pemeriksaan['rps'] : '' ?></textarea>
+                                            <textarea name="rps" id="riwayat_sekarang" class="form-control form-control-sm auto-resize smaller-text" rows="2" style="overflow-y: hidden; resize: none;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"><?= isset($pemeriksaan['rps']) ? $pemeriksaan['rps'] : '' ?></textarea>
                                         </div>
                                         <div class="col-md-3">
                                             <div class="card border">
@@ -1900,7 +1900,7 @@ if ($conn) {
                                     <label>Ultrasonografi</label>
                                     <div class="row">
                                         <div class="col-12">
-                                            <textarea name="ultra" id="ultrasonografi" class="form-control auto-resize" rows="2" style="overflow-y: hidden; resize: none;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"><?= isset($pemeriksaan['ultra']) ? $pemeriksaan['ultra'] : '' ?></textarea>
+                                            <textarea name="ultra" id="ultrasonografi" class="form-control auto-resize smaller-text" rows="2" style="overflow-y: hidden; resize: none;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"><?= isset($pemeriksaan['ultra']) ? $pemeriksaan['ultra'] : '' ?></textarea>
                                             <div class="d-flex gap-2 mt-2">
                                                 <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#modalDaftarTemplateUsg">
                                                     <i class="fas fa-list"></i> Lihat Template USG
@@ -1930,7 +1930,7 @@ if ($conn) {
                                     <label>Diagnosis</label>
                                     <div class="row">
                                         <div class="col-md-8">
-                                            <textarea name="diagnosis" id="diagnosis" class="form-control auto-resize" rows="5" style="overflow-y: hidden; resize: none;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"><?= isset($pemeriksaan['diagnosis']) ? $pemeriksaan['diagnosis'] : '' ?></textarea>
+                                            <textarea name="diagnosis" id="diagnosis" class="form-control auto-resize smaller-text" rows="5" style="overflow-y: hidden; resize: none;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"><?= isset($pemeriksaan['diagnosis']) ? $pemeriksaan['diagnosis'] : '' ?></textarea>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="card border mb-2">
@@ -1955,7 +1955,7 @@ if ($conn) {
                                     <label>Tatalaksana</label>
                                     <div class="row">
                                         <div class="col-md-8">
-                                            <textarea name="tata" id="tatalaksana" class="form-control auto-resize" rows="2" style="overflow-y: hidden; resize: none;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"><?= isset($pemeriksaan['tata']) ? $pemeriksaan['tata'] : '' ?></textarea>
+                                            <textarea name="tata" id="tatalaksana" class="form-control auto-resize smaller-text" rows="2" style="overflow-y: hidden; resize: none;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"><?= isset($pemeriksaan['tata']) ? $pemeriksaan['tata'] : '' ?></textarea>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="card border">
@@ -1974,7 +1974,7 @@ if ($conn) {
                                     <label>Edukasi</label>
                                     <div class="row">
                                         <div class="col-md-8">
-                                            <textarea name="edukasi" id="edukasi" class="form-control auto-resize" rows="2" style="overflow-y: hidden; resize: none;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"><?= isset($pemeriksaan['edukasi']) ? $pemeriksaan['edukasi'] : '' ?></textarea>
+                                            <textarea name="edukasi" id="edukasi" class="form-control auto-resize smaller-text" rows="2" style="overflow-y: hidden; resize: none;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"><?= isset($pemeriksaan['edukasi']) ? $pemeriksaan['edukasi'] : '' ?></textarea>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="card border">
@@ -2043,7 +2043,7 @@ if ($conn) {
                                     <label>Resume</label>
                                     <div class="row">
                                         <div class="col-md-8">
-                                            <textarea name="resume" id="resume" class="form-control auto-resize" rows="20" style="overflow-y: hidden; resize: none;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"><?= isset($pemeriksaan['resume']) ? $pemeriksaan['resume'] : '' ?></textarea>
+                                            <textarea name="resume" id="resume" class="form-control auto-resize smaller-text" rows="20" style="overflow-y: hidden; resize: none;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"><?= isset($pemeriksaan['resume']) ? $pemeriksaan['resume'] : '' ?></textarea>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="card border">
@@ -2085,7 +2085,7 @@ if ($conn) {
                                     <label>Resep</label>
                                     <div class="row">
                                         <div class="col-md-8">
-                                            <textarea name="resep" id="resep" class="form-control auto-resize" rows="2" style="overflow-y: hidden; resize: none;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"><?= isset($pemeriksaan['resep']) ? $pemeriksaan['resep'] : '' ?></textarea>
+                                            <textarea name="resep" id="resep" class="form-control auto-resize smaller-text" rows="2" style="overflow-y: hidden; resize: none;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"><?= isset($pemeriksaan['resep']) ? $pemeriksaan['resep'] : '' ?></textarea>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="card border mb-2">
@@ -2163,6 +2163,11 @@ if ($conn) {
 
             <!-- Style untuk toggle gratis -->
             <style>
+                /* Smaller font size for specific text fields */
+                .smaller-text {
+                    font-size: 0.75rem !important;
+                }
+
                 .toggle-gratis {
                     cursor: pointer;
                     width: 2rem;
