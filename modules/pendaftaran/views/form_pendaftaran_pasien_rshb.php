@@ -1,10 +1,11 @@
 <?php
+// Query layanan sudah diurutkan berdasarkan updated_at DESC (paling baru di atas)
 // --- Fallback pengisian layanan untuk dropdown jika belum di-set dari controller ---
 if (!isset($layanan_list)) {
     try {
         require_once dirname(__DIR__, 3) . '/config/database.php';
         global $conn;
-        $query = "SELECT id_layanan, nama_layanan FROM menu_layanan WHERE status_aktif = 1 ORDER BY nama_layanan ASC";
+        $query = "SELECT id_layanan, nama_layanan FROM menu_layanan WHERE status_aktif = 1 ORDER BY updated_at DESC";
         $stmt = $conn->query($query);
         $layanan_list = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
     } catch (Exception $e) {
