@@ -1973,7 +1973,9 @@ if ($conn) {
                                     <label>Edukasi</label>
                                     <div class="row">
                                         <div class="col-md-8">
-                                            <textarea name="edukasi" id="edukasi" class="form-control auto-resize smaller-text" rows="2" style="overflow-y: hidden; resize: none;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"><?= isset($pemeriksaan['edukasi']) ? $pemeriksaan['edukasi'] : '' ?></textarea>
+                                            <textarea name="edukasi" id="edukasi" class="form-control auto-resize smaller-text" rows="2" style="overflow-y: hidden; resize: none;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"><?php echo isset($pemeriksaan['edukasi']) ? strip_tags($pemeriksaan['edukasi']) : '' ?></textarea>
+                                                <!-- Simpan versi HTML asli untuk kebutuhan cetak -->
+                                                <input type="hidden" id="edukasi_html" value="<?php echo isset($pemeriksaan['edukasi']) ? htmlspecialchars($pemeriksaan['edukasi'], ENT_QUOTES) : '' ?>">
                                         </div>
                                         <div class="col-md-4">
                                             <div class="card border">
@@ -3128,7 +3130,29 @@ if ($conn) {
         try {
             const textarea = document.getElementById(fieldId);
             if (textarea) {
-                textarea.value = isi;
+                // Only convert HTML to plain text for the 'edukasi' field
+                if (fieldId === 'edukasi') {
+                    let html = isi;
+                    // Replace <br> and <br/> with newlines
+                    html = html.replace(/<br\s*\/?>/gi, '\n');
+                    // Replace block-level tags with newlines to preserve paragraphs/lists
+                    html = html.replace(/<\/(p|div|li|h[1-6]|tr)>/gi, '\n');
+                    // Remove opening block tags (optional, just in case)
+                    html = html.replace(/<(p|div|li|h[1-6]|tr)[^>]*>/gi, '');
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = html;
+                    let textContent = tempDiv.textContent || tempDiv.innerText || '';
+                    // Normalize multiple newlines and trim
+                    textContent = textContent.replace(/\n{3,}/g, '\n\n').replace(/^[\n\s]+|[\n\s]+$/g, '');
+                    textarea.value = textContent;
+                        // Simpan HTML asli ke hidden input untuk cetak
+                        const hiddenHtml = document.getElementById('edukasi_html');
+                        if (hiddenHtml) {
+                            hiddenHtml.value = isi;
+                        }
+                } else {
+                    textarea.value = isi;
+                }
                 textarea.dispatchEvent(new Event('input'));
             }
             // Pastikan modal selalu ditutup dengan Bootstrap API
@@ -3290,6 +3314,19 @@ echo "<!-- END FORM EDIT -->\n";
         console.log('printEdukasi called'); // Debug marker
         // Ambil isi dari textarea edukasi
         const isiEdukasi = document.getElementById('edukasi').value.trim();
+        // Ambil versi HTML jika tersedia
+        const htmlStored = document.getElementById('edukasi_html') ? document.getElementById('edukasi_html').value : '';
+        let htmlContent = '';
+        if (htmlStored && htmlStored.trim() !== '') {
+            htmlContent = htmlStored;
+        } else {
+            // Konversi plain text ke HTML sederhana: paragraf dan <br>
+            const paragraphs = isiEdukasi.split(/\n{2,}/).map(p => {
+                const withBr = p.replace(/\n/g, '<br>');
+                return `<p>${withBr}</p>`;
+            });
+            htmlContent = paragraphs.join('');
+        }
 
         // Validasi isi edukasi
         if (!isiEdukasi) {
@@ -3302,7 +3339,7 @@ echo "<!-- END FORM EDIT -->\n";
         const noRm = '<?= $pasien['no_rkm_medis'] ?>';
 
         // Redirect ke halaman print dengan parameter
-        const url = 'modules/rekam_medis/print_edukasi.php?isi=' + encodeURIComponent(isiEdukasi) +
+        const url = 'modules/rekam_medis/print_edukasi.php?isi=' + encodeURIComponent(htmlContent) + '&html=1' +
             '&no_rawat=' + encodeURIComponent(noRawat) +
             '&nama=' + encodeURIComponent(namaPasien) +
             '&no_rm=' + encodeURIComponent(noRm);

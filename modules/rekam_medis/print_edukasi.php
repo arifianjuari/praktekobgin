@@ -14,6 +14,8 @@ if (!isset($_GET['isi']) || trim($_GET['isi']) === '') {
 
 // Dapatkan data dari parameter
 $isiEdukasi = trim($_GET['isi']);
+// Jika parameter html=1, maka konten sudah berupa HTML lengkap
+$isHtml = isset($_GET['html']) && $_GET['html'] == '1';
 $noRawat = isset($_GET['no_rawat']) ? $_GET['no_rawat'] : 'N/A';
 $namaPasien = isset($_GET['nama']) ? $_GET['nama'] : 'N/A';
 $noRm = isset($_GET['no_rm']) ? $_GET['no_rm'] : 'N/A';
@@ -82,14 +84,12 @@ $tempPdf->SetFont('helvetica', '', 9);
 $tempPdf->Cell(52, 5, date('d-m-Y'), 0, 1, 'L');
 
 // Garis pemisah
-$tempPdf->Ln(2);
+$tempPdf->Ln(1);
 $tempPdf->Line($leftMargin, $tempPdf->GetY(), 100 - $rightMargin, $tempPdf->GetY());
-$tempPdf->Ln(4);
-
-
 // Tampilkan hasil edukasi
 $tempPdf->SetFont('helvetica', '', 9);
-$tempPdf->writeHTML('<div style="line-height: 1.5; text-align: justify;">' . nl2br($isiEdukasi) . '</div>', true, false, true, false, '');
+$renderedContent = $isHtml ? $isiEdukasi : nl2br(htmlspecialchars($isiEdukasi, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5));
+$tempPdf->writeHTML('<div style="line-height: 1.5; text-align: justify;">' . $renderedContent . '</div>', true, false, true, false, '');
 
 // ---- Akhir Tambahkan Konten ke PDF Sementara ----
 
@@ -150,12 +150,12 @@ $pdf->Cell(52, 5, date('d-m-Y'), 0, 1, 'L');
 // Garis pemisah
 $pdf->Ln(2);
 $pdf->Line($leftMargin, $pdf->GetY(), 100 - $rightMargin, $pdf->GetY());
-$pdf->Ln(4);
+
 
 
 // Tampilkan hasil edukasi
 $pdf->SetFont('helvetica', '', 9);
-$pdf->writeHTML('<div style="line-height: 1.5; text-align: justify;">' . nl2br($isiEdukasi) . '</div>', true, false, true, false, '');
+$pdf->writeHTML('<div style="line-height: 1.5; text-align: justify;">' . $renderedContent . '</div>', true, false, true, false, '');
 
 // ---- Akhir Tambahkan Konten ke PDF FINAL ----
 
