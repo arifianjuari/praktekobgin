@@ -749,7 +749,7 @@ error_log("Data pasien: " . json_encode($pasien));
                                                         <th class="text-muted px-3">Status Nikah</th>
                                                         <td class="px-3"><?= $pasien['stts_nikah'] ?? '-' ?></td>
                                                     </tr>
-                                                    
+
 
                                                 </table>
                                             </div>
@@ -778,20 +778,20 @@ error_log("Data pasien: " . json_encode($pasien));
                                                         contenteditable="true"
                                                         style="white-space: pre-wrap; line-height: 1.3; min-height: 100px; outline: none; font-size: 0.7rem;"
                                                         data-no-rkm-medis="<?= $pasien['no_rkm_medis'] ?>"><?= !empty($pasien['ceklist']) ? $pasien['ceklist'] : '-' ?></div>
-                                            <!-- Catatan Pasien (editable & AJAX save) -->
-                                            <div class="mt-3">
-                                                <label for="catatanPasienContent2" style="font-size:0.75rem; font-weight:bold;">Catatan Pasien</label>
-                                                <div class="d-flex align-items-center gap-2">
-                                                    <div id="catatanPasienContent2"
-                                                        contenteditable="true"
-                                                        style="flex-grow:1; min-height: 40px; border: 1px solid #ced4da; border-radius: 4px; padding: 6px 12px; font-size: 0.8rem; line-height: 1.3; white-space: pre-wrap; outline: none;"
-                                                        data-no-rkm-medis="<?= $pasien['no_rkm_medis'] ?>"><?= htmlspecialchars($pasien['catatan_pasien'] ?? '-') ?></div>
-                                                    <button type="button" id="saveCatatanPasien2" class="btn btn-xs btn-success" style="display:none; font-size:0.7rem; padding:0.2rem 0.5rem;">
-                                                        <i class="fas fa-save"></i>
-                                                    </button>
-                                                </div>
-                                                <input type="hidden" name="catatan_pasien" id="catatanPasienHidden2" value="<?= htmlspecialchars($pasien['catatan_pasien'] ?? '-') ?>">
-                                            </div>
+                                                    <!-- Catatan Pasien (editable & AJAX save) -->
+                                                    <div class="mt-3">
+                                                        <label for="catatanPasienContent2" style="font-size:0.75rem; font-weight:bold;">Catatan Pasien</label>
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <div id="catatanPasienContent2"
+                                                                contenteditable="true"
+                                                                style="flex-grow:1; min-height: 40px; border: 1px solid #ced4da; border-radius: 4px; padding: 6px 12px; font-size: 0.8rem; line-height: 1.3; white-space: pre-wrap; outline: none;"
+                                                                data-no-rkm-medis="<?= $pasien['no_rkm_medis'] ?>"><?= htmlspecialchars($pasien['catatan_pasien'] ?? '-') ?></div>
+                                                            <button type="button" id="saveCatatanPasien2" class="btn btn-xs btn-success" style="display:none; font-size:0.7rem; padding:0.2rem 0.5rem;">
+                                                                <i class="fas fa-save"></i>
+                                                            </button>
+                                                        </div>
+                                                        <input type="hidden" name="catatan_pasien" id="catatanPasienHidden2" value="<?= htmlspecialchars($pasien['catatan_pasien'] ?? '-') ?>">
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -1071,46 +1071,53 @@ error_log("Data pasien: " . json_encode($pasien));
                                 <table class="table table-sm table-bordered table-striped table-resizable">
                                     <thead>
                                         <tr>
-    <th width="120">Aksi<div class="resizer"></div></th>
-    <th>Waktu Pemeriksaan<div class="resizer"></div></th>
-    <th>Keluhan Utama<div class="resizer"></div></th>
-    <th>Diagnosis<div class="resizer"></div></th>
-    <th>Tatalaksana<div class="resizer"></div></th>
-    <th>Resep<div class="resizer"></div></th>
-    <th>Layanan<div class="resizer"></div></th>
-</tr>
+                                            <th width="120">Aksi<div class="resizer"></div>
+                                            </th>
+                                            <th>Waktu Pemeriksaan<div class="resizer"></div>
+                                            </th>
+                                            <th>Keluhan Utama<div class="resizer"></div>
+                                            </th>
+                                            <th>Diagnosis<div class="resizer"></div>
+                                            </th>
+                                            <th>Tatalaksana<div class="resizer"></div>
+                                            </th>
+                                            <th>Resep<div class="resizer"></div>
+                                            </th>
+                                            <th>Layanan<div class="resizer"></div>
+                                            </th>
+                                        </tr>
                                     </thead>
                                     <tbody>
                                         <?php foreach ($riwayatPemeriksaan as $rp): ?>
                                             <tr>
-    <td>
-        <?php
-        $no_rawat = isset($rp['no_rawat']) ? htmlspecialchars($rp['no_rawat']) : '';
-        $source_page = isset($_SESSION['source_page']) ? htmlspecialchars($source_page) : '';
-        ?>
-        <div class="btn-group">
-            <?php
-            // Tombol Edit/Tambah Pemeriksaan:
-            // - Jika keluhan_utama kosong (belum ada data), arahkan ke form_penilaian_medis_ralan_kandungan untuk input baru
-            // - Jika sudah ada data, arahkan ke form_edit_pemeriksaan untuk edit
-            ?>
-            <a href="index.php?module=rekam_medis&action=<?= empty($rp['keluhan_utama']) ? 'form_penilaian_medis_ralan_kandungan' : 'form_edit_pemeriksaan' ?>&no_rawat=<?= $no_rawat ?>&source=<?= $source_page ?>" class="btn btn-success btn-sm" title="<?= empty($rp['keluhan_utama']) ? 'Input Pemeriksaan Baru' : 'Edit Pemeriksaan' ?>">
-                <?= empty($rp['keluhan_utama']) ? 'Input' : 'Edit' ?>
-            </a>
-            <a href="index.php?module=rekam_medis&action=edit_kunjungan&no_rawat=<?= $no_rawat ?>&source=<?= $source_page ?>" class="btn btn-warning btn-sm">
-                <i class="fas fa-edit"></i>
-            </a>
-            <?php
-            $no_rawat = isset($rp['no_rawat']) ? htmlspecialchars($rp['no_rawat']) : '';
-            $source_page = isset($_SESSION['source_page']) ? htmlspecialchars($source_page) : '';
-            ?>
-            <a href="index.php?module=rekam_medis&action=hapus_kunjungan&no_rawat=<?= $no_rawat ?>&source=<?= $source_page ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus kunjungan ini?')">
-                <i class="fas fa-trash"></i>
-            </a>
-        </div>
-    </td>
-    <td>
-        <strong><?= date('d-m-Y', strtotime($rp['tgl_registrasi'])) ?> <?= $rp['jam_reg'] ?></strong>
+                                                <td>
+                                                    <?php
+                                                    $no_rawat = isset($rp['no_rawat']) ? htmlspecialchars($rp['no_rawat']) : '';
+                                                    $source_page = isset($_SESSION['source_page']) ? htmlspecialchars($source_page) : '';
+                                                    ?>
+                                                    <div class="btn-group">
+                                                        <?php
+                                                        // Tombol Edit/Tambah Pemeriksaan:
+                                                        // - Jika keluhan_utama kosong (belum ada data), arahkan ke form_penilaian_medis_ralan_kandungan untuk input baru
+                                                        // - Jika sudah ada data, arahkan ke form_edit_pemeriksaan untuk edit
+                                                        ?>
+                                                        <a href="index.php?module=rekam_medis&action=<?= empty($rp['keluhan_utama']) ? 'form_penilaian_medis_ralan_kandungan' : 'form_edit_pemeriksaan' ?>&no_rawat=<?= $no_rawat ?>&source=<?= $source_page ?>" class="btn btn-success btn-sm" title="<?= empty($rp['keluhan_utama']) ? 'Input Pemeriksaan Baru' : 'Edit Pemeriksaan' ?>">
+                                                            <?= empty($rp['keluhan_utama']) ? 'Input' : '<span style="font-size:0.6em">PERIKSA</span>' ?>
+                                                        </a>
+                                                        <a href="index.php?module=rekam_medis&action=edit_kunjungan&no_rawat=<?= $no_rawat ?>&source=<?= $source_page ?>" class="btn btn-warning btn-sm">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <?php
+                                                        $no_rawat = isset($rp['no_rawat']) ? htmlspecialchars($rp['no_rawat']) : '';
+                                                        $source_page = isset($_SESSION['source_page']) ? htmlspecialchars($source_page) : '';
+                                                        ?>
+                                                        <a href="index.php?module=rekam_medis&action=hapus_kunjungan&no_rawat=<?= $no_rawat ?>&source=<?= $source_page ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus kunjungan ini?')">
+                                                            <i class="fas fa-trash"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <strong><?= date('d-m-Y', strtotime($rp['tgl_registrasi'])) ?> <?= $rp['jam_reg'] ?></strong>
                                                     <?php if (!empty($rp['nm_dokter'])): ?>
                                                         <br><small>Dr. <?= $rp['nm_dokter'] ?></small>
                                                     <?php endif; ?>
@@ -1121,28 +1128,28 @@ error_log("Data pasien: " . json_encode($pasien));
                                                 <td><?= $rp['tata'] ?: '-' ?></td>
                                                 <td><?= $rp['resep'] ?: '-' ?></td>
                                                 <td>
-<?php
-if (!empty($rp['rincian'])) {
-    $lines = explode("\n", str_replace(["\r\n", "\r"], "\n", trim($rp['rincian'])));
-    $output = '';
-    $first = true;
-    foreach ($lines as $line) {
-        $line = trim($line);
-        if ($line !== '') {
-            if (!$first) {
-                $output .= '<div style="margin-top:2px"></div>';
-            }
-            $output .= '<div style="line-height:1.1">' . htmlspecialchars($line) . '</div>';
-            $first = false;
-        }
-    }
-    echo $output ?: '-';
-} else {
-    echo '-';
-}
-?>
+                                                    <?php
+                                                    if (!empty($rp['rincian'])) {
+                                                        $lines = explode("\n", str_replace(["\r\n", "\r"], "\n", trim($rp['rincian'])));
+                                                        $output = '';
+                                                        $first = true;
+                                                        foreach ($lines as $line) {
+                                                            $line = trim($line);
+                                                            if ($line !== '') {
+                                                                if (!$first) {
+                                                                    $output .= '<div style="margin-top:2px"></div>';
+                                                                }
+                                                                $output .= '<div style="line-height:1.1">' . htmlspecialchars($line) . '</div>';
+                                                                $first = false;
+                                                            }
+                                                        }
+                                                        echo $output ?: '-';
+                                                    } else {
+                                                        echo '-';
+                                                    }
+                                                    ?>
                                                 </td>
-</td>
+                                                </td>
                                                 <td>
                                                     <!-- Modal Detail Pemeriksaan -->
                                                     <div class="modal fade" id="modalDetail<?= str_replace('/', '', $rp['no_rawat']) ?>" tabindex="-1" aria-labelledby="modalDetailLabel<?= str_replace('/', '', $rp['no_rawat']) ?>" aria-hidden="true">
