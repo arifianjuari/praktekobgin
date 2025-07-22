@@ -1902,8 +1902,87 @@ class RekamMedisController
 
             // Generate nomor rawat dan nomor registrasi
             $tgl_registrasi = date('Y-m-d');
-            $no_rawat = $this->rekamMedisModel->generateNoRawat($tgl_registrasi);
+            $jam_reg       = date('H:i:s');
+            $no_rawat      = $this->rekamMedisModel->generateNoRawat($tgl_registrasi);
 
+            // Jika parameter auto=1 dikirim, bypass form dan langsung simpan kunjungan
+            if (isset($_GET['auto']) && $_GET['auto'] == '1') {
+                try {
+                    $dataKunjungan = [
+                        'no_rawat'       => $no_rawat,
+                        'no_rkm_medis'   => $no_rkm_medis,
+                        'tgl_registrasi' => $tgl_registrasi,
+                        'jam_reg'        => $jam_reg,
+                        'no_reg'         => date('Ymd-His'),
+                        'status_bayar'   => 'Belum Bayar',
+                        'rincian'        => null
+                    ];
+
+                    // Simpan kunjungan ke reg_periksa (via model helper)
+                    $this->rekamMedisModel->tambahPemeriksaan($dataKunjungan);
+
+                    // --- Tambahkan data pemeriksaan awal ke penilaian_medis_ralan_kandungan ---
+                    $dataPemeriksaan = [
+                        'no_rawat' => $no_rawat,
+                        'tanggal' => date('Y-m-d'),
+                        'anamnesis' => 'Autoanamnesis',
+                        'hubungan' => '',
+                        'keluhan_utama' => '-',
+                        'rps' => '',
+                        'rpd' => '',
+                        'rpk' => '',
+                        'rpo' => '',
+                        'alergi' => '',
+                        'keadaan' => 'Sehat',
+                        'gcs' => '',
+                        'kesadaran' => 'Compos Mentis',
+                        'td' => '',
+                        'nadi' => '',
+                        'rr' => '',
+                        'suhu' => '',
+                        'spo' => '',
+                        'bb' => null,
+                        'tb' => null,
+                        'kepala' => 'Normal',
+                        'mata' => 'Normal',
+                        'gigi' => 'Normal',
+                        'tht' => 'Normal',
+                        'thoraks' => 'Normal',
+                        'abdomen' => 'Normal',
+                        'genital' => 'Normal',
+                        'ekstremitas' => 'Normal',
+                        'kulit' => 'Normal',
+                        'ket_fisik' => '',
+                        'ultra' => '',
+                        'lab' => '',
+                        'diagnosis' => '',
+                        'tata' => '',
+                        'edukasi' => '',
+                        'resume' => '',
+                        'resep' => '',
+                        'tanggal_kontrol' => null,
+                        'atensi' => null
+                    ];
+
+                    $stmt = $this->pdo->prepare("INSERT INTO penilaian_medis_ralan_kandungan (
+                        no_rawat, tanggal, anamnesis, hubungan, keluhan_utama, rps, rpd, rpk, rpo, alergi, keadaan, gcs, kesadaran, td, nadi, rr, suhu, spo, bb, tb, kepala, mata, gigi, tht, thoraks, abdomen, genital, ekstremitas, kulit, ket_fisik, ultra, lab, diagnosis, tata, edukasi, resume, resep, tanggal_kontrol, atensi
+                    ) VALUES (
+                        :no_rawat, :tanggal, :anamnesis, :hubungan, :keluhan_utama, :rps, :rpd, :rpk, :rpo, :alergi, :keadaan, :gcs, :kesadaran, :td, :nadi, :rr, :suhu, :spo, :bb, :tb, :kepala, :mata, :gigi, :tht, :thoraks, :abdomen, :genital, :ekstremitas, :kulit, :ket_fisik, :ultra, :lab, :diagnosis, :tata, :edukasi, :resume, :resep, :tanggal_kontrol, :atensi
+                    )");
+                    $stmt->execute($dataPemeriksaan);
+
+                    $_SESSION['success'] = 'Kunjungan dan data pemeriksaan awal berhasil ditambahkan';
+                    header('Location: index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=' . $no_rkm_medis);
+                    exit;
+                } catch (Exception $e) {
+                    error_log('Error auto tambah_pemeriksaan: ' . $e->getMessage());
+                    $_SESSION['error'] = 'Gagal menambahkan kunjungan baru: ' . $e->getMessage();
+                    header('Location: index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=' . $no_rkm_medis);
+                    exit;
+                }
+            }
+
+            // Default: tampilkan form jika tidak bypass
             include 'modules/rekam_medis/views/form_tambah_pemeriksaan.php';
         } catch (Exception $e) {
             $_SESSION['error'] = $e->getMessage();

@@ -1062,7 +1062,7 @@ error_log("Data pasien: " . json_encode($pasien));
                         </div>
 
                         <div class="d-flex justify-content-start mb-3">
-                            <a href="index.php?module=rekam_medis&action=tambah_pemeriksaan&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>&source=<?= $_SESSION['source_page'] ?><?= isset($_GET['no_rawat']) ? '&no_rawat=' . $_GET['no_rawat'] : '' ?>" class="btn btn-primary btn-sm">
+                            <a href="index.php?module=rekam_medis&action=tambah_pemeriksaan&auto=1&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>&source=<?= $_SESSION['source_page'] ?><?= isset($_GET['no_rawat']) ? '&no_rawat=' . $_GET['no_rawat'] : '' ?>" class="btn btn-primary btn-sm">
                                 <i class="fas fa-plus"></i> Tambah Kunjungan
                             </a>
                         </div>
