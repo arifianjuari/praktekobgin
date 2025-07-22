@@ -749,10 +749,7 @@ error_log("Data pasien: " . json_encode($pasien));
                                                         <th class="text-muted px-3">Status Nikah</th>
                                                         <td class="px-3"><?= $pasien['stts_nikah'] ?? '-' ?></td>
                                                     </tr>
-                                                    <tr>
-                                                        <th class="text-muted px-3">Catatan Pasien</th>
-                                                        <td class="px-3"><?= $pasien['catatan_pasien'] ?? '-' ?></td>
-                                                    </tr>
+                                                    
 
                                                 </table>
                                             </div>
@@ -781,6 +778,20 @@ error_log("Data pasien: " . json_encode($pasien));
                                                         contenteditable="true"
                                                         style="white-space: pre-wrap; line-height: 1.3; min-height: 100px; outline: none; font-size: 0.7rem;"
                                                         data-no-rkm-medis="<?= $pasien['no_rkm_medis'] ?>"><?= !empty($pasien['ceklist']) ? $pasien['ceklist'] : '-' ?></div>
+                                            <!-- Catatan Pasien (editable & AJAX save) -->
+                                            <div class="mt-3">
+                                                <label for="catatanPasienContent2" style="font-size:0.75rem; font-weight:bold;">Catatan Pasien</label>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <div id="catatanPasienContent2"
+                                                        contenteditable="true"
+                                                        style="flex-grow:1; min-height: 40px; border: 1px solid #ced4da; border-radius: 4px; padding: 6px 12px; font-size: 0.8rem; line-height: 1.3; white-space: pre-wrap; outline: none;"
+                                                        data-no-rkm-medis="<?= $pasien['no_rkm_medis'] ?>"><?= htmlspecialchars($pasien['catatan_pasien'] ?? '-') ?></div>
+                                                    <button type="button" id="saveCatatanPasien2" class="btn btn-xs btn-success" style="display:none; font-size:0.7rem; padding:0.2rem 0.5rem;">
+                                                        <i class="fas fa-save"></i>
+                                                    </button>
+                                                </div>
+                                                <input type="hidden" name="catatan_pasien" id="catatanPasienHidden2" value="<?= htmlspecialchars($pasien['catatan_pasien'] ?? '-') ?>">
+                                            </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -2567,6 +2578,82 @@ if (!empty($rp['rincian'])) {
                 }
             });
         }
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- CATATAN PASIEN ---
+            const catatanContent2 = document.getElementById('catatanPasienContent2');
+            if (!catatanContent2) return;
+            const catatanHidden2 = document.getElementById('catatanPasienHidden2');
+            const saveCatatanBtn2 = document.getElementById('saveCatatanPasien2');
+            let catatanOriginal2 = catatanContent2.textContent;
+            const noRkmMedis2 = catatanContent2.dataset.noRkmMedis;
+
+            // Show save button when content changes
+            catatanContent2.addEventListener('input', function() {
+                catatanHidden2.value = catatanContent2.textContent;
+                if (catatanContent2.textContent !== catatanOriginal2) {
+                    saveCatatanBtn2.style.display = 'inline-block';
+                    saveCatatanBtn2.innerHTML = '<i class="fas fa-save"></i>';
+                    saveCatatanBtn2.classList.remove('btn-danger');
+                    saveCatatanBtn2.classList.add('btn-success');
+                } else {
+                    saveCatatanBtn2.style.display = 'none';
+                }
+            });
+
+            // Handle save click
+            saveCatatanBtn2.addEventListener('click', function() {
+                const newCatatan = catatanContent2.textContent;
+                saveCatatanBtn2.disabled = true;
+                saveCatatanBtn2.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+
+                fetch('index.php?module=rekam_medis&action=updatePasien', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: `no_rkm_medis=${encodeURIComponent(noRkmMedis2)}&catatan_pasien=${encodeURIComponent(newCatatan)}`
+                    })
+                    .then(response => response.text())
+                    .then(data => {
+                        catatanOriginal2 = newCatatan;
+                        saveCatatanBtn2.innerHTML = '<i class="fas fa-check"></i>';
+                        saveCatatanBtn2.classList.remove('btn-danger');
+                        saveCatatanBtn2.classList.add('btn-success');
+                        setTimeout(() => {
+                            saveCatatanBtn2.style.display = 'none';
+                            saveCatatanBtn2.innerHTML = '<i class="fas fa-save"></i>';
+                            saveCatatanBtn2.disabled = false;
+                        }, 2000);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        saveCatatanBtn2.innerHTML = '<i class="fas fa-times"></i>';
+                        saveCatatanBtn2.classList.remove('btn-success');
+                        saveCatatanBtn2.classList.add('btn-danger');
+                        saveCatatanBtn2.disabled = false;
+                        setTimeout(() => {
+                            saveCatatanBtn2.innerHTML = '<i class="fas fa-save"></i>';
+                            saveCatatanBtn2.classList.remove('btn-danger');
+                            saveCatatanBtn2.classList.add('btn-success');
+                        }, 2000);
+                    });
+            });
+
+            // Handle Ctrl+Enter to save
+            catatanContent2.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && e.ctrlKey) {
+                    e.preventDefault();
+                    if (saveCatatanBtn2.style.display !== 'none') {
+                        saveCatatanBtn2.click();
+                    }
+                }
+            });
+            // --- END CATATAN PASIEN ---
+        });
     </script>
 
     <!-- Toast Notification -->
