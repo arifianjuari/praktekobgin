@@ -363,3 +363,5 @@
 [19-Jul-2025 12:55:11 Asia/Jakarta] Including layout template from: /Users/arifianjuari/Library/CloudStorage/GoogleDrive-arifianjuari@gmail.com/My Drive/01 PAPA/05 DEVELOPMENT/praktekobgin/template/layout.php
 [19-Jul-2025 12:55:11 Asia/Jakarta] Layout rendering - Content length: 7373
 [19-Jul-2025 12:55:11 Asia/Jakarta] Database connection closed explicitly
+[2025-07-25 15:41:15] [get_jadwal.php] URI: /modules/pendaftaran/controllers/get_jadwal.php?tempat=df2900af-f9b4-47c7-ad5d-bbaed4a62a88&dokter=b81a5b13-1bd4-4298-b294-285735630c0d&_=1753432874926, GET: {"tempat":"df2900af-f9b4-47c7-ad5d-bbaed4a62a88","dokter":"b81a5b13-1bd4-4298-b294-285735630c0d","_":"1753432874926"}
+[2025-07-25 15:44:17] [get_jadwal.php] URI: /modules/pendaftaran/controllers/get_jadwal.php?tempat=df2900af-f9b4-47c7-ad5d-bbaed4a62a88&dokter=b81a5b13-1bd4-4298-b294-285735630c0d&_=1753433057341, GET: {"tempat":"df2900af-f9b4-47c7-ad5d-bbaed4a62a88","dokter":"b81a5b13-1bd4-4298-b294-285735630c0d","_":"1753433057341"}

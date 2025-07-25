@@ -3,6 +3,11 @@
 require_once __DIR__ . '/../../../config/koneksi.php';
 $conn = getPDOConnection();
 
+// --- DEBUG LOGGING ---
+$logFile = __DIR__ . '/../views/error_log.txt';
+$logMsg = '[' . date('Y-m-d H:i:s') . "] [get_jadwal.php] URI: " . ($_SERVER['REQUEST_URI'] ?? '-') . ", GET: " . json_encode($_GET) . "\n";
+file_put_contents($logFile, $logMsg, FILE_APPEND);
+
 // Set header untuk mengirim respons JSON
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
@@ -15,6 +20,9 @@ $id_dokter = isset($_GET['dokter']) ? $_GET['dokter'] : '';
 
 // Validasi input
 if (empty($id_tempat_praktek) || empty($id_dokter)) {
+    $logMsg = '[' . date('Y-m-d H:i:s') . "] [get_jadwal.php] ERROR: Parameter kosong (tempat/dokter)\n";
+    file_put_contents($logFile, $logMsg, FILE_APPEND);
+    http_response_code(400);
     echo json_encode(['error' => 'Parameter tempat dan dokter harus diisi']);
     exit;
 }
@@ -59,7 +67,10 @@ try {
     
 } catch (PDOException $e) {
     // Log error dan return pesan error
+    $logMsg = '[' . date('Y-m-d H:i:s') . "] [get_jadwal.php] DB ERROR: " . $e->getMessage() . "\n";
+    file_put_contents($logFile, $logMsg, FILE_APPEND);
     error_log("Database Error in get_jadwal.php: " . $e->getMessage());
+    http_response_code(500);
     echo json_encode(['error' => 'Terjadi kesalahan saat mengambil data jadwal']);
 }
 ?>

@@ -1203,7 +1203,7 @@ ob_start();
                         data.forEach(function(d) {
                             const option = document.createElement('option');
                             option.value = d.ID_Dokter;
-                            option.textContent = d.Nama_Dokter + ' - ' + d.Spesialis;
+                            option.textContent = d.Nama_Dokter;
                             dokterSelect.appendChild(option);
                         });
                         dokterSelect.disabled = false;
