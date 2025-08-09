@@ -1924,7 +1924,7 @@ class RekamMedisController
                     // --- Tambahkan data pemeriksaan awal ke penilaian_medis_ralan_kandungan ---
                     $dataPemeriksaan = [
                         'no_rawat' => $no_rawat,
-                        'tanggal' => date('Y-m-d'),
+                        'tanggal' => date('Y-m-d H:i:s'),
                         'anamnesis' => 'Autoanamnesis',
                         'hubungan' => '',
                         'keluhan_utama' => '-',
@@ -3214,6 +3214,63 @@ class RekamMedisController
             throw new Exception("Terjadi kesalahan pada database: " . $e->getMessage());
         } catch (Exception $e) {
             error_log("General error in daftarAtensi: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
+            throw new Exception("Terjadi kesalahan: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Menampilkan Riwayat Rajal (duplikat dari daftarAtensi, view berbeda)
+     */
+    public function riwayatRajal()
+    {
+        try {
+            // Pastikan koneksi database tersedia
+            if (!$this->pdo) {
+                error_log("Database connection not available in riwayatRajal");
+                throw new Exception("Koneksi database tidak tersedia");
+            }
+            // Query untuk mengambil SEMUA data
+            $query = "SELECT 
+                pmrk.no_rawat,
+                pmrk.tanggal,
+                pmrk.tanggal_kontrol,
+                pmrk.atensi,
+                pmrk.diagnosis,
+                pmrk.tata as keterangan,
+                pmrk.sudah_follow_up,
+                p.nm_pasien as nama_pasien,
+                p.no_tlp,
+                p.catatan_pasien,
+                rp.no_rkm_medis
+            FROM penilaian_medis_ralan_kandungan pmrk
+            JOIN reg_periksa rp ON pmrk.no_rawat = rp.no_rawat
+            JOIN pasien p ON rp.no_rkm_medis = p.no_rkm_medis
+            ORDER BY pmrk.tanggal DESC, pmrk.no_rawat DESC";
+            error_log("Executing query in riwayatRajal: " . $query);
+            $stmt = $this->pdo->prepare($query);
+            if (!$stmt) {
+                error_log("Failed to prepare statement: " . print_r($this->pdo->errorInfo(), true));
+                throw new Exception("Gagal mempersiapkan query");
+            }
+            $stmt->execute();
+            if ($stmt->errorCode() !== '00000') {
+                error_log("Error executing statement: " . print_r($stmt->errorInfo(), true));
+                throw new Exception("Gagal menjalankan query");
+            }
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if ($result === false) {
+                error_log("Error fetching results: " . print_r($stmt->errorInfo(), true));
+                throw new Exception("Gagal mengambil data hasil query");
+            }
+            $page_title = "Riwayat Rawat Jalan";
+            include __DIR__ . '/../views/riwayat_rajal.php';
+        } catch (PDOException $e) {
+            error_log("Database error in riwayatRajal: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
+            throw new Exception("Terjadi kesalahan pada database: " . $e->getMessage());
+        } catch (Exception $e) {
+            error_log("General error in riwayatRajal: " . $e->getMessage());
             error_log("Stack trace: " . $e->getTraceAsString());
             throw new Exception("Terjadi kesalahan: " . $e->getMessage());
         }

@@ -4,6 +4,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 $current_path = $_SERVER['PHP_SELF'];
 $is_logged_in = isset($_SESSION['user_id']); // Akan digunakan nanti
 $is_admin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin'; // Akan digunakan nanti
+// Ikon untuk Riwayat Rajal: bi-clock-history
 
 // Fungsi untuk membersihkan base_url
 function clean_url($url)
@@ -1113,6 +1114,13 @@ function is_current_module($module, $action = null)
                             class="nav-link <?php echo is_current_module('rekam_medis', 'daftar_atensi') ? 'active' : ''; ?>" data-title="Daftar Atensi">
                             <i class="bi bi-exclamation-circle"></i>
                             <span class="menu-text">Daftar Atensi</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?php echo clean_url($base_url); ?>/index.php?module=rekam_medis&action=riwayat_rajal"
+                            class="nav-link <?php echo is_current_module('rekam_medis', 'riwayat_rajal') ? 'active' : ''; ?>" data-title="Riwayat Rajal">
+                            <i class="bi bi-clock-history"></i>
+                            <span class="menu-text">Riwayat Rajal</span>
                         </a>
                     </li>
                     <li class="nav-item">

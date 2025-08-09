@@ -151,6 +151,9 @@ try {
             case 'daftar_atensi':
                 $rekamMedisController->daftarAtensi();
                 break;
+            case 'riwayat_rajal':
+                $rekamMedisController->riwayatRajal();
+                break;
             case 'template_anamnesis':
                 $rekamMedisController->template_anamnesis();
                 break;
