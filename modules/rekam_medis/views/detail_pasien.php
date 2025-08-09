@@ -633,18 +633,13 @@ error_log("Data pasien: " . json_encode($pasien));
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" id="riwayat-kehamilan-tab" data-bs-toggle="tab" data-bs-target="#riwayat-kehamilan" role="tab" aria-controls="riwayat-kehamilan" aria-selected="false">
-                                    <i class="fas fa-baby me-2"></i>Riwayat Kehamilan
-                                </a>
-                            </li>
-                            <li class="nav-item">
                                 <a class="nav-link" id="status-ginekologi-tab" data-bs-toggle="tab" data-bs-target="#status-ginekologi" role="tab" aria-controls="status-ginekologi" aria-selected="false">
                                     <i class="fas fa-female me-2"></i>Status Ginekologi
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link collapsed" id="surat-tab" data-toggle="collapse" href="#surat" role="tab">
-                                    Surat <i class="fas fa-chevron-down"></i>
+                                <a class="nav-link" id="surat-tab" data-bs-toggle="tab" data-bs-target="#surat" href="#surat" role="tab" aria-controls="surat" aria-selected="false">
+                                    <i class="fas fa-file-alt me-2"></i>Surat
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -864,73 +859,61 @@ error_log("Data pasien: " . json_encode($pasien));
                                         </tbody>
                                     </table>
                                 </div>
-                            </div>
-
-                            <!-- Tab Riwayat Kehamilan -->
-                            <div class="tab-pane fade" id="riwayat-kehamilan" role="tabpanel" aria-labelledby="riwayat-kehamilan-tab">
-                                <div class="d-flex justify-content-end mb-3">
-                                    <a href="index.php?module=rekam_medis&action=tambah_riwayat_kehamilan&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>&source=<?= $_SESSION['source_page'] ?><?= isset($_GET['no_rawat']) ? '&no_rawat=' . $_GET['no_rawat'] : '' ?>" class="btn btn-primary btn-sm">
-                                        <i class="fas fa-plus"></i> Tambah Riwayat
-                                    </a>
-                                </div>
-                                <div id="riwayatKehamilanContent" class="position-relative">
-                                    <div class="table-responsive">
-                                        <table class="table table-sm table-bordered table-striped table-resizable">
-                                            <thead>
-                                                <tr>
-                                                    <th>No<div class="resizer"></div>
-                                                    </th>
-                                                    <th>Status<div class="resizer"></div>
-                                                    </th>
-                                                    <th>Jenis<div class="resizer"></div>
-                                                    </th>
-                                                    <th>Tempat<div class="resizer"></div>
-                                                    </th>
-                                                    <th>Penolong<div class="resizer"></div>
-                                                    </th>
-                                                    <th>Tahun<div class="resizer"></div>
-                                                    </th>
-                                                    <th>Jenis Kelamin<div class="resizer"></div>
-                                                    </th>
-                                                    <th>BB<div class="resizer"></div>
-                                                    </th>
-                                                    <th>Kondisi<div class="resizer"></div>
-                                                    </th>
-                                                    <th>Aksi<div class="resizer"></div>
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <?php if (isset($riwayatKehamilan) && count($riwayatKehamilan) > 0): ?>
-                                                    <?php foreach ($riwayatKehamilan as $rk): ?>
-                                                        <tr>
-                                                            <td><?= htmlspecialchars($rk['no_urut_kehamilan'] ?? '-') ?></td>
-                                                            <td><?= htmlspecialchars($rk['status_kehamilan'] ?? '-') ?></td>
-                                                            <td><?= htmlspecialchars($rk['jenis_persalinan'] ?? '-') ?></td>
-                                                            <td><?= htmlspecialchars($rk['tempat_persalinan'] ?? '-') ?></td>
-                                                            <td><?= htmlspecialchars($rk['penolong_persalinan'] ?? '-') ?></td>
-                                                            <td><?= htmlspecialchars($rk['tahun_persalinan'] ?? '-') ?></td>
-                                                            <td><?= htmlspecialchars($rk['jenis_kelamin_anak'] ?? '-') ?></td>
-                                                            <td><?= htmlspecialchars($rk['berat_badan_lahir'] ?? '-') ?></td>
-                                                            <td><?= htmlspecialchars($rk['kondisi_lahir'] ?? '-') ?></td>
-                                                            <td>
-                                                                <a href="index.php?module=rekam_medis&action=edit_riwayat_kehamilan&id=<?= $rk['id_riwayat_kehamilan'] ?>&source=detail_pasien<?= isset($_GET['no_rawat']) ? '&no_rawat=' . $_GET['no_rawat'] : '' ?>" class="btn btn-warning btn-sm">
-                                                                    <i class="fas fa-edit"></i>
-                                                                </a>
-                                                                <a href="index.php?module=rekam_medis&action=hapus_riwayat_kehamilan&id=<?= $rk['id_riwayat_kehamilan'] ?>&source=detail_pasien<?= isset($_GET['no_rawat']) ? '&no_rawat=' . $_GET['no_rawat'] : '' ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
-
-                                                                    <i class="fas fa-trash"></i>
-                                                                </a>
-                                                            </td>
-                                                        </tr>
-                                                    <?php endforeach; ?>
-                                                <?php else: ?>
+                                <!-- Riwayat Kehamilan (dipindahkan ke bawah Status Obstetri, PASTIKAN berada di dalam pane #skrining) -->
+                                <div class="mt-4">
+                                    <div class="d-flex justify-content-end mb-3">
+                                        <a href="index.php?module=rekam_medis&action=tambah_riwayat_kehamilan&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>&source=<?= $_SESSION['source_page'] ?><?= isset($_GET['no_rawat']) ? '&no_rawat=' . $_GET['no_rawat'] : '' ?>" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-plus"></i> Tambah Riwayat
+                                        </a>
+                                    </div>
+                                    <div id="riwayatKehamilanContent" class="position-relative">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-bordered table-striped table-resizable">
+                                                <thead>
                                                     <tr>
-                                                        <td colspan="10" class="text-center">Tidak ada data riwayat kehamilan</td>
+                                                        <th>No<div class="resizer"></div></th>
+                                                        <th>Status<div class="resizer"></div></th>
+                                                        <th>Jenis<div class="resizer"></div></th>
+                                                        <th>Tempat<div class="resizer"></div></th>
+                                                        <th>Penolong<div class="resizer"></div></th>
+                                                        <th>Tahun<div class="resizer"></div></th>
+                                                        <th>Jenis Kelamin<div class="resizer"></div></th>
+                                                        <th>BB<div class="resizer"></div></th>
+                                                        <th>Kondisi<div class="resizer"></div></th>
+                                                        <th>Aksi<div class="resizer"></div></th>
                                                     </tr>
-                                                <?php endif; ?>
-                                            </tbody>
-                                        </table>
+                                                </thead>
+                                                <tbody>
+                                                    <?php if (isset($riwayatKehamilan) && count($riwayatKehamilan) > 0): ?>
+                                                        <?php foreach ($riwayatKehamilan as $rk): ?>
+                                                            <tr>
+                                                                <td><?= htmlspecialchars($rk['no_urut_kehamilan'] ?? '-') ?></td>
+                                                                <td><?= htmlspecialchars($rk['status_kehamilan'] ?? '-') ?></td>
+                                                                <td><?= htmlspecialchars($rk['jenis_persalinan'] ?? '-') ?></td>
+                                                                <td><?= htmlspecialchars($rk['tempat_persalinan'] ?? '-') ?></td>
+                                                                <td><?= htmlspecialchars($rk['penolong_persalinan'] ?? '-') ?></td>
+                                                                <td><?= htmlspecialchars($rk['tahun_persalinan'] ?? '-') ?></td>
+                                                                <td><?= htmlspecialchars($rk['jenis_kelamin_anak'] ?? '-') ?></td>
+                                                                <td><?= htmlspecialchars($rk['berat_badan_lahir'] ?? '-') ?></td>
+                                                                <td><?= htmlspecialchars($rk['kondisi_lahir'] ?? '-') ?></td>
+                                                                <td>
+                                                                    <a href="index.php?module=rekam_medis&action=edit_riwayat_kehamilan&id=<?= $rk['id_riwayat_kehamilan'] ?>&source=detail_pasien<?= isset($_GET['no_rawat']) ? '&no_rawat=' . $_GET['no_rawat'] : '' ?>" class="btn btn-warning btn-sm">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </a>
+                                                                    <a href="index.php?module=rekam_medis&action=hapus_riwayat_kehamilan&id=<?= $rk['id_riwayat_kehamilan'] ?>&source=detail_pasien<?= isset($_GET['no_rawat']) ? '&no_rawat=' . $_GET['no_rawat'] : '' ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                                        <i class="fas fa-trash"></i>
+                                                                    </a>
+                                                                </td>
+                                                            </tr>
+                                                        <?php endforeach; ?>
+                                                    <?php else: ?>
+                                                        <tr>
+                                                            <td colspan="10" class="text-center">Tidak ada data riwayat kehamilan</td>
+                                                        </tr>
+                                                    <?php endif; ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -991,7 +974,7 @@ error_log("Data pasien: " . json_encode($pasien));
                             <!-- Tab Surat -->
                             <div class="tab-pane fade" id="surat" role="tabpanel">
                                 <div class="d-flex justify-content-end mb-3">
-                                    <button id="tambahSurat" class="btn btn-primary btn-sm">
+                                    <button type="button" id="tambahSurat" class="btn btn-primary btn-sm">
                                         <i class="fas fa-plus"></i> Tambah Surat
                                     </button>
                                 </div>
@@ -2330,9 +2313,9 @@ error_log("Data pasien: " . json_encode($pasien));
                                         <a href="index.php?module=rekam_medis&action=hapus_surat&id=${surat.id_surat}&source=<?= $_SESSION['source_page'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus surat ini?')">
                                             <i class="fas fa-trash"></i>
                                         </a>
-                                        <a href="index.php?module=rekam_medis&action=cetak_surat&id=${surat.id_surat}" class="btn btn-primary btn-sm" target="_blank">
-                                            <i class="fas fa-print"></i>
-                                        </a>
+                                        <a href="index.php?module=rekam_medis&action=cetak_surat&id=${surat.id_surat}&pdf=1" class="btn btn-primary btn-sm" target="_blank" title="Cetak PDF Surat">
+    <i class="fas fa-file-pdf"></i>
+</a>
                                     </td>
                                 </tr>
                             `;
@@ -2340,33 +2323,60 @@ error_log("Data pasien: " . json_encode($pasien));
 
                         suratTableBody.innerHTML = tableHtml;
                     } else {
-                        suratTableBody.innerHTML = '<tr><td colspan="5" class="text-center">Tidak ada data surat</td></tr>';
+                        suratTableBody.innerHTML = '<tr><td colspan="6" class="text-center">Tidak ada data surat</td></tr>';
                     }
                 })
                 .catch(error => {
                     console.error('Error saat memuat data surat:', error);
-                    suratTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Error: Gagal memuat data surat</td></tr>';
+                    suratTableBody.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Error: Gagal memuat data surat</td></tr>';
                 });
         }
 
         // Muat data saat tab dibuka
         document.addEventListener('DOMContentLoaded', function() {
             // Modify tab click handlers to load data
-            document.getElementById('status-ginekologi-tab').addEventListener('click', function() {
-                loadStatusGinekologiData();
-            });
+            (function(){
+                const ginekologiTab = document.getElementById('status-ginekologi-tab');
+                if (ginekologiTab) {
+                    ginekologiTab.addEventListener('click', function() {
+                        if (typeof loadStatusGinekologiData === 'function') {
+                            loadStatusGinekologiData();
+                        }
+                    });
+                }
 
-            document.getElementById('riwayat-kehamilan-tab').addEventListener('click', function() {
-                loadRiwayatKehamilanData();
-            });
+                const riwayatKehamilanTab = document.getElementById('riwayat-kehamilan-tab');
+                if (riwayatKehamilanTab) {
+                    riwayatKehamilanTab.addEventListener('click', function() {
+                        if (typeof loadRiwayatKehamilanData === 'function') {
+                            loadRiwayatKehamilanData();
+                        }
+                    });
+                }
 
-            document.getElementById('surat-tab').addEventListener('click', function() {
-                loadSuratData();
-            });
+                const suratTab = document.getElementById('surat-tab');
+                if (suratTab) {
+                    suratTab.addEventListener('click', function() {
+                        loadSuratData();
+                    });
+                }
+            })();
 
             // Handler untuk tombol Tambah Surat
             document.getElementById('tambahSurat').addEventListener('click', function() {
-                $('#modalSurat').modal('show');
+                // Bootstrap 5 modal API
+                const modalEl = document.getElementById('modalSurat');
+                const modal = (typeof bootstrap !== 'undefined' && bootstrap.Modal)
+                    ? bootstrap.Modal.getOrCreateInstance(modalEl)
+                    : null;
+                if (modal) {
+                    modal.show();
+                } else if (window.$ && typeof $('#modalSurat').modal === 'function') {
+                    // Fallback if jQuery modal plugin is available
+                    $('#modalSurat').modal('show');
+                } else {
+                    console.warn('Bootstrap Modal API not found. Please ensure Bootstrap JS is loaded.');
+                }
             });
 
             // Handler untuk perubahan jenis surat
@@ -2407,20 +2417,34 @@ error_log("Data pasien: " . json_encode($pasien));
                     success: function(response) {
                         console.log('Success response:', response);
                         if (response.status == 'success') {
-                            $('#modalSurat').modal('hide');
+                            // Hide modal via Bootstrap 5 API
+                            (function(){
+                                const el = document.getElementById('modalSurat');
+                                try {
+                                    const instance = (typeof bootstrap !== 'undefined' && bootstrap.Modal)
+                                        ? (bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el))
+                                        : null;
+                                    if (instance) {
+                                        instance.hide();
+                                    } else if (window.$ && typeof $('#modalSurat').modal === 'function') {
+                                        $('#modalSurat').modal('hide');
+                                    }
+                                } catch (e) { console.error(e); }
+                                // Force remove Bootstrap modal backdrop and class if stuck
+                                setTimeout(function() {
+                                    document.body.classList.remove('modal-open');
+                                    const backdrops = document.querySelectorAll('.modal-backdrop');
+                                    backdrops.forEach(bd => bd.remove());
+                                }, 500);
+                            })();
                             $('#formSurat')[0].reset();
 
-                            // Tampilkan alert sukses
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil',
-                                text: 'Data surat berhasil disimpan',
-                                allowOutsideClick: false
-                            }).then((result) => {
-                                // Refresh halaman dengan mempertahankan tab yang aktif
-                                window.location.href = 'index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=<?= $pasien["no_rkm_medis"] ?>#surat';
-                                location.reload();
-                            });
+                            // Refresh daftar surat tanpa reload halaman
+                            // Pastikan tab surat tetap aktif
+                            if (!location.hash || location.hash !== '#surat') {
+                                history.replaceState(null, '', location.pathname + location.search + '#surat');
+                            }
+                            loadSuratData();
                         } else {
                             // Tampilkan alert error
                             console.error('Error in response:', response);
@@ -2469,18 +2493,31 @@ error_log("Data pasien: " . json_encode($pasien));
 
             // Jika ada hash di URL (contoh: #riwayat-kehamilan), buka tab yang sesuai dan muat datanya
             if (window.location.hash) {
-                const targetTab = document.querySelector(`a[href="${window.location.hash}"]`);
+                // Cari tab menggunakan href atau data-bs-target
+                let targetTab = document.querySelector(`a[href="${window.location.hash}"]`);
+                if (!targetTab) {
+                    targetTab = document.querySelector(`a[data-bs-target="${window.location.hash}"]`);
+                }
                 if (targetTab) {
-                    // Klik tab secara programatis untuk membukanya
-                    targetTab.click();
+                    try {
+                        if (typeof bootstrap !== 'undefined' && bootstrap.Tab) {
+                            bootstrap.Tab.getOrCreateInstance(targetTab).show();
+                        } else {
+                            targetTab.click();
+                        }
+                    } catch (e) { console.warn(e); }
 
                     // Muat data untuk tab yang ditargetkan
                     if (window.location.hash === '#riwayat-kehamilan') {
-                        setTimeout(loadRiwayatKehamilanData, 300); // Delay sebentar agar tab selesai dibuka
+                        if (typeof loadRiwayatKehamilanData === 'function') {
+                            setTimeout(loadRiwayatKehamilanData, 300);
+                        }
                     } else if (window.location.hash === '#status-ginekologi') {
-                        setTimeout(loadStatusGinekologiData, 300); // Delay sebentar agar tab selesai dibuka
+                        if (typeof loadStatusGinekologiData === 'function') {
+                            setTimeout(loadStatusGinekologiData, 300);
+                        }
                     } else if (window.location.hash === '#surat') {
-                        setTimeout(loadSuratData, 300); // Delay sebentar agar tab selesai dibuka
+                        setTimeout(loadSuratData, 300);
                     }
                 }
             }

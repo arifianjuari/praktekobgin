@@ -4690,6 +4690,7 @@ class RekamMedisController
         }
 
         $id_surat = $_GET['id'];
+        $output_pdf = (isset($_GET['pdf']) && $_GET['pdf'] == '1');
 
         try {
             // Gunakan model Surat untuk mendapatkan data
@@ -4705,21 +4706,56 @@ class RekamMedisController
             // Dapatkan data pasien
             $pasien = $this->rekamMedisModel->getPasienById($surat['no_rkm_medis']);
 
-            // Tampilkan halaman cetak surat sesuai jenis surat
+            // Pilih view surat sesuai jenis surat
+            $view_file = '';
             switch ($surat['jenis_surat']) {
                 case 'skd':
-                    include 'modules/rekam_medis/views/cetak_surat_dokter.php';
+                    $view_file = 'modules/rekam_medis/views/cetak_surat_skd.php';
                     break;
                 case 'sakit':
-                    include 'modules/rekam_medis/views/cetak_surat_sakit.php';
+                    $view_file = 'modules/rekam_medis/views/cetak_surat_sakit.php';
                     break;
                 case 'rujukan':
-                    include 'modules/rekam_medis/views/cetak_surat_rujukan.php';
+                    $view_file = 'modules/rekam_medis/views/cetak_surat_rujukan.php';
                     break;
                 default:
                     $_SESSION['error'] = 'Jenis surat tidak valid';
                     header('Location: index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=' . $surat['no_rkm_medis']);
                     exit;
+            }
+
+            if ($output_pdf) {
+                // --- PDF GENERATION ---
+                // Start output buffering to capture HTML
+                ob_start();
+                include $view_file;
+                $html = ob_get_clean();
+
+                // Load TCPDF
+                require_once __DIR__ . '/../../../vendor/tecnickcom/tcpdf/tcpdf.php';
+
+                // Create new PDF document
+                $pdf = new \TCPDF('P', 'mm', 'A4', true, 'UTF-8', false);
+                $pdf->SetCreator('praktekobgin');
+                $pdf->SetAuthor('praktekobgin');
+                $pdf->SetTitle('Surat ' . ucfirst($surat['jenis_surat']));
+                $pdf->SetMargins(15, 15, 15);
+                $pdf->SetAutoPageBreak(true, 15);
+                $pdf->AddPage();
+                // Remove print buttons for PDF
+                $html = preg_replace('/<div class="no-print"[\s\S]*?<\/div>/', '', $html);
+                $pdf->writeHTML($html, true, false, true, false, '');
+
+                // Output PDF
+                $filename = 'Surat_' . $surat['jenis_surat'] . '_' . ($surat['nomor_surat'] ?? $id_surat) . '.pdf';
+                // Set headers for download/inline
+                header('Content-Type: application/pdf');
+                header('Content-Disposition: inline; filename="' . $filename . '"');
+                $pdf->Output($filename, 'I'); // Inline display
+                exit;
+            } else {
+                // HTML output for browser
+                include $view_file;
             }
         } catch (Exception $e) {
             $_SESSION['error'] = 'Terjadi kesalahan: ' . $e->getMessage();
@@ -4727,6 +4763,7 @@ class RekamMedisController
             exit;
         }
     }
+
 
     // [Fungsi dataKunjungan telah dihapus - tidak lagi digunakan]
 
