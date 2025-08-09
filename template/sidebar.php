@@ -1047,13 +1047,16 @@ function is_current_module($module, $action = null)
     <ul class="nav nav-pills flex-column">
         <?php if ($is_admin): ?>
             <!-- Menu untuk Admin -->
+            <!-- Dashboard menu hidden as requested
             <li class="nav-item">
                 <a href="<?php echo clean_url($base_url); ?>/dashboard.php" class="nav-link <?php echo is_current_page('/dashboard.php') ? 'active' : ''; ?>" data-title="Dashboard">
                     <i class="bi bi-grid"></i>
                     <span class="menu-text">Dashboard</span>
                 </a>
             </li>
+            -->
 
+            <!-- RSHB Menu - Commented out as requested
             <li class="nav-item has-submenu">
                 <a href="#" class="nav-link submenu-toggle" data-title="RSHB">
                     <i class="bi bi-hospital"></i>
@@ -1079,29 +1082,30 @@ function is_current_module($module, $action = null)
                             <span class="menu-text">Daftar Pasien Rajal</span>
                         </a>
                     </li>
+                </ul>
+            </li>
+            -->
+
+
+            <!-- Menu Rawat Jalan -->
+            <li class="nav-item has-submenu">
+                <a href="#" class="nav-link submenu-toggle" data-title="Rawat Jalan">
+                    <i class="bi bi-journal-medical"></i>
+                    <span class="menu-text">Rawat Jalan</span>
+                    <i class="bi bi-chevron-right ms-auto submenu-arrow"></i>
+                </a>
+                <ul class="submenu collapse">
                     <li class="nav-item">
                         <a href="<?php echo $base_url; ?>/modules/pendaftaran/views/form_pendaftaran_pasien_rshb.php" class="nav-link <?php echo is_current_page('/modules/pendaftaran/views/form_pendaftaran_pasien_rshb.php') ? 'active' : ''; ?>" data-title="Pendaftaran Pasien RSHB">
                             <i class="bi bi-clipboard-plus"></i>
                             <span class="menu-text">Pendaftaran Pasien RSHB</span>
                         </a>
                     </li>
-                </ul>
-            </li>
-
-
-            <!-- Menu Rekam Medis -->
-            <li class="nav-item has-submenu">
-                <a href="#" class="nav-link submenu-toggle" data-title="Rekam Medis">
-                    <i class="bi bi-journal-medical"></i>
-                    <span class="menu-text">Rekam Medis</span>
-                    <i class="bi bi-chevron-right ms-auto submenu-arrow"></i>
-                </a>
-                <ul class="submenu collapse">
                     <li class="nav-item">
                         <a href="<?php echo clean_url($base_url); ?>/index.php?module=rekam_medis&action=manajemen_antrian"
-                            class="nav-link <?php echo is_current_module('rekam_medis', 'manajemen_antrian') ? 'active' : ''; ?>" data-title="Pasien Rawat Jalan">
+                            class="nav-link <?php echo is_current_module('rekam_medis', 'manajemen_antrian') ? 'active' : ''; ?>" data-title="Daftar Pasien Rajal">
                             <i class="bi bi-people"></i>
-                            <span class="menu-text">Pasien Rawat Jalan</span>
+                            <span class="menu-text">Daftar Pasien Rajal</span>
                         </a>
                     </li>
                                         <li class="nav-item">
