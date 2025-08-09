@@ -882,11 +882,6 @@ if ($conn) {
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link collapsed" id="riwayat-kehamilan-tab" data-toggle="collapse" href="#riwayat-kehamilan" role="tab">
-                        <i class="fas fa-baby mr-1"></i> Riwayat Kehamilan <i class="fas fa-chevron-down"></i>
-                    </a>
-                </li>
-                <li class="nav-item">
                     <a class="nav-link collapsed" id="status-ginekologi-tab" data-toggle="collapse" href="#status-ginekologi" role="tab">
                         <i class="fas fa-venus mr-1"></i> Status Ginekologi <i class="fas fa-chevron-down"></i>
                     </a>
@@ -1321,67 +1316,66 @@ if ($conn) {
                                 </tbody>
                             </table>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Tab Riwayat Kehamilan -->
-                <div class="tab-pane fade collapse" id="riwayat-kehamilan" role="tabpanel">
-                    <div class="mb-3 d-flex justify-content-between">
-                        <h6 class="font-weight-bold">Riwayat Kehamilan</h6>
-                        <a href="index.php?module=rekam_medis&action=tambah_riwayat_kehamilan&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>&source=form_edit_pemeriksaan<?= isset($_GET['no_rawat']) ? '&no_rawat=' . $_GET['no_rawat'] : '' ?>" class="btn btn-primary btn-sm">
-                            <i class="fas fa-plus"></i> Tambah Data
-                        </a>
-                    </div>
-                    <div id="riwayatKehamilanContent">
-                        <div class="table-responsive">
-                            <table class="table table-sm table-bordered table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Status</th>
-                                        <th>Jenis</th>
-                                        <th>Tempat</th>
-                                        <th>Penolong</th>
-                                        <th>Tahun</th>
-                                        <th>Jenis Kelamin</th>
-                                        <th>BB</th>
-                                        <th>Kondisi</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php if (isset($riwayatKehamilan) && count($riwayatKehamilan) > 0): ?>
-                                        <?php foreach ($riwayatKehamilan as $rk): ?>
-                                            <tr>
-                                                <td><?= htmlspecialchars($rk['no_urut_kehamilan'] ?? '-') ?></td>
-                                                <td><?= htmlspecialchars($rk['status_kehamilan'] ?? '-') ?></td>
-                                                <td><?= htmlspecialchars($rk['jenis_persalinan'] ?? '-') ?></td>
-                                                <td><?= htmlspecialchars($rk['tempat_persalinan'] ?? '-') ?></td>
-                                                <td><?= htmlspecialchars($rk['penolong_persalinan'] ?? '-') ?></td>
-                                                <td><?= htmlspecialchars($rk['tahun_persalinan'] ?? '-') ?></td>
-                                                <td><?= htmlspecialchars($rk['jenis_kelamin_anak'] ?? '-') ?></td>
-                                                <td><?= htmlspecialchars($rk['berat_badan_lahir'] ?? '-') ?></td>
-                                                <td><?= htmlspecialchars($rk['kondisi_lahir'] ?? '-') ?></td>
-                                                <td>
-                                                    <a href="index.php?module=rekam_medis&action=edit_riwayat_kehamilan&id=<?= $rk['id_riwayat_kehamilan'] ?>&source=form_edit_pemeriksaan<?= isset($_GET['no_rawat']) ? '&no_rawat=' . $_GET['no_rawat'] : '' ?>" class="btn btn-warning btn-sm">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
-                                                    <a href="index.php?module=rekam_medis&action=hapus_riwayat_kehamilan&id=<?= $rk['id_riwayat_kehamilan'] ?>&source=form_edit_pemeriksaan<?= isset($_GET['no_rawat']) ? '&no_rawat=' . $_GET['no_rawat'] : '' ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
-                                                        <i class="fas fa-trash"></i>
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    <?php else: ?>
+                        <!-- Riwayat Kehamilan (dipindahkan ke bawah Status Obstetri) -->
+                        <hr />
+                        <div class="mb-3 d-flex justify-content-between">
+                            <h6 class="font-weight-bold">Riwayat Kehamilan</h6>
+                            <a href="index.php?module=rekam_medis&action=tambah_riwayat_kehamilan&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>&source=form_edit_pemeriksaan<?= isset($_GET['no_rawat']) ? '&no_rawat=' . $_GET['no_rawat'] : '' ?>" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus"></i> Tambah Data
+                            </a>
+                        </div>
+                        <div id="riwayatKehamilanContent">
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered table-striped">
+                                    <thead>
                                         <tr>
-                                            <td colspan="10" class="text-center">Tidak ada data riwayat kehamilan</td>
+                                            <th>No</th>
+                                            <th>Status</th>
+                                            <th>Jenis</th>
+                                            <th>Tempat</th>
+                                            <th>Penolong</th>
+                                            <th>Tahun</th>
+                                            <th>Jenis Kelamin</th>
+                                            <th>BB</th>
+                                            <th>Kondisi</th>
+                                            <th>Aksi</th>
                                         </tr>
-                                    <?php endif; ?>
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        <?php if (isset($riwayatKehamilan) && count($riwayatKehamilan) > 0): ?>
+                                            <?php foreach ($riwayatKehamilan as $rk): ?>
+                                                <tr>
+                                                    <td><?= htmlspecialchars($rk['no_urut_kehamilan'] ?? '-') ?></td>
+                                                    <td><?= htmlspecialchars($rk['status_kehamilan'] ?? '-') ?></td>
+                                                    <td><?= htmlspecialchars($rk['jenis_persalinan'] ?? '-') ?></td>
+                                                    <td><?= htmlspecialchars($rk['tempat_persalinan'] ?? '-') ?></td>
+                                                    <td><?= htmlspecialchars($rk['penolong_persalinan'] ?? '-') ?></td>
+                                                    <td><?= htmlspecialchars($rk['tahun_persalinan'] ?? '-') ?></td>
+                                                    <td><?= htmlspecialchars($rk['jenis_kelamin_anak'] ?? '-') ?></td>
+                                                    <td><?= htmlspecialchars($rk['berat_badan_lahir'] ?? '-') ?></td>
+                                                    <td><?= htmlspecialchars($rk['kondisi_lahir'] ?? '-') ?></td>
+                                                    <td>
+                                                        <a href="index.php?module=rekam_medis&action=edit_riwayat_kehamilan&id=<?= $rk['id_riwayat_kehamilan'] ?>&source=form_edit_pemeriksaan<?= isset($_GET['no_rawat']) ? '&no_rawat=' . $_GET['no_rawat'] : '' ?>" class="btn btn-warning btn-sm">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <a href="index.php?module=rekam_medis&action=hapus_riwayat_kehamilan&id=<?= $rk['id_riwayat_kehamilan'] ?>&source=form_edit_pemeriksaan<?= isset($_GET['no_rawat']) ? '&no_rawat=' . $_GET['no_rawat'] : '' ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                            <i class="fas fa-trash"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <tr>
+                                                <td colspan="10" class="text-center">Tidak ada data riwayat kehamilan</td>
+                                            </tr>
+                                        <?php endif; ?>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
+
 
                 <!-- Tab Status Ginekologi -->
                 <div class="tab-pane fade collapse" id="status-ginekologi" role="tabpanel">
@@ -1974,8 +1968,8 @@ if ($conn) {
                                     <div class="row">
                                         <div class="col-md-8">
                                             <textarea name="edukasi" id="edukasi" class="form-control auto-resize smaller-text" rows="2" style="overflow-y: hidden; resize: none;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"><?php echo isset($pemeriksaan['edukasi']) ? strip_tags($pemeriksaan['edukasi']) : '' ?></textarea>
-                                                <!-- Simpan versi HTML asli untuk kebutuhan cetak -->
-                                                <input type="hidden" id="edukasi_html" value="<?php echo isset($pemeriksaan['edukasi']) ? htmlspecialchars($pemeriksaan['edukasi'], ENT_QUOTES) : '' ?>">
+                                            <!-- Simpan versi HTML asli untuk kebutuhan cetak -->
+                                            <input type="hidden" id="edukasi_html" value="<?php echo isset($pemeriksaan['edukasi']) ? htmlspecialchars($pemeriksaan['edukasi'], ENT_QUOTES) : '' ?>">
                                         </div>
                                         <div class="col-md-4">
                                             <div class="card border">
@@ -2160,7 +2154,84 @@ if ($conn) {
                 <!-- Hidden input untuk data pasien yang digunakan oleh fitur Grafik IMT -->
                 <input type="hidden" id="hidden_no_rkm_medis" value="<?= $pasien['no_rkm_medis'] ?>">
                 <input type="hidden" id="hidden_nm_pasien" value="<?= $pasien['nm_pasien'] ?>">
+                <!-- Floating Save Button (Icon Only) -->
+                <button type="button" id="floatingSaveBtn" class="btn btn-warning btn-lg floating-save-btn" title="Simpan & Kembali">
+                    <i class="fas fa-save"></i>
+                </button>
             </form>
+
+            <style>
+                .floating-save-btn {
+                    position: fixed;
+                    right: 32px;
+                    bottom: 32px;
+                    z-index: 1050;
+                    width: 56px;
+                    height: 56px;
+                    border-radius: 50%;
+                    padding: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                    border: none;
+                    background-color: #fd7e14;
+                    /* Bootstrap orange color */
+                    color: white;
+                    transition: all 0.2s ease;
+                }
+
+                .floating-save-btn:hover {
+                    background-color: #e06c0d;
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+                }
+
+                .floating-save-btn.saving {
+                    pointer-events: none;
+                    opacity: 0.7;
+                }
+
+                @media (max-width: 576px) {
+                    .floating-save-btn {
+                        right: 16px;
+                        bottom: 16px;
+                        width: 48px;
+                        height: 48px;
+                    }
+                }
+            </style>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    var floatingBtn = document.getElementById('floatingSaveBtn');
+                    var form = document.querySelector('form[action*="update_pemeriksaan"]');
+                    if (floatingBtn && form) {
+                        floatingBtn.addEventListener('click', function() {
+                            if (floatingBtn.classList.contains('saving')) return;
+                            floatingBtn.classList.add('saving');
+                            floatingBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Sedang Menyimpan...';
+                            // Submit the form via AJAX
+                            var formData = new FormData(form);
+                            fetch(form.action, {
+                                    method: 'POST',
+                                    body: formData,
+                                })
+                                .then(response => response.text())
+                                .then(function(data) {
+                                    // Optional: Show success message
+                                    // Redirect to manajemen_antrian.php
+                                    window.location.href = 'index.php?module=rekam_medis&action=manajemen_antrian';
+                                })
+                                .catch(function(err) {
+                                    alert('Gagal menyimpan data!');
+                                    floatingBtn.classList.remove('saving');
+                                    floatingBtn.innerHTML = '<i class="fas fa-save"></i>';
+                                });
+                        });
+                    }
+                });
+            </script>
 
             <!-- Style untuk toggle gratis -->
             <style>
@@ -2989,7 +3060,10 @@ if ($conn) {
                             echo '<div class="card-body">';
                             echo '<h6 class="card-title">' . htmlspecialchars($row['judul']) . '</h6>';
                             echo '<p class="card-text small">' . htmlspecialchars($row['kategori']) . '</p>';
-                            echo '<button type="button" class="btn btn-primary btn-sm w-100" onclick="gunakanTemplateEdukasi(\'' . htmlspecialchars($row['judul']) . '\')"><i class="fas fa-check"></i> Gunakan</button>';
+                            echo '<div class="d-flex gap-2">';
+echo '<button type="button" class="btn btn-primary btn-sm flex-fill" onclick="gunakanTemplateEdukasi(\'' . htmlspecialchars($row['judul']) . '\')"><i class="fas fa-check"></i> Gunakan</button>';
+echo '<button type="button" class="btn btn-secondary btn-sm flex-fill" onclick="window.open(\'uploads/edukasi/' . htmlspecialchars($row['link_gambar']) . '\', \'_blank\')"><i class="fas fa-external-link-alt"></i> Lihat Gambar</button>';
+echo '</div>';
                             echo '</div>';
                             echo '</div>';
                             echo '</div>';
@@ -3145,11 +3219,11 @@ if ($conn) {
                     // Normalize multiple newlines and trim
                     textContent = textContent.replace(/\n{3,}/g, '\n\n').replace(/^[\n\s]+|[\n\s]+$/g, '');
                     textarea.value = textContent;
-                        // Simpan HTML asli ke hidden input untuk cetak
-                        const hiddenHtml = document.getElementById('edukasi_html');
-                        if (hiddenHtml) {
-                            hiddenHtml.value = isi;
-                        }
+                    // Simpan HTML asli ke hidden input untuk cetak
+                    const hiddenHtml = document.getElementById('edukasi_html');
+                    if (hiddenHtml) {
+                        hiddenHtml.value = isi;
+                    }
                 } else {
                     textarea.value = isi;
                 }
@@ -4446,7 +4520,7 @@ echo "<!-- END FORM EDIT -->\n";
         }
 
         // Format pemeriksaan USG
-        var pemeriksaanUSG = "PEMERIKSAAN USG:\n" + isiUsg + "\n";
+        var pemeriksaanUSG = "PEMERIKSAAN USG:\n" + isiUsg;
 
         // Sisipkan ke field resume
         var resumeField = document.getElementById('resume');
@@ -5356,24 +5430,27 @@ echo "<!-- END FORM EDIT -->\n";
 
     // Fungsi untuk memilih gambar
     function pilihGambar(namaFile, judul) {
-        // Simpan data gambar ke input hidden
-        document.getElementById('gambarEdukasiInput').value = namaFile;
-        document.getElementById('judulGambarEdukasiInput').value = judul;
+    // Simpan data gambar ke input hidden
+    document.getElementById('gambarEdukasiInput').value = namaFile;
+    document.getElementById('judulGambarEdukasiInput').value = judul;
 
-        // Tampilkan gambar dengan path yang benar
-        const gambarPath = 'uploads/edukasi/' + namaFile;
-        document.getElementById('gambarEdukasiTerpilih').src = gambarPath;
-        document.getElementById('judulGambarEdukasiTerpilih').textContent = judul;
+    // Tampilkan gambar dengan path yang benar
+    const gambarPath = 'uploads/edukasi/' + namaFile;
+    document.getElementById('gambarEdukasiTerpilih').src = gambarPath;
+    document.getElementById('judulGambarEdukasiTerpilih').textContent = judul;
 
-        // Tampilkan card gambar
-        document.getElementById('cardGambarEdukasi').style.display = 'block';
+    // Tampilkan card gambar
+    document.getElementById('cardGambarEdukasi').style.display = 'block';
 
-        // Tutup modal
-        const modal = bootstrap.Modal.getInstance(document.getElementById('modalPilihGambarEdukasi'));
-        if (modal) {
-            modal.hide();
-        }
+    // Buka gambar di tab baru
+    window.open(gambarPath, '_blank');
+
+    // Tutup modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('modalPilihGambarEdukasi'));
+    if (modal) {
+        modal.hide();
     }
+}
 
     // Fungsi untuk menghapus gambar terpilih
     function hapusGambarTerpilih() {
