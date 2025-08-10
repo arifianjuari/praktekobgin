@@ -576,7 +576,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Tambahkan nomor pasien ke array penerima
                 $whatsapp_numbers[] = $patient_phone;
 
-                // Kirim pesan ke setiap nomor
+                /* Nonaktifkan sementara notifikasi WhatsApp
                 foreach ($whatsapp_numbers as $number) {
                     // Parameter untuk API UltraMsg
                     $params = array(
@@ -613,6 +613,64 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         error_log("WhatsApp Notification Error for {$number}: " . $err);
                     } else {
                         error_log("WhatsApp Notification Sent to {$number}: " . $response);
+                    }
+                }
+                */
+
+                // Kirim notifikasi Telegram
+                // Pastikan kode ini berada di dalam blok PHP, tanpa tag pembuka baru
+                $token = '7838022147:AAE5fa4QP8SDCdVrgDxKW5ilawqtw7TX52Q';
+                $chatId = '-1002435976055'; // chat_id channel praktekobgin_bot (pastikan bot sudah admin)
+
+                // Buat pesan lebih informatif berisi data pendaftaran
+                $telegram_message = "<b>Pendaftaran Pasien Baru</b>\n" .
+                    "ID: {$id_pendaftaran}\n" .
+                    "Nama: {$nama_pasien}\n" .
+                    "NIK: {$no_ktp}\n" .
+                    "No.HP: {$nomor_telepon}\n" .
+                    "Tanggal Lahir: {$tanggal_lahir}\n" .
+                    "Jenis Layanan: {$nama_layanan}\n" .
+                    "Tempat Praktek: {$nama_tempat}\n" .
+                    "Dokter/Bidan: {$nama_dokter}\n" .
+                    "Jadwal: {$jadwal_jam}\n" .
+                    "Waktu Daftar: " . date('Y-m-d H:i:s') . "\n" .
+                    "Perkiraan Periksa: " . date('H:i', strtotime($waktu_perkiraan)) . " WIB";
+
+                $url = "https://api.telegram.org/bot{$token}/sendMessage";
+                $payload = [
+                    'chat_id' => $chatId,
+                    'text' => $telegram_message,
+                    'parse_mode' => 'HTML',
+                    'disable_web_page_preview' => true,
+                ];
+
+                $ch = curl_init($url);
+                curl_setopt_array($ch, [
+                    CURLOPT_POST => true,
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_TIMEOUT => 10,
+                    CURLOPT_HTTPHEADER => ['Content-Type: application/x-www-form-urlencoded'],
+                    CURLOPT_POSTFIELDS => http_build_query($payload),
+                ]);
+
+                $response = curl_exec($ch);
+                $err = curl_error($ch);
+                $http = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                curl_close($ch);
+
+                // Logging & validasi respons Telegram
+                if ($err) {
+                    error_log("Telegram cURL error: $err");
+                } else {
+                    if ($http !== 200) {
+                        error_log("Telegram HTTP $http: $response");
+                    } else {
+                        $json = json_decode($response, true);
+                        if (!isset($json['ok']) || !$json['ok']) {
+                            error_log("Telegram API error: $response");
+                        } else {
+                            error_log("Telegram sent: message_id " . $json['result']['message_id']);
+                        }
                     }
                 }
             } catch (Exception $e) {
@@ -890,7 +948,7 @@ ob_start();
 <script>
     // Definisikan base_url untuk digunakan di JavaScript
     const base_url = '<?= $base_url ?>';
-    
+
     document.addEventListener('DOMContentLoaded', function() {
         const formElement = document.getElementById('formPendaftaran');
         const submitBtn = document.getElementById('submitBtn');
@@ -1443,6 +1501,7 @@ ob_start();
             right: 15px;
             padding: 6px 12px;
         }
+
         .floating-antrian-btn .antrian-label {
             font-size: 0.75rem;
         }
@@ -1461,7 +1520,8 @@ ob_start();
         top: 20px;
         right: 20px;
         height: auto;
-        background-color: #28a745; /* Green color for distinction */
+        background-color: #28a745;
+        /* Green color for distinction */
         color: white;
         border-radius: 20px;
         display: flex;
@@ -1495,6 +1555,7 @@ ob_start();
             right: 15px;
             padding: 6px 12px;
         }
+
         .floating-jadwal-btn .jadwal-label {
             font-size: 0.75rem;
         }
