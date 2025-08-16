@@ -173,12 +173,41 @@ try {
     // Filter berdasarkan kategori jika ada
     $kategori_filter = isset($_GET['kategori']) ? $_GET['kategori'] : '';
 
+    // Server-side pagination params
+    $allowedPerPage = [25, 50, 100];
+    $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 25;
+    if (!in_array($perPage, $allowedPerPage, true)) {
+        $perPage = 25;
+    }
+    $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+
+    // Hitung total baris
     if (!empty($kategori_filter)) {
-        $stmt = $conn->prepare("SELECT * FROM formularium WHERE kategori = :kategori ORDER BY nama_obat ASC");
+        $countStmt = $conn->prepare("SELECT COUNT(*) FROM formularium WHERE kategori = :kategori");
+        $countStmt->bindParam(':kategori', $kategori_filter);
+        $countStmt->execute();
+        $totalRows = (int)$countStmt->fetchColumn();
+    } else {
+        $totalRows = (int)$conn->query("SELECT COUNT(*) FROM formularium")->fetchColumn();
+    }
+
+    $totalPages = max(1, (int)ceil($totalRows / $perPage));
+    if ($page > $totalPages) {
+        $page = $totalPages;
+    }
+    $offset = max(0, (int)(($page - 1) * $perPage));
+    $perPage = (int)$perPage;
+
+    // Ambil data sesuai halaman
+    if (!empty($kategori_filter)) {
+        $sql = "SELECT * FROM formularium WHERE kategori = :kategori ORDER BY nama_obat ASC LIMIT $offset, $perPage";
+        $stmt = $conn->prepare($sql);
         $stmt->bindParam(':kategori', $kategori_filter);
         $stmt->execute();
     } else {
-        $stmt = $conn->query("SELECT * FROM formularium ORDER BY nama_obat ASC");
+        $sql = "SELECT * FROM formularium ORDER BY nama_obat ASC LIMIT $offset, $perPage";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
     }
 
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -286,11 +315,11 @@ try {
                             <div class="filter-container">
                                 <div class="d-flex flex-wrap align-items-center">
                                     <label class="me-2"><strong>Filter Kategori:</strong></label>
-                                    <a href="<?= $base_url ?>/modules/admin/formularium.php" class="btn <?= empty($kategori_filter) ? 'btn-primary' : 'btn-outline-primary' ?>">
+                                    <a href="<?= $base_url ?>/modules/admin/controllers/formularium.php?per_page=<?= $perPage ?>&page=1" class="btn <?= empty($kategori_filter) ? 'btn-primary' : 'btn-outline-primary' ?>">
                                         Semua
                                     </a>
                                     <?php foreach ($kategori_list as $kat): ?>
-                                        <a href="<?= $base_url ?>/modules/admin/formularium.php?kategori=<?= urlencode($kat) ?>"
+                                        <a href="<?= $base_url ?>/modules/admin/controllers/formularium.php?kategori=<?= urlencode($kat) ?>&per_page=<?= $perPage ?>&page=1"
                                             class="btn <?= $kategori_filter === $kat ? 'btn-primary' : 'btn-outline-primary' ?>">
                                             <?= $kat ?>
                                         </a>
@@ -384,6 +413,60 @@ try {
                                     </tbody>
                                 </table>
                             </div>
+                            <?php if (isset($totalPages) && $totalPages > 1): ?>
+                                <nav aria-label="Pagination" class="mt-3">
+                                    <ul class="pagination justify-content-end">
+                                        <?php
+                                            // Helper to build URL with preserved params
+                                            if (!function_exists('buildPageUrl')) {
+                                                function buildPageUrl($base, $params) {
+                                                    return $base . '?' . http_build_query($params);
+                                                }
+                                            }
+                                            $base = $base_url . '/modules/admin/controllers/formularium.php';
+                                            $commonParams = [];
+                                            if (!empty($kategori_filter)) { $commonParams['kategori'] = $kategori_filter; }
+                                            $commonParams['per_page'] = $perPage;
+
+                                            $prevDisabled = $page <= 1 ? ' disabled' : '';
+                                            $prevUrl = buildPageUrl($base, array_merge($commonParams, ['page' => max(1, $page - 1)]));
+                                        ?>
+                                        <li class="page-item<?= $prevDisabled ?>">
+                                            <a class="page-link" href="<?= $prevUrl ?>" tabindex="-1">&laquo;</a>
+                                        </li>
+                                        <?php
+                                            $window = 2;
+                                            $start = max(1, $page - $window);
+                                            $end = min($totalPages, $page + $window);
+                                            if ($start > 1) {
+                                                $firstUrl = buildPageUrl($base, array_merge($commonParams, ['page' => 1]));
+                                                echo '<li class="page-item"><a class="page-link" href="' . $firstUrl . '">1</a></li>';
+                                                if ($start > 2) {
+                                                    echo '<li class="page-item disabled"><span class="page-link">…</span></li>';
+                                                }
+                                            }
+                                            for ($i = $start; $i <= $end; $i++) {
+                                                $active = $i === $page ? ' active' : '';
+                                                $url = buildPageUrl($base, array_merge($commonParams, ['page' => $i]));
+                                                echo '<li class="page-item' . $active . '"><a class="page-link" href="' . $url . '">' . $i . '</a></li>';
+                                            }
+                                            if ($end < $totalPages) {
+                                                if ($end < $totalPages - 1) {
+                                                    echo '<li class="page-item disabled"><span class="page-link">…</span></li>';
+                                                }
+                                                $lastUrl = buildPageUrl($base, array_merge($commonParams, ['page' => $totalPages]));
+                                                echo '<li class="page-item"><a class="page-link" href="' . $lastUrl . '">' . $totalPages . '</a></li>';
+                                            }
+
+                                            $nextDisabled = $page >= $totalPages ? ' disabled' : '';
+                                            $nextUrl = buildPageUrl($base, array_merge($commonParams, ['page' => min($totalPages, $page + 1)]));
+                                        ?>
+                                        <li class="page-item<?= $nextDisabled ?>">
+                                            <a class="page-link" href="<?= $nextUrl ?>">&raquo;</a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -577,7 +660,10 @@ try {
                 language: {
                     url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/id.json'
                 },
-                paging: false,
+                paging: false, // paging dihandle server-side
+                order: [], // gunakan urutan dari server (SQL)
+                deferRender: true,
+                searchDelay: 300,
                 info: false // Menghilangkan informasi "Showing X of Y entries"
             });
 
