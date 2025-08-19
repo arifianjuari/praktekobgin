@@ -2482,6 +2482,14 @@ if ($conn) {
                             <option value="ginekologi">Ginekologi</option>
                         </select>
                     </div>
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <input type="text" id="search_template_usg" class="form-control" placeholder="Cari template USG..." aria-label="Cari template USG">
+                            <button class="btn btn-outline-secondary" type="button" id="clear_search_template_usg">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Tabel Template -->
@@ -2756,7 +2764,7 @@ if ($conn) {
                                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                                     $bentuk_dosis = $row['bentuk_sediaan'] . ' ' . $row['dosis'];
                                     echo "<tr class='obat-row' data-kategori='" . htmlspecialchars($row['kategori'] ?? '') . "'>";
-                                    echo "<td><input type='checkbox' class='form-check-input obat-checkbox' data-nama='" . htmlspecialchars($row['nama_obat'] ?? '') . "' data-bentuk-sediaan='" . htmlspecialchars($row['bentuk_sediaan'] ?? '') . "' data-dosis='" . htmlspecialchars($row['dosis'] ?? '') . "' data-catatan='" . htmlspecialchars($row['catatan_obat'] ?? '') . "'></td>";
+                                    echo "<td><input type='checkbox' class='form-check-input obat-checkbox' data-nama='" . htmlspecialchars($row['nama_obat'] ?? '') . "' data-dosis='" . htmlspecialchars($row['dosis'] ?? '') . "' data-catatan='" . htmlspecialchars($row['catatan_obat'] ?? '') . "'></td>";
                                     echo "<td>" . htmlspecialchars($row['nama_obat'] ?? '') . "</td>";
                                     echo "<td>" . htmlspecialchars($row['bentuk_sediaan'] ?? '') . "</td>";
                                     echo "<td>" . htmlspecialchars($row['dosis'] ?? '') . "</td>";
@@ -3061,9 +3069,9 @@ if ($conn) {
                             echo '<h6 class="card-title">' . htmlspecialchars($row['judul']) . '</h6>';
                             echo '<p class="card-text small">' . htmlspecialchars($row['kategori']) . '</p>';
                             echo '<div class="d-flex gap-2">';
-echo '<button type="button" class="btn btn-primary btn-sm flex-fill" onclick="gunakanTemplateEdukasi(\'' . htmlspecialchars($row['judul']) . '\')"><i class="fas fa-check"></i> Gunakan</button>';
-echo '<button type="button" class="btn btn-secondary btn-sm flex-fill" onclick="window.open(\'uploads/edukasi/' . htmlspecialchars($row['link_gambar']) . '\', \'_blank\')"><i class="fas fa-external-link-alt"></i> Lihat Gambar</button>';
-echo '</div>';
+                            echo '<button type="button" class="btn btn-primary btn-sm flex-fill" onclick="gunakanTemplateEdukasi(\'' . htmlspecialchars($row['judul']) . '\')"><i class="fas fa-check"></i> Gunakan</button>';
+                            echo '<button type="button" class="btn btn-secondary btn-sm flex-fill" onclick="window.open(\'uploads/edukasi/' . htmlspecialchars($row['link_gambar']) . '\', \'_blank\')"><i class="fas fa-external-link-alt"></i> Lihat Gambar</button>';
+                            echo '</div>';
                             echo '</div>';
                             echo '</div>';
                             echo '</div>';
@@ -3574,6 +3582,33 @@ echo "<!-- END FORM EDIT -->\n";
                 });
             });
         }
+        // Highlight TD (tekanan darah) merah jika sistolik >= 140
+        const tdInput = document.querySelector('input[name="td"]');
+        if (tdInput) {
+            const evaluateBP = () => {
+                const val = (tdInput.value || '').trim();
+                let systolic = null;
+                // Match formats: "120/80", "120 / 80", or just "120"
+                const m = val.match(/^(\d{2,3})\s*\/\s*(\d{2,3})$/) || val.match(/^(\d{2,3})$/);
+                if (m) {
+                    systolic = parseInt(m[1], 10);
+                }
+                if (Number.isFinite(systolic) && systolic >= 140) {
+                    tdInput.style.color = '#dc3545'; // bootstrap danger
+                    tdInput.style.fontWeight = '600';
+                    tdInput.style.borderColor = '#dc3545';
+                    tdInput.title = 'Sistolik >= 140 mmHg';
+                } else {
+                    tdInput.style.color = '';
+                    tdInput.style.fontWeight = '';
+                    tdInput.style.borderColor = '';
+                    tdInput.removeAttribute('title');
+                }
+            };
+            evaluateBP(); // initial
+            tdInput.addEventListener('input', evaluateBP);
+            tdInput.addEventListener('change', evaluateBP);
+        }
     });
 
     const loadingManager = {
@@ -3868,7 +3903,6 @@ echo "<!-- END FORM EDIT -->\n";
             hiddenInput: !!ceklistHidden
         });
     }
-    }
 
 
     function gunakanDiagnosis(isi) {
@@ -3932,17 +3966,16 @@ echo "<!-- END FORM EDIT -->\n";
         const lines = [];
         document.querySelectorAll('.obat-checkbox:checked').forEach(cb => {
             const nama = cb.dataset.nama || '';
-            const bentukSediaan = cb.dataset.bentukSediaan || '';
             const dosis = cb.dataset.dosis || '';
 
             // Format:
             // [nama_obat]     No.X
-            //          [bentuk_sediaan] [dosis]
+            //         [dosis]
             let text = nama.trim();
             if (text) {
                 text += '     No.X';
             }
-            const dosisLine = [bentukSediaan, dosis].filter(Boolean).join(' ').trim();
+            let dosisLine = (dosis || '').trim();
             if (dosisLine) {
                 text += '\n         ' + dosisLine;
             }
@@ -4520,7 +4553,7 @@ echo "<!-- END FORM EDIT -->\n";
         }
 
         // Format pemeriksaan USG
-        var pemeriksaanUSG = "PEMERIKSAAN USG:\n" + isiUsg;
+        var pemeriksaanUSG = "PEMERIKSAAN USG:\n" + isiUsg + "\n";
 
         // Sisipkan ke field resume
         var resumeField = document.getElementById('resume');
@@ -4605,14 +4638,26 @@ echo "<!-- END FORM EDIT -->\n";
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        // Filter untuk template USG
-        document.getElementById('filter_kategori_usg').addEventListener('change', function() {
-            var kategori = this.value;
+        // Filter untuk template USG (kategori + pencarian teks)
+        function filterTemplateUsg() {
+            var kategori = (document.getElementById('filter_kategori_usg')?.value || '').trim().toLowerCase();
+            var searchText = (document.getElementById('search_template_usg')?.value || '').trim().toLowerCase();
             var rows = document.querySelectorAll('#tabelTemplateUsg tbody tr.template-row');
+            var hasVisibleRows = false;
 
             rows.forEach(function(row) {
-                if (kategori === '' || row.getAttribute('data-kategori') === kategori) {
+                var rowKategori = (row.getAttribute('data-kategori') || '').toLowerCase();
+                var nama = (row.cells[1]?.textContent || '').toLowerCase();
+                var isi = (row.cells[2]?.textContent || '').toLowerCase();
+                var katText = (row.cells[3]?.textContent || '').toLowerCase();
+                var tags = (row.cells[4]?.textContent || '').toLowerCase();
+
+                var matchesKategori = kategori === '' || rowKategori === kategori || rowKategori.includes(kategori) || katText === kategori;
+                var matchesSearch = searchText === '' || nama.includes(searchText) || isi.includes(searchText) || tags.includes(searchText) || katText.includes(searchText);
+
+                if (matchesKategori && matchesSearch) {
                     row.style.display = '';
+                    hasVisibleRows = true;
                 } else {
                     row.style.display = 'none';
                 }
@@ -4624,25 +4669,42 @@ echo "<!-- END FORM EDIT -->\n";
                 row.cells[0].textContent = index + 1;
             });
 
-            // Tampilkan pesan jika tidak ada data
+            // Tampilkan/ sembunyikan baris "tidak ada data"
             var tbody = document.querySelector('#tabelTemplateUsg tbody');
-            var noDataRow = document.querySelector('#tabelTemplateUsg tbody tr:not(.template-row)');
-
-            if (visibleRows.length === 0) {
+            var noDataRow = document.querySelector('#tabelTemplateUsg tbody tr.no-data-row');
+            if (!hasVisibleRows) {
                 if (!noDataRow) {
                     var tr = document.createElement('tr');
                     tr.className = 'no-data-row';
-                    tr.innerHTML = '<td colspan="6" class="text-center">Tidak ada template tersedia untuk kategori ini</td>';
+                    tr.innerHTML = '<td colspan="6" class="text-center">Tidak ada template USG yang sesuai dengan kriteria pencarian</td>';
                     tbody.appendChild(tr);
                 } else {
                     noDataRow.style.display = '';
                 }
-            } else {
-                if (noDataRow) {
-                    noDataRow.style.display = 'none';
-                }
+            } else if (noDataRow) {
+                noDataRow.style.display = 'none';
             }
-        });
+        }
+
+        // Event listeners untuk filter dan pencarian USG
+        var kategoriUsgEl = document.getElementById('filter_kategori_usg');
+        if (kategoriUsgEl) kategoriUsgEl.addEventListener('change', filterTemplateUsg);
+
+        var searchUsgEl = document.getElementById('search_template_usg');
+        if (searchUsgEl) searchUsgEl.addEventListener('input', filterTemplateUsg);
+
+        var clearSearchUsgBtn = document.getElementById('clear_search_template_usg');
+        if (clearSearchUsgBtn) {
+            clearSearchUsgBtn.addEventListener('click', function() {
+                var input = document.getElementById('search_template_usg');
+                if (input) input.value = '';
+                filterTemplateUsg();
+                if (input) input.focus();
+            });
+        }
+
+        // Inisialisasi awal (pastikan nomor urut benar dan baris no-data disembunyikan)
+        filterTemplateUsg();
 
         // Filter untuk template tatalaksana
         document.getElementById('filter_kategori_tatalaksana').addEventListener('change', function() {
@@ -5375,31 +5437,73 @@ echo "<!-- END FORM EDIT -->\n";
     document.getElementById('filter_kategori_gambar').addEventListener('change', filterGambar);
     document.getElementById('search_gambar').addEventListener('input', filterGambar);
 
-    // Event listener untuk filter formularium (resep)
-    document.getElementById('search_generik').addEventListener('input', filterFormularium);
-    document.getElementById('filter_kategori_obat').addEventListener('change', filterFormularium);
+    // Event listener untuk filter formularium (resep) – scope khusus di dalam modal untuk menghindari konflik ID ganda
+    document.querySelectorAll('#modalDaftarTemplateResep #search_generik').forEach(function(el) {
+        el.addEventListener('input', filterFormularium);
+    });
+    document.querySelectorAll('#modalDaftarTemplateResep #filter_kategori_obat').forEach(function(el) {
+        el.addEventListener('change', filterFormularium);
+    });
+
+    // Pastikan listener terpasang juga jika modal dibuka kembali atau kontennya dirender ulang
+    var modalResep = document.getElementById('modalDaftarTemplateResep');
+    // Fallback: delegasi event ke seluruh dokumen (berguna jika elemen dibuat ulang)
+    document.addEventListener('input', function(e) {
+        if (e.target && e.target.id === 'search_generik') {
+            filterFormularium();
+        }
+    });
+    document.addEventListener('change', function(e) {
+        if (e.target && e.target.id === 'filter_kategori_obat') {
+            filterFormularium();
+        }
+    });
+
+    if (modalResep) {
+        modalResep.addEventListener('shown.bs.modal', function() {
+            var search = this.querySelector('#search_generik');
+            var kategoriSelect = this.querySelector('#filter_kategori_obat');
+            if (search && !search.dataset.listenerAdded) {
+                search.addEventListener('input', filterFormularium);
+                search.dataset.listenerAdded = 'true';
+            }
+            if (kategoriSelect && !kategoriSelect.dataset.listenerAdded) {
+                kategoriSelect.addEventListener('change', filterFormularium);
+                kategoriSelect.dataset.listenerAdded = 'true';
+            }
+            // Jalankan penyaringan awal setiap modal muncul
+            filterFormularium();
+        });
+    }
 
     function filterFormularium() {
-        // Ambil nilai filter kategori dan kata kunci pencarian
-        var kategori = document.getElementById('filter_kategori_obat').value.toLowerCase();
-        var searchText = document.getElementById('search_generik').value.toLowerCase();
+        // DEBUG LOG
+        console.debug('filterFormularium triggered');
+        // Ambil nilai filter kategori dan kata kunci pencarian (trim & ignore case) hanya dari elemen di dalam modal
+        var modal = document.getElementById('modalDaftarTemplateResep');
+        var kategoriFilter = modal.querySelector('#filter_kategori_obat').value.trim().toLowerCase();
+        var searchText = modal.querySelector('#search_generik').value.trim().toLowerCase();
         var rows = document.querySelectorAll('#tabelFormularium tbody tr.obat-row');
         var hasVisible = false;
 
         // Iterasi setiap baris dalam tabel
         rows.forEach(function(row) {
-            var rowKategori = row.getAttribute('data-kategori').toLowerCase();
+            // Ambil kategori pada baris (support multi-kategori/kombinasi, case-insensitive). 
+            // Jika atribut data-kategori kosong, gunakan teks pada kolom kategori terakhir.
+            var rowKategoriAttr = (row.getAttribute('data-kategori') || '').toLowerCase();
+            if (!rowKategoriAttr) {
+                var kategoriCellText = row.cells[row.cells.length - 1].textContent || '';
+                rowKategoriAttr = kategoriCellText.trim().toLowerCase();
+            }
 
-            // Perbaikan: Ambil semua teks dari semua kolom (kecuali kolom aksi di index 0)
-            // untuk memungkinkan pencarian di semua kolom formularium
+            // Ambil semua teks (kecuali kolom aksi) untuk pencarian bebas
             var text = Array.from(row.cells).map(function(cell, index) {
-                // Skip kolom aksi (biasanya kolom pertama dengan tombol)
                 if (index === 0) return '';
                 return cell.textContent.toLowerCase();
             }).join(' ');
 
             // Cek apakah kategori dan kata kunci cocok
-            var matchesKategori = kategori === '' || rowKategori === kategori;
+            var matchesKategori = kategoriFilter === '' || rowKategoriAttr.includes(kategoriFilter);
             var matchesSearch = searchText === '' || text.includes(searchText);
 
             // Tampilkan atau sembunyikan baris berdasarkan hasil filter
@@ -5430,27 +5534,27 @@ echo "<!-- END FORM EDIT -->\n";
 
     // Fungsi untuk memilih gambar
     function pilihGambar(namaFile, judul) {
-    // Simpan data gambar ke input hidden
-    document.getElementById('gambarEdukasiInput').value = namaFile;
-    document.getElementById('judulGambarEdukasiInput').value = judul;
+        // Simpan data gambar ke input hidden
+        document.getElementById('gambarEdukasiInput').value = namaFile;
+        document.getElementById('judulGambarEdukasiInput').value = judul;
 
-    // Tampilkan gambar dengan path yang benar
-    const gambarPath = 'uploads/edukasi/' + namaFile;
-    document.getElementById('gambarEdukasiTerpilih').src = gambarPath;
-    document.getElementById('judulGambarEdukasiTerpilih').textContent = judul;
+        // Tampilkan gambar dengan path yang benar
+        const gambarPath = 'uploads/edukasi/' + namaFile;
+        document.getElementById('gambarEdukasiTerpilih').src = gambarPath;
+        document.getElementById('judulGambarEdukasiTerpilih').textContent = judul;
 
-    // Tampilkan card gambar
-    document.getElementById('cardGambarEdukasi').style.display = 'block';
+        // Tampilkan card gambar
+        document.getElementById('cardGambarEdukasi').style.display = 'block';
 
-    // Buka gambar di tab baru
-    window.open(gambarPath, '_blank');
+        // Buka gambar di tab baru
+        window.open(gambarPath, '_blank');
 
-    // Tutup modal
-    const modal = bootstrap.Modal.getInstance(document.getElementById('modalPilihGambarEdukasi'));
-    if (modal) {
-        modal.hide();
+        // Tutup modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modalPilihGambarEdukasi'));
+        if (modal) {
+            modal.hide();
+        }
     }
-}
 
     // Fungsi untuk menghapus gambar terpilih
     function hapusGambarTerpilih() {
