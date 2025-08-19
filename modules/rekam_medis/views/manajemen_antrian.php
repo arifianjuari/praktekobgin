@@ -595,15 +595,15 @@ try {
                             text-align: center;
                         }
 
-                        .table td:nth-child(5),
+                        .table td:nth-child(6),
                         /* Kolom Keluhan */
-                        .table th:nth-child(5) {
+                        .table th:nth-child(6) {
                             min-width: 150px;
                         }
 
-                        .table td:nth-child(6),
+                        .table td:nth-child(7),
                         /* Kolom Status */
-                        .table th:nth-child(6) {
+                        .table th:nth-child(7) {
                             min-width: 130px;
                             text-align: center;
                         }
@@ -761,11 +761,8 @@ try {
                                                     <th class="text-center small fw-normal">No</th>
                                                     <th class="text-center small fw-normal">Nama Pasien</th>
                                                     <th class="text-center small fw-normal">Waktu Perkiraan</th>
-                                                    <th class="text-center small fw-normal">Kode Voucher</th>
+                                                    <th class="text-center small fw-normal">Info</th>
                                                     <th class="text-center small fw-normal">Keluhan</th>
-                                                    <th class="text-center small fw-normal">Mohon Keringanan</th>
-                                                    <th class="text-center small fw-normal">Gratis</th>
-                                                    <th class="text-center small fw-normal">Saran dari</th>
                                                     <th class="text-center small fw-normal">Status</th>
                                                 </tr>
                                             </thead>
@@ -868,25 +865,25 @@ try {
                                                                 <i class="bi bi-check"></i>
                                                             </button>
                                                         </td>
-                                                        <td class="text-center">
-                                                            <?php if (!empty($a['voucher_code'])): ?>
-                                                                <span class="badge bg-info">
-                                                                    <?= htmlspecialchars($a['voucher_code']) ?>
-                                                                </span>
-                                                            <?php else: ?>
+                                                        <td>
+                                                            <?php $hasInfo = false; ?>
+                                                            <?php if (!empty($a['voucher_code'])): $hasInfo = true; ?>
+                                                                <div><span class="badge bg-info">Voucher: <?= htmlspecialchars($a['voucher_code']) ?></span></div>
+                                                            <?php endif; ?>
+                                                            <?php if (!empty($a['mohon_keringanan'])): $hasInfo = true; ?>
+                                                                <div><span class="badge bg-warning text-dark">Keringanan</span> <?= htmlspecialchars($a['mohon_keringanan']) ?></div>
+                                                            <?php endif; ?>
+                                                            <?php if ($a['berikutnya_gratis'] == 1): $hasInfo = true; ?>
+                                                                <div><span class="badge bg-success">Gratis berikutnya: Ya</span></div>
+                                                            <?php endif; ?>
+                                                            <?php if (!empty($a['yang_menyarankan'])): $hasInfo = true; ?>
+                                                                <div>Saran dari: <?= htmlspecialchars($a['yang_menyarankan']) ?></div>
+                                                            <?php endif; ?>
+                                                            <?php if (!$hasInfo): ?>
                                                                 <span class="text-muted">-</span>
                                                             <?php endif; ?>
                                                         </td>
                                                         <td><?= !empty($a['Keluhan']) ? htmlspecialchars($a['Keluhan']) : '-' ?></td>
-                                                        <td><?= !empty($a['mohon_keringanan']) ? htmlspecialchars($a['mohon_keringanan']) : '-' ?></td>
-                                                        <td class="text-center">
-                                                            <?php if ($a['berikutnya_gratis'] == 1): ?>
-                                                                <span class="badge bg-success">Ya</span>
-                                                            <?php else: ?>
-                                                                <span class="badge bg-secondary">Tidak</span>
-                                                            <?php endif; ?>
-                                                        </td>
-                                                        <td><?= !empty($a['yang_menyarankan']) ? htmlspecialchars($a['yang_menyarankan']) : '-' ?></td>
                                                         <td>
                                                             <span class="badge <?= getStatusBadgeClass($a['Status_Pendaftaran']) ?>">
                                                                 <?= htmlspecialchars($a['Status_Pendaftaran']) ?>
