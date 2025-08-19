@@ -964,18 +964,41 @@ if ($conn) {
                     // When any nav link is clicked, ensure the tab content container becomes visible again
                     document.querySelectorAll('#myTab .nav-link').forEach(function(lnk) {
                         lnk.addEventListener('click', function(e) {
+                            // Prevent default anchor navigation so we fully control behavior
+                            e.preventDefault();
+
                             const tabContent = document.getElementById('myTabContent');
                             if (tabContent) {
                                 tabContent.style.display = 'block';
                             }
-                            // Clear leftover inline heights and force-hide all tab panes except the one being opened
+
+                            // Determine target pane from href
+                            const targetSelector = lnk.getAttribute('href');
+                            if (!targetSelector || !targetSelector.startsWith('#')) return;
+                            const targetPane = document.querySelector(targetSelector);
+                            if (!targetPane) return;
+
+                            const isCurrentlyOpen = targetPane.classList.contains('show');
+
+                            // Close all panes and deactivate all nav links
                             const allTabPanes = document.querySelectorAll('#myTabContent .tab-pane');
                             allTabPanes.forEach(function(pane) {
-                                if (!lnk.classList.contains('active')) {
-                                    pane.classList.remove('show', 'active');
-                                }
+                                pane.classList.remove('show', 'active');
                                 pane.style.height = '';
                             });
+                            document.querySelectorAll('#myTab .nav-link').forEach(function(link) {
+                                link.classList.remove('active', 'show');
+                                link.setAttribute('aria-expanded', 'false');
+                            });
+
+                            // Toggle the clicked pane: if it was open, leave all closed; if closed, open it
+                            if (!isCurrentlyOpen) {
+                                targetPane.classList.add('show', 'active');
+                                lnk.classList.add('active', 'show');
+                                lnk.setAttribute('aria-expanded', 'true');
+                            }
+
+                            // Clear leftover inline heights on collapsible elements
                             document.querySelectorAll('#myTabContent .collapse').forEach(function(c) {
                                 c.style.height = '';
                             });
@@ -2614,7 +2637,6 @@ if ($conn) {
     </div>
 </div>
 
-<!-- Modal Daftar Template Resep -->
 <!-- Modal Daftar Template Ceklist -->
 <div class="modal fade" id="modalDaftarTemplateCeklist" tabindex="-1" aria-labelledby="modalDaftarTemplateCeklistLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
@@ -2798,8 +2820,8 @@ if ($conn) {
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <!-- Filter Kategori dan Pencarian -->
-                <div class="row mb-3">
+                <!-- Filter Kategori, Pencarian, dan Tombol Tambah Edukasi (pojok kanan atas) -->
+                <div class="row mb-3 align-items-center">
                     <div class="col-md-4">
                         <select id="filter_kategori_edukasi" class="form-select me-2">
                             <option value="">Semua Kategori</option>
@@ -2810,8 +2832,13 @@ if ($conn) {
                             <option value="uroginekologi">Uroginekologi</option>
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-5">
                         <input type="text" id="search_edukasi" class="form-control" placeholder="Cari judul atau isi edukasi...">
+                    </div>
+                    <div class="col-md-3 text-end">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalManajemenEdukasi">
+                            <i class="fas fa-plus"></i> Edukasi
+                        </button>
                     </div>
                 </div>
 
@@ -2857,6 +2884,24 @@ if ($conn) {
                         </tbody>
                     </table>
                 </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Manajemen Edukasi (in-page) -->
+<div class="modal" id="modalManajemenEdukasi" tabindex="-1" aria-labelledby="modalManajemenEdukasiLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable" style="height:90vh;">
+        <div class="modal-content" style="height:100%;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalManajemenEdukasiLabel">Manajemen Edukasi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0" style="height:calc(100% - 56px - 56px);">
+                <iframe src="modules/admin/controllers/manajemen_edukasi.php" title="Manajemen Edukasi" style="border:0; width:100%; height:100%;"></iframe>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
@@ -3597,11 +3642,13 @@ echo "<!-- END FORM EDIT -->\n";
                     tdInput.style.color = '#dc3545'; // bootstrap danger
                     tdInput.style.fontWeight = '600';
                     tdInput.style.borderColor = '#dc3545';
+                    tdInput.style.fontSize = '1.1em';
                     tdInput.title = 'Sistolik >= 140 mmHg';
                 } else {
                     tdInput.style.color = '';
                     tdInput.style.fontWeight = '';
                     tdInput.style.borderColor = '';
+                    tdInput.style.fontSize = '';
                     tdInput.removeAttribute('title');
                 }
             };
