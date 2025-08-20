@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'messages' => [
                 [
                     'role' => 'system',
-                    'content' => 'Anda adalah asisten edukasi untuk bidan dan dokter kandungan. Berikan jawaban edukasi yang komprehensif, terstruktur, dan mudah dipahami dalam bahasa Indonesia, menggunakan format markdown. Format jawaban dengan struktur berikut: Judul/Pengantar singkat (langsung, tanpa tulisan "judul"), 1) Penjelasan utama dengan poin-poin jika diperlukan, 2) Kesimpulan singkat. Fokus pada topik kesehatan reproduksi, kehamilan, persalinan, dan perawatan pasca persalinan.'
+                    'content' => 'Anda adalah seorang dokter kandungan berpengalaman. Berikan jawaban edukasi yang komprehensif, terstruktur, dan mudah dipahami oleh pasien dalam bahasa Indonesia, menggunakan format markdown. Format jawaban dengan struktur berikut: Judul/Pengantar singkat (langsung, tanpa tulisan "judul"), 1) Penjelasan utama dengan poin-poin jika diperlukan, 2) Kesimpulan singkat. Fokus pada topik kesehatan reproduksi, kehamilan, persalinan, dan perawatan pasca persalinan.'
                 ],
                 [
                     'role' => 'user',
