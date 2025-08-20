@@ -22,14 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             throw new Exception('Pertanyaan tidak boleh kosong');
         }
 
-        // API Key OpenAI: ambil dari environment atau config
-        $apiKey = getenv('OPENAI_API_KEY');
-        if (!$apiKey && isset($GLOBALS['config']['openai_api_key'])) {
-            $apiKey = $GLOBALS['config']['openai_api_key'];
-        }
-        if (!$apiKey) {
-            throw new Exception('OPENAI_API_KEY belum dikonfigurasi. Set environment variable OPENAI_API_KEY atau tambahkan pada config.');
-        }
+        // API Key OpenAI (sebaiknya disimpan di environment variable atau config file)
+        $apiKey = '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';
 
         // Siapkan data untuk dikirim ke OpenAI API
         $data = [
