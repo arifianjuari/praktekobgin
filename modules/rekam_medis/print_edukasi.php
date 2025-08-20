@@ -7,6 +7,9 @@ if (session_status() === PHP_SESSION_NONE) {
 // Load TCPDF library
 require_once('../../vendor/tecnickcom/tcpdf/tcpdf.php');
 
+// Load markdown helper
+require_once('helpers/markdown_helper.php');
+
 // Periksa apakah parameter tersedia
 if (!isset($_GET['isi']) || trim($_GET['isi']) === '') {
     die("Tidak ada data edukasi yang diberikan.");
@@ -52,44 +55,30 @@ $tempPdf->SetMargins($leftMargin, $topMargin, $rightMargin);
 $tempPdf->SetAutoPageBreak(false); // Nonaktifkan page break otomatis untuk kalkulasi
 
 $tempPdf->AddPage();
+// Hilangkan padding/margin cell agar tidak ada spasi ekstra
+$tempPdf->setCellPaddings(0, 0, 0, 0);
+$tempPdf->setCellMargins(0, 0, 0, 0);
+$tempPdf->setCellHeightRatio(1.0);
 
 // ---- Mulai Tambahkan Konten ke PDF Sementara ----
 
 // Posisi awal Y untuk melacak
 $startY = $tempPdf->GetY();
 
-// Judul utama
-$tempPdf->SetFont('helvetica', 'B', 12);
-$tempPdf->Cell(0, 6, 'EDUKASI PASIEN', 0, 1, 'C');
-
-$tempPdf->Ln(3);
-
-// Informasi pasien
-$tempPdf->SetFont('helvetica', 'B', 9);
-$tempPdf->Cell(25, 5, 'Nama Pasien', 0, 0, 'L');
-$tempPdf->Cell(3, 5, ':', 0, 0, 'C');
-$tempPdf->SetFont('helvetica', '', 9);
-$tempPdf->Cell(52, 5, $namaPasien, 0, 1, 'L');
-
-$tempPdf->SetFont('helvetica', 'B', 9);
-$tempPdf->Cell(25, 5, 'No. RM', 0, 0, 'L');
-$tempPdf->Cell(3, 5, ':', 0, 0, 'C');
-$tempPdf->SetFont('helvetica', '', 9);
-$tempPdf->Cell(52, 5, $noRm, 0, 1, 'L');
-
-$tempPdf->SetFont('helvetica', 'B', 9);
-$tempPdf->Cell(25, 5, 'Tanggal', 0, 0, 'L');
-$tempPdf->Cell(3, 5, ':', 0, 0, 'C');
-$tempPdf->SetFont('helvetica', '', 9);
-$tempPdf->Cell(52, 5, date('d-m-Y'), 0, 1, 'L');
-
-// Garis pemisah
-$tempPdf->Ln(1);
-$tempPdf->Line($leftMargin, $tempPdf->GetY(), 100 - $rightMargin, $tempPdf->GetY());
 // Tampilkan hasil edukasi
 $tempPdf->SetFont('helvetica', '', 9);
-$renderedContent = $isHtml ? $isiEdukasi : nl2br(htmlspecialchars($isiEdukasi, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5));
-$tempPdf->writeHTML('<div style="line-height: 1.5; text-align: justify;">' . $renderedContent . '</div>', true, false, true, false, '');
+// Samakan proses render dengan final agar perhitungan tinggi akurat
+if ($isHtml) {
+    $renderedContent = $isiEdukasi;
+} else {
+    $renderedContent = markdownToHtml($isiEdukasi);
+}
+$zeroMarginCss = '<style>
+  div, p, h1, h2, h3, h4, h5, h6, ul, ol, li { margin: 0; padding: 0; }
+  ul, ol { list-style-position: inside; padding-left: 0; }
+  li { margin: 0; padding: 0; }
+</style>';
+$tempPdf->writeHTML($zeroMarginCss . '<div style="margin:0; padding:0; text-align: left;">' . $renderedContent . '</div>', false, false, true, false, '');
 
 // ---- Akhir Tambahkan Konten ke PDF Sementara ----
 
@@ -119,43 +108,26 @@ $pdf->SetAutoPageBreak(false);
 
 // Tambahkan halaman
 $pdf->AddPage();
+// Hilangkan padding/margin cell agar tidak ada spasi ekstra
+$pdf->setCellPaddings(0, 0, 0, 0);
+$pdf->setCellMargins(0, 0, 0, 0);
+$pdf->setCellHeightRatio(1.0);
 
 // ---- Mulai Tambahkan Konten ke PDF FINAL (sama seperti di atas) ----
 
-// Judul utama
-$pdf->SetFont('helvetica', 'B', 12);
-$pdf->Cell(0, 6, 'EDUKASI PASIEN', 0, 1, 'C');
 
-$pdf->Ln(3);
-
-// Informasi pasien
-$pdf->SetFont('helvetica', 'B', 9);
-$pdf->Cell(25, 5, 'Nama Pasien', 0, 0, 'L');
-$pdf->Cell(3, 5, ':', 0, 0, 'C');
-$pdf->SetFont('helvetica', '', 9);
-$pdf->Cell(52, 5, $namaPasien, 0, 1, 'L');
-
-$pdf->SetFont('helvetica', 'B', 9);
-$pdf->Cell(25, 5, 'No. RM', 0, 0, 'L');
-$pdf->Cell(3, 5, ':', 0, 0, 'C');
-$pdf->SetFont('helvetica', '', 9);
-$pdf->Cell(52, 5, $noRm, 0, 1, 'L');
-
-$pdf->SetFont('helvetica', 'B', 9);
-$pdf->Cell(25, 5, 'Tanggal', 0, 0, 'L');
-$pdf->Cell(3, 5, ':', 0, 0, 'C');
-$pdf->SetFont('helvetica', '', 9);
-$pdf->Cell(52, 5, date('d-m-Y'), 0, 1, 'L');
-
-// Garis pemisah
-$pdf->Ln(2);
-$pdf->Line($leftMargin, $pdf->GetY(), 100 - $rightMargin, $pdf->GetY());
 
 
 
 // Tampilkan hasil edukasi
 $pdf->SetFont('helvetica', '', 9);
-$pdf->writeHTML('<div style="line-height: 1.5; text-align: justify;">' . $renderedContent . '</div>', true, false, true, false, '');
+// Parse markdown content if it's not already HTML
+if ($isHtml) {
+    $renderedContent = $isiEdukasi;
+} else {
+    $renderedContent = markdownToHtml($isiEdukasi);
+}
+$pdf->writeHTML($zeroMarginCss . '<div style="margin:0; padding:0; text-align: left;">' . $renderedContent . '</div>', false, false, true, false, '');
 
 // ---- Akhir Tambahkan Konten ke PDF FINAL ----
 

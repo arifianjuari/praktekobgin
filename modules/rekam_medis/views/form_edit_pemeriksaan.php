@@ -840,13 +840,13 @@ if ($conn) {
 </div>
 
 <div class="container-fluid">
+    <!-- Floating action button: Lihat Rekam Medis -->
+    <div class="fab-top-right" style="position: fixed; top: 16px; right: 16px; z-index: 1050;">
+        <a href="index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>" class="btn btn-primary rounded-circle shadow" style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;" title="Lihat Rekam Medis" data-bs-toggle="tooltip" data-bs-placement="left">
+            <i class="fas fa-file-medical fa-2x"></i>
+        </a>
+    </div>
     <div class="card shadow mb-4">
-        <div class="card-header py-3 d-flex justify-content-between align-items-center">
-
-            <a href="index.php?module=rekam_medis&action=detailPasien&no_rkm_medis=<?= $pasien['no_rkm_medis'] ?>" class="btn btn-sm btn-secondary">
-                <i class="fas fa-arrow-left"></i> Lihat Rekam Medis
-            </a>
-        </div>
         <div class="card-body">
             <?php if (isset($_SESSION['error'])): ?>
                 <div class="alert alert-danger">
@@ -1946,7 +1946,7 @@ if ($conn) {
                                     <label>Diagnosis</label>
                                     <div class="row">
                                         <div class="col-md-8">
-                                            <textarea name="diagnosis" id="diagnosis" class="form-control auto-resize smaller-text" rows="5" style="overflow-y: hidden; resize: none;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"><?= isset($pemeriksaan['diagnosis']) ? $pemeriksaan['diagnosis'] : '' ?></textarea>
+                                            <textarea name="diagnosis" id="diagnosis" class="form-control auto-resize smaller-text" rows="1" style="overflow-y: hidden; resize: none; min-height: 100px;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"><?= isset($pemeriksaan['diagnosis']) ? $pemeriksaan['diagnosis'] : '' ?></textarea>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="card border mb-2">
@@ -2009,6 +2009,20 @@ if ($conn) {
                                                     </a>
                                                 </div>
                                             </div>
+                                            <div class="card border mt-2">
+                                                <div class="card-body p-2">
+                                                    <button type="button" class="btn btn-sm btn-warning w-100" data-bs-toggle="modal" data-bs-target="#modalEdukasiAI">
+                                                        <i class="fas fa-robot"></i> Edukasi AI
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="card border mt-2">
+                                                <div class="card-body p-2">
+                                                    <a href="#" target="_blank" class="btn btn-sm btn-info w-100" id="btnKirimWhatsAppEdukasi">
+                                                        <i class="bi bi-whatsapp"></i> Kirim Edukasi via WhatsApp
+                                                    </a>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -2061,7 +2075,7 @@ if ($conn) {
                                     <label>Resume</label>
                                     <div class="row">
                                         <div class="col-md-8">
-                                            <textarea name="resume" id="resume" class="form-control auto-resize smaller-text" rows="40" style="overflow-y: hidden; resize: none;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"><?= isset($pemeriksaan['resume']) ? $pemeriksaan['resume'] : '' ?></textarea>
+                                            <textarea name="resume" id="resume" class="form-control auto-resize smaller-text" rows="1" style="overflow-y: hidden; resize: none; min-height: 100px;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"><?= isset($pemeriksaan['resume']) ? $pemeriksaan['resume'] : '' ?></textarea>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="card border">
@@ -3441,19 +3455,6 @@ echo "<!-- END FORM EDIT -->\n";
         console.log('printEdukasi called'); // Debug marker
         // Ambil isi dari textarea edukasi
         const isiEdukasi = document.getElementById('edukasi').value.trim();
-        // Ambil versi HTML jika tersedia
-        const htmlStored = document.getElementById('edukasi_html') ? document.getElementById('edukasi_html').value : '';
-        let htmlContent = '';
-        if (htmlStored && htmlStored.trim() !== '') {
-            htmlContent = htmlStored;
-        } else {
-            // Konversi plain text ke HTML sederhana: paragraf dan <br>
-            const paragraphs = isiEdukasi.split(/\n{2,}/).map(p => {
-                const withBr = p.replace(/\n/g, '<br>');
-                return `<p>${withBr}</p>`;
-            });
-            htmlContent = paragraphs.join('');
-        }
 
         // Validasi isi edukasi
         if (!isiEdukasi) {
@@ -3466,7 +3467,8 @@ echo "<!-- END FORM EDIT -->\n";
         const noRm = '<?= $pasien['no_rkm_medis'] ?>';
 
         // Redirect ke halaman print dengan parameter
-        const url = 'modules/rekam_medis/print_edukasi.php?isi=' + encodeURIComponent(htmlContent) + '&html=1' +
+        // Pass the raw content to be processed by the markdown parser
+        const url = 'modules/rekam_medis/print_edukasi.php?isi=' + encodeURIComponent(isiEdukasi) +
             '&no_rawat=' + encodeURIComponent(noRawat) +
             '&nama=' + encodeURIComponent(namaPasien) +
             '&no_rm=' + encodeURIComponent(noRm);
@@ -5631,6 +5633,209 @@ echo "<!-- END FORM EDIT -->\n";
 <!-- Robust autoresize fix for Riwayat Sekarang textarea -->
 <script src="../../modules/rekam_medis/js/resize_fix.js"></script>
 <script src="modules/rekam_medis/views/form_edit_pemeriksaan_global.js"></script>
+
+<!-- Modal Edukasi AI -->
+<div class="modal fade" id="modalEdukasiAI" tabindex="-1" aria-labelledby="modalEdukasiAILabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEdukasiAILabel">Edukasi AI</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="pertanyaanEdukasiAI" class="form-label">Pertanyaan:</label>
+                    <textarea class="form-control" id="pertanyaanEdukasiAI" rows="3" placeholder="Masukkan pertanyaan edukasi Anda di sini..."></textarea>
+                </div>
+                <div class="mb-3">
+                    <button type="button" class="btn btn-primary" id="btnTanyaAI">Tanya AI</button>
+                    <button type="button" class="btn btn-success" id="btnTambahkanJawaban" style="display: none;">Tambahkan ke Edukasi</button>
+                    <button type="button" class="btn btn-warning" id="btnGantiJawaban" style="display: none;">Ganti Isi Edukasi</button>
+                    <a href="#" target="_blank" class="btn btn-info" id="btnKirimWhatsApp" style="display: none;">
+                        <i class="bi bi-whatsapp"></i> Kirim ke WhatsApp
+                    </a>
+                </div>
+                <div class="mb-3">
+                    <label for="jawabanEdukasiAI" class="form-label">Jawaban:</label>
+                    <div id="jawabanEdukasiAI" class="border p-3" style="min-height: 200px; white-space: pre-wrap; font-family: sans-serif;"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Edukasi AI functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const btnTanyaAI = document.getElementById('btnTanyaAI');
+        const btnTambahkanJawaban = document.getElementById('btnTambahkanJawaban');
+        const btnGantiJawaban = document.getElementById('btnGantiJawaban');
+        const btnKirimWhatsApp = document.getElementById('btnKirimWhatsApp');
+        const pertanyaanInput = document.getElementById('pertanyaanEdukasiAI');
+        const jawabanDiv = document.getElementById('jawabanEdukasiAI');
+
+        btnTanyaAI.addEventListener('click', function() {
+            const pertanyaan = pertanyaanInput.value.trim();
+
+            if (pertanyaan === '') {
+                alert('Silakan masukkan pertanyaan terlebih dahulu');
+                return;
+            }
+
+            // Show loading state
+            jawabanDiv.innerHTML = 'Memproses pertanyaan...';
+            btnTanyaAI.disabled = true;
+            btnTambahkanJawaban.style.display = 'none';
+            btnGantiJawaban.style.display = 'none';
+            btnKirimWhatsApp.style.display = 'none';
+
+            // Send request to backend
+            fetch('../../modules/rekam_medis/controllers/EdukasiAIController.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        pertanyaan: pertanyaan
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        jawabanDiv.innerHTML = data.jawaban;
+                        btnTambahkanJawaban.style.display = 'inline-block';
+                        btnGantiJawaban.style.display = 'inline-block';
+                        btnKirimWhatsApp.style.display = 'inline-block';
+                    } else {
+                        jawabanDiv.innerHTML = 'Error: ' + data.error;
+                    }
+                    btnTanyaAI.disabled = false;
+                })
+                .catch(error => {
+                    jawabanDiv.innerHTML = 'Error: Gagal menghubungi server';
+                    btnTanyaAI.disabled = false;
+                    console.error('Error:', error);
+                });
+        });
+
+        // Tambahkan jawaban AI ke field Edukasi (append)
+        btnTambahkanJawaban.addEventListener('click', function() {
+            const jawaban = jawabanDiv.innerHTML;
+
+            // Insert jawaban into edukasi textarea
+            const edukasiTextarea = document.getElementById('edukasi');
+            if (edukasiTextarea) {
+                edukasiTextarea.value = edukasiTextarea.value + (edukasiTextarea.value ? '\n\n' : '') + jawaban;
+
+                // Auto-resize textarea if function available
+                if (typeof autoResizeTextarea === 'function') {
+                    autoResizeTextarea(edukasiTextarea);
+                }
+
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('modalEdukasiAI'));
+                modal.hide();
+            }
+        });
+
+        // Ganti seluruh isi field Edukasi dengan jawaban AI
+        btnGantiJawaban.addEventListener('click', function() {
+            const jawaban = jawabanDiv.innerHTML;
+
+            // Replace content of edukasi textarea
+            const edukasiTextarea = document.getElementById('edukasi');
+            if (edukasiTextarea) {
+                edukasiTextarea.value = jawaban;
+
+                // Auto-resize textarea if function available
+                if (typeof autoResizeTextarea === 'function') {
+                    autoResizeTextarea(edukasiTextarea);
+                }
+
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('modalEdukasiAI'));
+                modal.hide();
+            }
+        });
+
+        // Kirim jawaban AI ke WhatsApp
+        btnKirimWhatsApp.addEventListener('click', function() {
+            const jawaban = jawabanDiv.innerHTML;
+            const pertanyaan = pertanyaanInput.value.trim();
+
+            if (jawaban) {
+                // Format pesan untuk WhatsApp
+                let pesan = jawaban;
+
+                // Encode pesan untuk URL
+                const encodedPesan = encodeURIComponent(pesan);
+
+                // Dapatkan nomor telepon pasien
+                const noTlp = "<?= $pasien['no_tlp'] ?? '' ?>";
+
+                // Bersihkan nomor telepon dari karakter non-numerik
+                let noTlpClean = noTlp.replace(/[^0-9]/g, '');
+
+                // Pastikan format nomor telepon benar (awali dengan 62)
+                if (noTlpClean.startsWith('0')) {
+                    noTlpClean = '62' + noTlpClean.substring(1);
+                } else if (!noTlpClean.startsWith('62')) {
+                    noTlpClean = '62' + noTlpClean;
+                }
+
+                // Update href dari tombol WhatsApp dengan nomor telepon pasien
+                if (noTlpClean) {
+                    btnKirimWhatsApp.href = `https://wa.me/${noTlpClean}?text=${encodedPesan}`;
+                } else {
+                    alert('Nomor telepon pasien tidak tersedia!');
+                    btnKirimWhatsApp.href = `https://wa.me/?text=${encodedPesan}`;
+                }
+            }
+        });
+        
+        // Kirim isi field Edukasi ke WhatsApp
+        const btnKirimWhatsAppEdukasi = document.getElementById('btnKirimWhatsAppEdukasi');
+        if (btnKirimWhatsAppEdukasi) {
+            btnKirimWhatsAppEdukasi.addEventListener('click', function() {
+                const edukasiTextarea = document.getElementById('edukasi');
+                if (!edukasiTextarea) return;
+
+                const teks = (edukasiTextarea.value || '').trim();
+                if (!teks) {
+                    alert('Isi Edukasi masih kosong.');
+                    return;
+                }
+
+                // Encode pesan untuk URL
+                const encodedPesan = encodeURIComponent(teks);
+
+                // Dapatkan nomor telepon pasien dari PHP
+                const noTlp = "<?= $pasien['no_tlp'] ?? '' ?>";
+
+                // Bersihkan nomor telepon dari karakter non-numerik
+                let noTlpClean = (noTlp || '').replace(/[^0-9]/g, '');
+
+                // Pastikan format nomor telepon benar (awali dengan 62)
+                if (noTlpClean.startsWith('0')) {
+                    noTlpClean = '62' + noTlpClean.substring(1);
+                } else if (noTlpClean && !noTlpClean.startsWith('62')) {
+                    noTlpClean = '62' + noTlpClean;
+                }
+
+                // Arahkan ke wa.me dengan nomor pasien (jika tersedia)
+                if (noTlpClean) {
+                    this.href = `https://wa.me/${noTlpClean}?text=${encodedPesan}`;
+                } else {
+                    alert('Nomor telepon pasien tidak tersedia!');
+                    this.href = `https://wa.me/?text=${encodedPesan}`;
+                }
+            });
+        }
+    });
+</script>
 
 <!-- Modal Kalkulator IMT -->
 <div class="modal fade" id="modalHitungIMT" tabindex="-1" aria-labelledby="modalHitungIMTLabel" aria-hidden="true">
