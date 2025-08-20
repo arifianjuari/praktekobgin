@@ -131,8 +131,9 @@ $page_title = "Form Tambah Riwayat Kehamilan";
                             <div class="col-sm-9">
                                 <select class="form-control" name="jenis_kelamin_anak">
                                     <option value="">Pilih Jenis Kelamin</option>
-                                    <option value="L">Laki-laki</option>
-                                    <option value="P">Perempuan</option>
+                                    <option value="Laki-laki">Laki-laki</option>
+                                    <option value="Perempuan">Perempuan</option>
+                                    <option value="Tidak Diketahui">Tidak Relevan</option>
                                 </select>
                             </div>
                         </div>
@@ -148,9 +149,12 @@ $page_title = "Form Tambah Riwayat Kehamilan";
                             <label class="col-sm-3 col-form-label">Kondisi Lahir</label>
                             <div class="col-sm-9">
                                 <select class="form-control" name="kondisi_lahir">
-                                    <option value="">Pilih Kondisi</option>
-                                    <option value="Hidup">Hidup</option>
+                                    <option value="">Pilih Kondisi Lahir</option>
+                                    <option value="Sehat">Sehat</option>
+                                    <option value="Cacat">Cacat</option>
+                                    <option value="Sakit">Sakit</option>
                                     <option value="Meninggal">Meninggal</option>
+                                    <option value="Tidak Relevan">Tidak Relevan</option>
                                 </select>
                             </div>
                         </div>

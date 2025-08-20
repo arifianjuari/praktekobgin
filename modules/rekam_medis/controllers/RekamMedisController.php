@@ -2554,6 +2554,26 @@ class RekamMedisController
             exit;
         }
 
+        // Normalisasi nilai jenis_kelamin_anak jika masih menggunakan kode lama 'L'/'P'
+        if (isset($_POST['jenis_kelamin_anak'])) {
+            if ($_POST['jenis_kelamin_anak'] === 'L') {
+                $_POST['jenis_kelamin_anak'] = 'Laki-laki';
+            } elseif ($_POST['jenis_kelamin_anak'] === 'P') {
+                $_POST['jenis_kelamin_anak'] = 'Perempuan';
+            }
+        }
+
+        // Normalisasi nilai kondisi_lahir jika menggunakan opsi lama
+        if (isset($_POST['kondisi_lahir'])) {
+            if ($_POST['kondisi_lahir'] === 'Hidup') {
+                // Di skema baru, 'Hidup' direpresentasikan sebagai kondisi bayi 'Sehat'
+                $_POST['kondisi_lahir'] = 'Sehat';
+            } elseif ($_POST['kondisi_lahir'] === 'Meninggal') {
+                // Untuk kompatibilitas, set ke 'Tidak Relevan' agar sesuai ENUM baru
+                $_POST['kondisi_lahir'] = 'Tidak Relevan';
+            }
+        }
+
         // Siapkan data untuk disimpan
         $data = [
             'no_rkm_medis' => $_POST['no_rkm_medis'],
