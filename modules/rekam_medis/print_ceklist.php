@@ -18,6 +18,13 @@ $noRawat = isset($_GET['no_rawat']) ? $_GET['no_rawat'] : 'N/A';
 $namaPasien = isset($_GET['nama']) ? $_GET['nama'] : 'N/A';
 $noRm = isset($_GET['no_rm']) ? $_GET['no_rm'] : 'N/A';
 
+// Siapkan konten untuk render: jika input sudah berupa HTML, gunakan apa adanya.
+// Jika hanya teks biasa, konversi newline menjadi <br> agar baris baru tetap tampil.
+$containsHtml = (strpos($isiCeklist, '<') !== false && strpos($isiCeklist, '>') !== false);
+$renderedCeklistHtml = $containsHtml ? $isiCeklist : nl2br($isiCeklist);
+// Hindari eksekusi script yang tidak diinginkan di dalam PDF
+$renderedCeklistHtml = preg_replace('/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/i', '', $renderedCeklistHtml);
+
 // Buat kelas turunan TCPDF untuk kustomisasi header dan footer
 class MYPDF extends TCPDF
 {
@@ -83,7 +90,7 @@ $tempPdf->Ln(4);
 
 // Tampilkan isi ceklist
 $tempPdf->SetFont('helvetica', '', 9);
-$tempPdf->writeHTML('<div style="line-height: 1.5; text-align: justify;">' . nl2br($isiCeklist) . '</div>', true, false, true, false, '');
+$tempPdf->writeHTML('<div style="line-height: 1.5; text-align: left;">' . $renderedCeklistHtml . '</div>', true, false, true, false, '');
 
 // ---- Akhir Tambahkan Konten ke PDF Sementara ----
 
@@ -143,7 +150,7 @@ $pdf->Ln(4);
 
 // Tampilkan isi ceklist
 $pdf->SetFont('helvetica', '', 9);
-$pdf->writeHTML('<div style="line-height: 1.5; text-align: justify;">' . nl2br($isiCeklist) . '</div>', true, false, true, false, '');
+$pdf->writeHTML('<div style="line-height: 1.5; text-align: left;">' . $renderedCeklistHtml . '</div>', true, false, true, false, '');
 
 // ---- Akhir Tambahkan Konten ke PDF FINAL ----
 

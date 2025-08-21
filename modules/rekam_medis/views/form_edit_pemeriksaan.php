@@ -4770,11 +4770,15 @@ echo "<!-- END FORM EDIT -->\n";
     }
 
     function printCeklist() {
-        // Ambil isi dari ceklist content
-        const isiCeklist = document.getElementById('ceklistContent').textContent.trim();
+        // Ambil elemen ceklist
+        const ceklistEl = document.getElementById('ceklistContent');
+        // Gunakan innerHTML untuk menjaga formatting (br/div/bullet, dsb.) saat dicetak
+        const isiHtml = ceklistEl.innerHTML.trim();
+        // Gunakan textContent untuk validasi kosong
+        const isiText = ceklistEl.textContent.trim();
 
-        // Validasi isi ceklist
-        if (!isiCeklist || isiCeklist === '-') {
+        // Validasi isi ceklist (berdasarkan teks)
+        if (!isiText || isiText === '-') {
             alert('Mohon isi data ceklist terlebih dahulu sebelum mencetak');
             return;
         }
@@ -4784,7 +4788,7 @@ echo "<!-- END FORM EDIT -->\n";
         const noRm = '<?= $pasien['no_rkm_medis'] ?>';
 
         // Redirect ke halaman print dengan parameter
-        const url = 'modules/rekam_medis/print_ceklist.php?isi=' + encodeURIComponent(isiCeklist) +
+        const url = 'modules/rekam_medis/print_ceklist.php?isi=' + encodeURIComponent(isiHtml) +
             '&no_rawat=' + encodeURIComponent(noRawat) +
             '&nama=' + encodeURIComponent(namaPasien) +
             '&no_rm=' + encodeURIComponent(noRm);
