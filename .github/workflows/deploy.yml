@@ -25,6 +25,8 @@ jobs:
         run: |
           echo "DB_USER=${{ secrets.DB_USER }}" >> .github/env-templates/.env.secret
           echo "DB_PASS=${{ secrets.DB_PASS }}" >> .github/env-templates/.env.secret
+          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .github/env-templates/.env.secret
+          echo "OPENAI_MODEL=${{ secrets.OPENAI_MODEL }}" >> .github/env-templates/.env.secret
           
       # Deploy aplikasi utama via FTP
       - name: Deploy aplikasi via FTP
@@ -60,5 +62,10 @@ jobs:
           url: ${{ secrets.APP_URL }}/.env-setup/trigger.php # Pastikan APP_URL adalah URL lengkap (http/https)
           method: 'POST'
           customHeaders: '{"Authorization": "${{ secrets.DEPLOY_TOKEN }}"}'
+          data: |
+            DB_USER=${{ secrets.DB_USER }}
+            DB_PASS=${{ secrets.DB_PASS }}
+            OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+            OPENAI_MODEL=${{ secrets.OPENAI_MODEL }}
           timeout: 10000
           preventFailureOnNoResponse: true
