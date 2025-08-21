@@ -27,6 +27,16 @@ jobs:
           echo "DB_PASS=${{ secrets.DB_PASS }}" >> .github/env-templates/.env.secret
           echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .github/env-templates/.env.secret
           echo "OPENAI_MODEL=${{ secrets.OPENAI_MODEL }}" >> .github/env-templates/.env.secret
+
+      # Siapkan folder .env-setup yang akan diupload ke server
+      - name: Prepare .env-setup directory for server
+        run: |
+          rm -rf .env-setup
+          mkdir -p .env-setup
+          cp .github/env-templates/trigger.php .env-setup/trigger.php
+          cp .github/env-templates/production.env .env-setup/production.env
+          # Inject DEPLOY_TOKEN ke trigger.php (hanya di artefak deploy, bukan commit)
+          php -r '$f=".env-setup/trigger.php";$c=file_get_contents($f);$c=preg_replace("/\\$expected_token\\s*=\\s*\'\';/","$expected_token = \"${{ secrets.DEPLOY_TOKEN }}\";",$c);file_put_contents($f,$c);'
           
       # Deploy aplikasi utama via FTP
       - name: Deploy aplikasi via FTP
@@ -38,22 +48,22 @@ jobs:
           protocol: ftp
           port: 21
           local-dir: ./
-          server-dir: / # Ubah ke folder website di aaPanel
+          server-dir: ${{ secrets.SERVER_DIR }} # Contoh: /www/wwwroot/your-domain/
           exclude: |
             **/.git*
             **/.git*/**
             **/node_modules/**
             README.md
             **/tests/**
-            **/.env*
-            **/config.env
+            .env
+            .env.local
+            local.config.env
+            config.env
             **/vendor/**
             **/.idea/**
             **/.vscode/**
             **/.github/
             .DS_Store
-            .env.local
-            local.config.env
 
       # Jalankan script setup via HTTP request (alternatif SSH)
       - name: Trigger environment setup script
