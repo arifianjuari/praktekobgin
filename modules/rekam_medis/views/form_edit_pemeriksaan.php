@@ -4862,6 +4862,74 @@ echo "<!-- END FORM EDIT -->\n";
         // Inisialisasi awal (pastikan nomor urut benar dan baris no-data disembunyikan)
         filterTemplateUsg();
 
+        // Filter untuk Template Ceklist (kategori + pencarian teks)
+        function filterTemplateCeklist() {
+            var kategori = (document.getElementById('filter_kategori_ceklist')?.value || '').trim().toLowerCase();
+            var searchText = (document.getElementById('search_template_ceklist')?.value || '').trim().toLowerCase();
+            var rows = document.querySelectorAll('#tabelTemplateCeklist tbody tr.template-row');
+            var hasVisibleRows = false;
+
+            rows.forEach(function(row) {
+                var rowKategori = (row.getAttribute('data-kategori') || '').toLowerCase();
+                var nama = (row.cells[1]?.textContent || '').toLowerCase();
+                var isi = (row.cells[2]?.textContent || '').toLowerCase();
+                var katText = (row.cells[3]?.textContent || '').toLowerCase();
+                var tags = (row.cells[4]?.textContent || '').toLowerCase();
+
+                var matchesKategori = kategori === '' || rowKategori === kategori || rowKategori.includes(kategori) || katText === kategori;
+                var matchesSearch = searchText === '' || nama.includes(searchText) || isi.includes(searchText) || tags.includes(searchText) || katText.includes(searchText);
+
+                if (matchesKategori && matchesSearch) {
+                    row.style.display = '';
+                    hasVisibleRows = true;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Perbarui nomor urut yang ditampilkan
+            var visibleRows = document.querySelectorAll('#tabelTemplateCeklist tbody tr.template-row:not([style*="display: none"])');
+            visibleRows.forEach(function(row, index) {
+                row.cells[0].textContent = index + 1;
+            });
+
+            // Tampilkan/ sembunyikan baris "tidak ada data"
+            var tbody = document.querySelector('#tabelTemplateCeklist tbody');
+            var noDataRow = document.querySelector('#tabelTemplateCeklist tbody tr.no-data-row');
+            if (!hasVisibleRows) {
+                if (!noDataRow) {
+                    var tr = document.createElement('tr');
+                    tr.className = 'no-data-row';
+                    tr.innerHTML = '<td colspan="6" class="text-center">Tidak ada data template ceklist yang sesuai dengan kriteria pencarian</td>';
+                    tbody.appendChild(tr);
+                } else {
+                    noDataRow.style.display = '';
+                }
+            } else if (noDataRow) {
+                noDataRow.style.display = 'none';
+            }
+        }
+
+        // Event listeners untuk filter & pencarian ceklist
+        var kategoriCeklistEl = document.getElementById('filter_kategori_ceklist');
+        if (kategoriCeklistEl) kategoriCeklistEl.addEventListener('change', filterTemplateCeklist);
+
+        var searchCeklistEl = document.getElementById('search_template_ceklist');
+        if (searchCeklistEl) searchCeklistEl.addEventListener('input', filterTemplateCeklist);
+
+        var clearSearchCeklistBtn = document.getElementById('clear_search_template_ceklist');
+        if (clearSearchCeklistBtn) {
+            clearSearchCeklistBtn.addEventListener('click', function() {
+                var input = document.getElementById('search_template_ceklist');
+                if (input) input.value = '';
+                filterTemplateCeklist();
+                if (input) input.focus();
+            });
+        }
+
+        // Inisialisasi awal tabel ceklist
+        filterTemplateCeklist();
+
         // Filter untuk template tatalaksana
         document.getElementById('filter_kategori_tatalaksana').addEventListener('change', function() {
             var kategori = this.value;
