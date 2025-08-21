@@ -28,3 +28,6 @@ config.env
 # Task files
 tasks.json
 tasks/ 
+
+# Ignore sensitive controller containing API keys (local only)
+modules/rekam_medis/controllers/EdukasiAIController.php
