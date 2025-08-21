@@ -162,56 +162,56 @@ $faktor_risiko_preeklampsia = $isEdit && !empty($statusObstetri['faktor_risiko_p
                                             <div class="col-md-4">
                                                 <h6>Faktor Risiko Umum</h6>
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="faktor_risiko_umum[]" value="Terlalu muda hamil kurang dari 16 th" <?= in_array('Terlalu muda hamil kurang dari 16 th', $faktor_risiko_umum) ? 'checked' : '' ?>>
-                                                    <label class="form-check-label">Terlalu muda hamil kurang dari 16 th</label>
+                                                    <input class="form-check-input" type="checkbox" name="faktor_risiko_umum[]" value="Usia <16 th" <?= (in_array('Usia <16 th', $faktor_risiko_umum) || in_array('Terlalu muda hamil kurang dari 16 th', $faktor_risiko_umum)) ? 'checked' : '' ?>>
+                                                    <label class="form-check-label">Usia <16 th</label>
                                                 </div>
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="faktor_risiko_umum[]" value="Terlalu lambat hamil 1 kawin lebih dari 4 th" <?= in_array('Terlalu lambat hamil 1 kawin lebih dari 4 th', $faktor_risiko_umum) ? 'checked' : '' ?>>
-                                                    <label class="form-check-label">Terlalu lambat hamil 1 kawin lebih dari 4 th</label>
+                                                    <input class="form-check-input" type="checkbox" name="faktor_risiko_umum[]" value="Riwayat Infertil" <?= (in_array('Riwayat Infertil', $faktor_risiko_umum) || in_array('Terlalu lambat hamil 1 kawin lebih dari 4 th', $faktor_risiko_umum)) ? 'checked' : '' ?>>
+                                                    <label class="form-check-label">Riwayat Infertil</label>
                                                 </div>
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="faktor_risiko_umum[]" value="Terlalu tua hamil 1 lebih dari 35 th" <?= in_array('Terlalu tua hamil 1 lebih dari 35 th', $faktor_risiko_umum) ? 'checked' : '' ?>>
-                                                    <label class="form-check-label">Terlalu tua hamil 1 lebih dari 35 th</label>
+                                                    <input class="form-check-input" type="checkbox" name="faktor_risiko_umum[]" value="Primi Tua Primer" <?= (in_array('Primi Tua Primer', $faktor_risiko_umum) || in_array('Terlalu tua hamil 1 lebih dari 35 th', $faktor_risiko_umum)) ? 'checked' : '' ?>>
+                                                    <label class="form-check-label">Primi Tua Primer</label>
                                                 </div>
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="faktor_risiko_umum[]" value="Terlalu cepat hamil lagi kurang dari 2 th" <?= in_array('Terlalu cepat hamil lagi kurang dari 2 th', $faktor_risiko_umum) ? 'checked' : '' ?>>
-                                                    <label class="form-check-label">Terlalu cepat hamil lagi kurang dari 2 th</label>
+                                                    <input class="form-check-input" type="checkbox" name="faktor_risiko_umum[]" value="Kehamilan tidak direncanakan" <?= (in_array('Kehamilan tidak direncanakan', $faktor_risiko_umum) || in_array('Terlalu cepat hamil lagi kurang dari 2 th', $faktor_risiko_umum)) ? 'checked' : '' ?>>
+                                                    <label class="form-check-label">Kehamilan tidak direncanakan</label>
                                                 </div>
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="faktor_risiko_umum[]" value="Terlalu lama hamil lagi lebih dari 10 th" <?= in_array('Terlalu lama hamil lagi lebih dari 10 th', $faktor_risiko_umum) ? 'checked' : '' ?>>
-                                                    <label class="form-check-label">Terlalu lama hamil lagi lebih dari 10 th</label>
+                                                    <input class="form-check-input" type="checkbox" name="faktor_risiko_umum[]" value="Primi Tua Sekunder" <?= (in_array('Primi Tua Sekunder', $faktor_risiko_umum) || in_array('Terlalu lama hamil lagi lebih dari 10 th', $faktor_risiko_umum)) ? 'checked' : '' ?>>
+                                                    <label class="form-check-label">Primi Tua Sekunder</label>
                                                 </div>
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="faktor_risiko_umum[]" value="Terlalu banyak anak lebih dari 3" <?= in_array('Terlalu banyak anak lebih dari 3', $faktor_risiko_umum) ? 'checked' : '' ?>>
-                                                    <label class="form-check-label">Terlalu banyak anak lebih dari 3</label>
+                                                    <input class="form-check-input" type="checkbox" name="faktor_risiko_umum[]" value="Grandemultipara" <?= (in_array('Grandemultipara', $faktor_risiko_umum) || in_array('Terlalu banyak anak lebih dari 3', $faktor_risiko_umum)) ? 'checked' : '' ?>>
+                                                    <label class="form-check-label">Grandemultipara</label>
                                                 </div>
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="faktor_risiko_umum[]" value="Terlalu tua umur lebih dari 35 th" <?= in_array('Terlalu tua umur lebih dari 35 th', $faktor_risiko_umum) ? 'checked' : '' ?>>
-                                                    <label class="form-check-label">Terlalu tua umur lebih dari 35 th</label>
+                                                    <input class="form-check-input" type="checkbox" name="faktor_risiko_umum[]" value="Usia >35 th" <?= (in_array('Usia >35 th', $faktor_risiko_umum) || in_array('Terlalu tua umur lebih dari 35 th', $faktor_risiko_umum)) ? 'checked' : '' ?>>
+                                                    <label class="form-check-label">Usia >35 th</label>
                                                 </div>
                                             </div>
 
                                             <div class="col-md-4">
                                                 <h6>Faktor Risiko Obstetri</h6>
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="faktor_risiko_obstetri[]" value="Terlalu pendek kurang dari 145 th" <?= in_array('Terlalu pendek kurang dari 145 th', $faktor_risiko_obstetri) ? 'checked' : '' ?>>
-                                                    <label class="form-check-label">Terlalu pendek kurang dari 145 th</label>
+                                                    <input class="form-check-input" type="checkbox" name="faktor_risiko_obstetri[]" value="Tinggi <145 cm" <?= (in_array('Tinggi <145 cm', $faktor_risiko_obstetri) || in_array('Terlalu pendek kurang dari 145 th', $faktor_risiko_obstetri)) ? 'checked' : '' ?>>
+                                                    <label class="form-check-label">Tinggi <145 cm</label>
                                                 </div>
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="faktor_risiko_obstetri[]" value="Pernah melahirkan dengan vakum" <?= in_array('Pernah melahirkan dengan vakum', $faktor_risiko_obstetri) ? 'checked' : '' ?>>
-                                                    <label class="form-check-label">Pernah melahirkan dengan vakum</label>
+                                                    <input class="form-check-input" type="checkbox" name="faktor_risiko_obstetri[]" value="Riwayat persalinan dengan ekstraksi Vakum" <?= (in_array('Riwayat persalinan dengan ekstraksi Vakum', $faktor_risiko_obstetri) || in_array('Pernah melahirkan dengan vakum', $faktor_risiko_obstetri)) ? 'checked' : '' ?>>
+                                                    <label class="form-check-label">Riwayat persalinan dengan ekstraksi Vakum</label>
                                                 </div>
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="faktor_risiko_obstetri[]" value="Pernah dilakukan plasenta manual" <?= in_array('Pernah dilakukan plasenta manual', $faktor_risiko_obstetri) ? 'checked' : '' ?>>
-                                                    <label class="form-check-label">Pernah dilakukan plasenta manual</label>
+                                                    <input class="form-check-input" type="checkbox" name="faktor_risiko_obstetri[]" value="Riwayat manual plasenta" <?= (in_array('Riwayat manual plasenta', $faktor_risiko_obstetri) || in_array('Pernah dilakukan plasenta manual', $faktor_risiko_obstetri)) ? 'checked' : '' ?>>
+                                                    <label class="form-check-label">Riwayat manual plasenta</label>
                                                 </div>
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="faktor_risiko_obstetri[]" value="Riwayat operasi sesar" <?= in_array('Riwayat operasi sesar', $faktor_risiko_obstetri) ? 'checked' : '' ?>>
-                                                    <label class="form-check-label">Riwayat operasi sesar</label>
+                                                    <input class="form-check-input" type="checkbox" name="faktor_risiko_obstetri[]" value="Riwayat SC" <?= (in_array('Riwayat SC', $faktor_risiko_obstetri) || in_array('Riwayat operasi sesar', $faktor_risiko_obstetri)) ? 'checked' : '' ?>>
+                                                    <label class="form-check-label">Riwayat SC</label>
                                                 </div>
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="faktor_risiko_obstetri[]" value="Kelainan letak sungsang atau lintang atau oblik" <?= in_array('Kelainan letak sungsang atau lintang atau oblik', $faktor_risiko_obstetri) ? 'checked' : '' ?>>
-                                                    <label class="form-check-label">Kelainan letak sungsang atau lintang atau oblik</label>
+                                                    <input class="form-check-input" type="checkbox" name="faktor_risiko_obstetri[]" value="Kelainan letak" <?= (in_array('Kelainan letak', $faktor_risiko_obstetri) || in_array('Kelainan letak sungsang atau lintang atau oblik', $faktor_risiko_obstetri)) ? 'checked' : '' ?>>
+                                                    <label class="form-check-label">Kelainan letak</label>
                                                 </div>
                                             </div>
 

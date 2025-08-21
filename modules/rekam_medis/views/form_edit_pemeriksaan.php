@@ -2098,11 +2098,17 @@ if ($conn) {
                                                     <button type="button" class="btn btn-sm btn-info w-100 mb-2" onclick="masukkanHasilUSG()">
                                                         <i class="fas fa-heartbeat"></i> Hasil USG
                                                     </button>
+                                                    <button type="button" class="btn btn-sm btn-info w-100 mb-2" onclick="masukkanHasilPenunjang()">
+                                                        <i class="fas fa-vials"></i> Hasil Penunjang
+                                                    </button>
                                                     <button type="button" class="btn btn-sm btn-info w-100 mb-2" onclick="masukkanDiagnosis()">
                                                         <i class="fas fa-tag"></i> Diagnosis
                                                     </button>
                                                     <button type="button" class="btn btn-sm btn-info w-100 mb-2" onclick="masukkanTatalaksana()">
                                                         <i class="fas fa-file-medical"></i> Tatalaksana
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-primary w-100 mb-2" onclick="masukkanSemuaData()">
+                                                        <i class="fas fa-layer-group"></i> Semua Data
                                                     </button>
                                                     <a href="javascript:void(0)" onclick="printResume()" class="btn btn-sm btn-success w-100">
                                                         <i class="fas fa-print"></i> Cetak Resume
@@ -4274,7 +4280,7 @@ echo "<!-- END FORM EDIT -->\n";
         }
 
         if (tanggalTpPenyesuaian && tanggalTpPenyesuaian !== '-') {
-            statusObstetriText += "\nTP: " + tanggalTpPenyesuaian;
+            statusObstetriText += "\nTP (terkonfirmasi USG): " + tanggalTpPenyesuaian;
         }
 
 
@@ -4324,7 +4330,7 @@ echo "<!-- END FORM EDIT -->\n";
         var bb = document.querySelector('input[name="bb"]') ? document.querySelector('input[name="bb"]').value : '<?= isset($pemeriksaan["bb"]) ? $pemeriksaan["bb"] : "" ?>';
 
         // Format teks yang akan dimasukkan
-        var statusUmumText = "Status Umum:\n";
+        var statusUmumText = "STATUS UMUM:\n";
         if (td) statusUmumText += "TD: " + td + " mmHg\n";
         if (nadi) statusUmumText += "N: " + nadi + " x/menit\n";
         if (bb) statusUmumText += "BB: " + bb + " kg\n";
@@ -4545,7 +4551,14 @@ echo "<!-- END FORM EDIT -->\n";
         console.log("Kontrasepsi:", kontrasepsiTerakhir);
         console.log("Lama Menikah:", lamaMenikahTh);
 
-        // Selalu tampilkan data parturien (jumlah persalinan)
+        // Cek apakah ada data bermakna; jika semuanya default/kosong, jangan masukkan ke resume
+        var adaDataGinekologi = (parturien > 0) || (abortus > 0) || (hariPertamaHaidTerakhir !== '-') || (kontrasepsiTerakhir && kontrasepsiTerakhir !== 'Tidak Ada') || (lamaMenikahTh > 0);
+        if (!adaDataGinekologi) {
+            // Tidak ada data bermakna, abaikan seperti DIAGNOSIS/TATALAKSANA yang kosong
+            return;
+        }
+
+        // Tampilkan data parturien (jumlah persalinan)
         statusGinekologiText += "P" + parturien;
 
         // Selalu tampilkan data abortus (jumlah keguguran)
@@ -4557,7 +4570,7 @@ echo "<!-- END FORM EDIT -->\n";
         // Tampilkan Kontrasepsi Terakhir
         statusGinekologiText += "KB Terakhir: " + kontrasepsiTerakhir + "\n";
 
-        // Selalu tampilkan Lama Menikah
+        // Tampilkan Lama Menikah
         statusGinekologiText += "Lama Menikah: " + lamaMenikahTh + " tahun";
 
         statusGinekologiText += "\n";
@@ -4612,6 +4625,33 @@ echo "<!-- END FORM EDIT -->\n";
         // updateResumeFormat();
     }
 
+    function masukkanHasilPenunjang() {
+        // Ambil isi dari textarea Laboratorium (name="lab")
+        const labTextarea = document.querySelector('textarea[name="lab"]');
+        const isiLab = labTextarea ? labTextarea.value.trim() : '';
+
+        // Validasi isi Laboratorium
+        if (!isiLab) {
+            alert('Mohon isi data Laboratorium terlebih dahulu sebelum menambahkan ke resume');
+            return;
+        }
+
+        // Format hasil penunjang
+        var hasilPenunjang = "HASIL PENUNJANG:\n" + isiLab + "\n";
+
+        // Sisipkan ke field resume
+        var resumeField = document.getElementById('resume');
+        resumeField.value += (resumeField.value ? "\n" : "") + hasilPenunjang;
+
+        // Auto-resize jika fungsi tersedia
+        if (typeof autoResizeTextarea === 'function') {
+            autoResizeTextarea(resumeField);
+        }
+
+        // Update format data (opsional)
+        // updateResumeFormat();
+    }
+
     function masukkanDiagnosis() {
         // Ambil isi dari textarea diagnosis
         const isiDiagnosis = document.getElementById('diagnosis').value.trim();
@@ -4660,7 +4700,74 @@ echo "<!-- END FORM EDIT -->\n";
         // updateResumeFormat();
     }
 
+    // Tombol agregasi: masukkan semua data yang tersedia seperti tombol-tombol di atasnya
+    function masukkanSemuaData() {
+        const resumeField = document.getElementById('resume');
+        if (!resumeField) return;
 
+        // Nonaktifkan alert sementara agar tidak muncul popup berulang saat agregasi
+        const originalAlert = window.alert;
+        window.alert = function() {};
+
+        try {
+            // Identitas
+            if (typeof masukkanIdentitasPasien === 'function') {
+                masukkanIdentitasPasien();
+            }
+
+            // Status Umum
+            if (typeof masukkanStatusUmum === 'function') {
+                masukkanStatusUmum();
+            }
+
+            // Status Obstetri
+            if (typeof masukkanStatusObstetri === 'function') {
+                masukkanStatusObstetri();
+            }
+
+            // Status Ginekologi
+            if (typeof masukkanStatusGinekologi === 'function') {
+                masukkanStatusGinekologi();
+            }
+
+            // Pemeriksaan Fisik
+            if (typeof masukkanPemeriksaanFisik === 'function') {
+                masukkanPemeriksaanFisik();
+            }
+
+            // Hasil USG (jika ada)
+            const usgEl = document.getElementById('ultrasonografi');
+            if (usgEl && usgEl.value && usgEl.value.trim() && typeof masukkanHasilUSG === 'function') {
+                masukkanHasilUSG();
+            }
+
+            // Hasil Penunjang / Laboratorium (jika ada)
+            const labEl = document.querySelector('textarea[name="lab"]');
+            if (labEl && labEl.value && labEl.value.trim() && typeof masukkanHasilPenunjang === 'function') {
+                masukkanHasilPenunjang();
+            }
+
+            // Diagnosis (jika ada)
+            const diagEl = document.getElementById('diagnosis');
+            if (diagEl && diagEl.value && diagEl.value.trim() && typeof masukkanDiagnosis === 'function') {
+                masukkanDiagnosis();
+            }
+
+            // Tatalaksana (jika ada)
+            const tatalaksanaEl = document.getElementById('tatalaksana');
+            if (tatalaksanaEl && tatalaksanaEl.value && tatalaksanaEl.value.trim() && typeof masukkanTatalaksana === 'function') {
+                masukkanTatalaksana();
+            }
+
+            // Auto-resize setelah agregasi
+            if (typeof autoResizeTextarea === 'function') {
+                autoResizeTextarea(resumeField);
+            }
+        } finally {
+            // Kembalikan alert seperti semula
+            window.alert = originalAlert;
+        }
+    }
 
     function printCeklist() {
         // Ambil isi dari ceklist content
@@ -5795,7 +5902,7 @@ echo "<!-- END FORM EDIT -->\n";
                 }
             }
         });
-        
+
         // Kirim isi field Edukasi ke WhatsApp
         const btnKirimWhatsAppEdukasi = document.getElementById('btnKirimWhatsAppEdukasi');
         if (btnKirimWhatsAppEdukasi) {
