@@ -7,7 +7,15 @@
 
 // Validasi token keamanan
 $auth_header = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
-$expected_token = ''; // Token akan diisi oleh env_setup.php
+// Baca token dari file .token atau dari env DEPLOY_TOKEN
+$token_file = __DIR__ . '/.token';
+$expected_token = '';
+if (file_exists($token_file)) {
+    $expected_token = trim(file_get_contents($token_file));
+}
+if (empty($expected_token)) {
+    $expected_token = getenv('DEPLOY_TOKEN') ?: '';
+}
 
 // Verifikasi request
 if (empty($auth_header) || $auth_header !== $expected_token) {

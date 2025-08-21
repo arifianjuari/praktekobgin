@@ -23,20 +23,21 @@ jobs:
       # Prepare environment files
       - name: Setup env variables
         run: |
-          echo "DB_USER=${{ secrets.DB_USER }}" >> .github/env-templates/.env.secret
-          echo "DB_PASS=${{ secrets.DB_PASS }}" >> .github/env-templates/.env.secret
-          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .github/env-templates/.env.secret
-          echo "OPENAI_MODEL=${{ secrets.OPENAI_MODEL }}" >> .github/env-templates/.env.secret
+          rm -f .env-setup/.env.secret
+          mkdir -p .env-setup
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env-setup/.env.secret
+          echo "DB_PASS=${{ secrets.DB_PASS }}" >> .env-setup/.env.secret
+          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env-setup/.env.secret
+          echo "OPENAI_MODEL=${{ secrets.OPENAI_MODEL }}" >> .env-setup/.env.secret
 
       # Siapkan folder .env-setup yang akan diupload ke server
       - name: Prepare .env-setup directory for server
         run: |
-          rm -rf .env-setup
           mkdir -p .env-setup
           cp .github/env-templates/trigger.php .env-setup/trigger.php
           cp .github/env-templates/production.env .env-setup/production.env
-          # Inject DEPLOY_TOKEN ke trigger.php (hanya di artefak deploy, bukan commit)
-          php -r '$f=".env-setup/trigger.php";$c=file_get_contents($f);$c=preg_replace("/\\$expected_token\\s*=\\s*\'\';/","$expected_token = \"${{ secrets.DEPLOY_TOKEN }}\";",$c);file_put_contents($f,$c);'
+          # Simpan token ke file .token agar dibaca oleh trigger.php di server
+          printf '%s' "${{ secrets.DEPLOY_TOKEN }}" > .env-setup/.token
           
       # Deploy aplikasi utama via FTP
       - name: Deploy aplikasi via FTP
@@ -72,10 +73,13 @@ jobs:
           url: ${{ secrets.APP_URL }}/.env-setup/trigger.php # Pastikan APP_URL adalah URL lengkap (http/https)
           method: 'POST'
           customHeaders: '{"Authorization": "${{ secrets.DEPLOY_TOKEN }}"}'
+          contentType: application/json
           data: |
-            DB_USER=${{ secrets.DB_USER }}
-            DB_PASS=${{ secrets.DB_PASS }}
-            OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
-            OPENAI_MODEL=${{ secrets.OPENAI_MODEL }}
+            {
+              "DB_USER": "${{ secrets.DB_USER }}",
+              "DB_PASS": "${{ secrets.DB_PASS }}",
+              "OPENAI_API_KEY": "${{ secrets.OPENAI_API_KEY }}",
+              "OPENAI_MODEL": "${{ secrets.OPENAI_MODEL }}"
+            }
           timeout: 10000
           preventFailureOnNoResponse: true
